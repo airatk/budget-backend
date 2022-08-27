@@ -1,0 +1,9 @@
+# Project files
+configurations/
+
+
+# Python & System files
+**/venv/
+**/__pycache__/
+
+**/.DS_Store
