@@ -3,5 +3,11 @@
             "path": "."
         }
     ],
-    "settings": {}
+    "settings": {
+        "python.linting.enabled": true,
+        "python.linting.flake8Enabled": true,
+        "python.linting.flake8Args": [ "--ignore=E121,E123,E126,E201,E202,E302,E501,E701,F401,W504" ],
+        "python.linting.mypyEnabled": true,
+        "python.linting.banditEnabled": true,
+    }
 }
