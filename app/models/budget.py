@@ -14,7 +14,7 @@ class Budget(BaseModel):
 
     id: Column = Column(BigInteger, primary_key=True)
     family_id: Column = Column(BigInteger, ForeignKey("family.id", ondelete="CASCADE"))
-    user_id: Column = Column(BigInteger, ForeignKey("family.id", ondelete="CASCADE"))
+    user_id: Column = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"))
 
     family: RelationshipProperty = relationship("Family", back_populates="budgets")
     user: RelationshipProperty = relationship("User", back_populates="budgets")

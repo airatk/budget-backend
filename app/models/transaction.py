@@ -29,8 +29,8 @@ class Transaction(BaseModel):
     account_id: Column = Column(BigInteger, ForeignKey("account.id", ondelete="CASCADE"), nullable=False)
     category_id: Column = Column(BigInteger, ForeignKey("category.id", ondelete="SET NULL"))
 
-    account: RelationshipProperty = relationship("Account", back_populates="transations")
-    category: RelationshipProperty = relationship("Category", back_populates="transations")
+    account: RelationshipProperty = relationship("Account", back_populates="transactions")
+    category: RelationshipProperty = relationship("Category", back_populates="transactions")
 
     type: Column = Column(Enum(TransactionType), nullable=False)
     due_date: Column = Column(Date, nullable=False)

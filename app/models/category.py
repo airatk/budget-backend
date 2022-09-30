@@ -23,9 +23,10 @@ class Category(BaseModel):
 
     id: Column = Column(BigInteger, primary_key=True)
     base_category_id: Column = Column(BigInteger, ForeignKey("category.id", ondelete="CASCADE"))
-    budget_id: Column = Column(BigInteger, ForeignKey("category.id", ondelete="SET NULL"))
+    budget_id: Column = Column(BigInteger, ForeignKey("budget.id", ondelete="SET NULL"))
 
-    base_category: RelationshipProperty = relationship("Category", back_populates="subcategories")
+    base_category: RelationshipProperty = relationship("Category", back_populates="subcategories", remote_side=id)
+    subcategories: RelationshipProperty = relationship("Category", back_populates="base_category")
     budget: RelationshipProperty = relationship("Budget", back_populates="categories")
     transactions: RelationshipProperty = relationship("Transaction", back_populates="category")
 
