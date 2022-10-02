@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.controllers import authentication_controller
 from app.controllers import family_controller
@@ -11,6 +12,9 @@ from app.controllers import budgets_controller
 from app.models.meta import BaseModel
 
 from app.utilities.database import engine
+from app.utilities.cors import ALLOWED_ORIGINS
+from app.utilities.cors import ALLOWED_METHODS
+from app.utilities.cors import ALLOWED_HEADERS
 
 
 BaseModel.metadata.create_all(bind=engine)
@@ -23,6 +27,14 @@ api: FastAPI = FastAPI(
         "name": "Airat K",
         "url": "https://github.com/airatk"
     }
+)
+
+api.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_methods=ALLOWED_METHODS,
+    allow_headers=ALLOWED_HEADERS,
+    allow_credentials=True
 )
 
 api.include_router(authentication_controller, tags=[ "authentication" ])
