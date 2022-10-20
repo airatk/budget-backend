@@ -16,6 +16,7 @@ class User(BaseModel):
 
     family: RelationshipProperty = relationship("Family", back_populates="members")
     accounts: RelationshipProperty = relationship("Account", back_populates="user")
+    categories: RelationshipProperty = relationship("Category", back_populates="user")
     budgets: RelationshipProperty = relationship("Budget", back_populates="user")
 
     username: Column = Column(String(30), unique=True, index=True, nullable=False)
