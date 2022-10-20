@@ -40,6 +40,7 @@ CREATE TABLE "account" (
 
 CREATE TABLE "category" (
   "id" integer PRIMARY KEY,
+  "user_id" integer,
   "base_category_id" integer,
   "budget_id" integer,
   "name" string,
@@ -62,6 +63,8 @@ ALTER TABLE "user" ADD FOREIGN KEY ("family_id") REFERENCES "family" ("id");
 ALTER TABLE "budget" ADD FOREIGN KEY ("family_id") REFERENCES "family" ("id");
 
 ALTER TABLE "account" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
+
+ALTER TABLE "category" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
 
 ALTER TABLE "budget" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
 
