@@ -1,5 +1,6 @@
 {
-    "folders": [ {
+    "folders": [
+        {
             "path": "."
         }
     ],
@@ -9,5 +10,27 @@
         "python.linting.flake8Args": [ "--ignore=E121,E123,E126,E201,E202,E302,E501,E701,F401,W504" ],
         "python.linting.mypyEnabled": true,
         "python.linting.banditEnabled": true,
+        "python.analysis.typeCheckingMode": "off",
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Debug Launch",
+                "type": "python",
+                "request": "launch",
+                "program": "${workspaceFolder}/main.py",
+                "justMyCode": false,
+            }, {
+                "name": "Production-Like Launch",
+                "type": "python",
+                "request": "launch",
+                "module": "uvicorn",
+                "args": [
+                    "main:app"
+                ],
+                "justMyCode": true,
+            }
+        ]
     }
 }
