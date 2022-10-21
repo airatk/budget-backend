@@ -1,3 +1,5 @@
+from datetime import date
+
 from sqlalchemy.orm import Session
 
 from pydantic import BaseModel
@@ -38,15 +40,19 @@ class AccountsSummary(BaseModel):
     incomes: float
     outcomes: float
 
+class DailyOutcomes(BaseModel):
+    date: date
+    amount: float
 
-@accounts_controller.get("/summary")
+
+@accounts_controller.get("/summary", response_model=AccountsSummary)
 async def get_summary(current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
     # TODO: There should be summary for current period & all the time.
     #       It should include `Balance`, `Income` & `Outcome` only.
     pass
 
-@accounts_controller.get("/last-7-days")
-async def get_last_7_days_highlight(current_user: User = Depends(identify_user)):
+@accounts_controller.get("/last-n-days", response_model=list[DailyOutcomes])
+async def get_last_n_days_highlight(n_days: int = 7, current_user: User = Depends(identify_user)):
     pass
 
 @accounts_controller.get("/monthly-trend")
@@ -60,11 +66,11 @@ async def get_balances(current_user: User = Depends(identify_user)):
     for account in current_user.accounts:
         account_incomes: float = sum(
             transaction.amount for transaction in account.transactions
-            if transaction.type == TransactionType.INCOME.value
+            if transaction.type == TransactionType.INCOME
         )
         account_outcomes: float = sum(
             transaction.amount for transaction in account.transactions
-            if transaction.type == TransactionType.OUTCOME.value
+            if transaction.type == TransactionType.OUTCOME
         )
 
         account_balance: AccountBalance = AccountBalance(
@@ -96,10 +102,12 @@ async def create_account(account_data: AccountData, current_user: User = Depends
 
 @accounts_controller.put("/update", response_model=str)
 async def update_account(account_data: AccountData, current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
-    account: Account | None = session.query(Account).filter(
-        Account.id == account_data.id,
-        Account.id.in_(account.id for account in current_user.accounts)
-    ).one_or_none()
+    account: Account | None = session.query(Account).\
+        filter(
+            Account.id == account_data.id,
+            Account.user == current_user
+        ).\
+        one_or_none()
 
     if account is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No account with given `id` was found")
@@ -114,10 +122,12 @@ async def update_account(account_data: AccountData, current_user: User = Depends
 
 @accounts_controller.delete("/delete", response_model=str)
 async def delete_account(id: int, current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
-    account: Account | None = session.query(Account).filter(
-        Account.id == id,
-        Account.id.in_(account.id for account in current_user.accounts)
-    ).one_or_none()
+    account: Account | None = session.query(Account).\
+        filter(
+            Account.id == id,
+            Account.user == current_user
+        ).\
+        one_or_none()
 
     if account is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No account with given `id` was found")

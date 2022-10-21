@@ -10,13 +10,14 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.relationships import RelationshipProperty
 
 from .meta import BaseModel
+from .meta import persist_enumeration_values
 
 
-class CurrencyType(EnumClass):
+class CurrencyType(str, EnumClass):
     RUB: str = "RUB"
     USD: str = "USD"
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return self.value
 
 class Account(BaseModel):
@@ -29,5 +30,5 @@ class Account(BaseModel):
     transactions: RelationshipProperty = relationship("Transaction", back_populates="account")
 
     name: Column = Column(String, index=True, nullable=False)
-    currency: Column = Column(Enum(CurrencyType), nullable=False)
+    currency: Column = Column(Enum(CurrencyType, values_callable=persist_enumeration_values), nullable=False)
     openning_balance: Column = Column(Float, default=0.00, nullable=False)

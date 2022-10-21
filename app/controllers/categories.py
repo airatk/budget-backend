@@ -34,10 +34,12 @@ async def get_categories(current_user: User = Depends(identify_user)):
 
 @categories_controller.get("/item", response_model=CategoryData)
 async def get_category(id: int, current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
-    category: Category = session.query(Category).filter(
-        Category.id == id,
-        Category.id.in_(category.id for category in current_user.categories)
-    ).one_or_none()
+    category: Category = session.query(Category).\
+        filter(
+            Category.id == id, 
+            Category.user == current_user
+        ).\
+        one_or_none()
 
     if category is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No category with given `id` was found")
@@ -60,10 +62,12 @@ async def create_category(category_data: CategoryData, current_user: User = Depe
 
 @categories_controller.put("/update", response_model=str)
 async def update_category(category_data: CategoryData, current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
-    category: Category | None = session.query(Category).filter(
-        Category.id == category_data.id,
-        Category.id.in_(category.id for category in current_user.categories)
-    ).one_or_none()
+    category: Category | None = session.query(Category).\
+        filter(
+            Category.id == category_data.id,
+            Category.user == current_user
+        ).\
+        one_or_none()
 
     if category is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No category with given `id` was found")
@@ -78,10 +82,12 @@ async def update_category(category_data: CategoryData, current_user: User = Depe
 
 @categories_controller.delete("/delete", response_model=str)
 async def delete_category(id: int, current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
-    category: Category | None = session.query(Category).filter(
-        Category.id == id,
-        Category.id.in_(category.id for category in current_user.categories)
-    ).one_or_none()
+    category: Category | None = session.query(Category).\
+        filter(
+            Category.id == id,
+            Category.user == current_user
+        ).\
+        one_or_none()
 
     if category is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No category with given `id` was found")

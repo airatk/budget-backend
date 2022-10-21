@@ -12,14 +12,15 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.relationships import RelationshipProperty
 
 from .meta import BaseModel
+from .meta import persist_enumeration_values
 
 
-class TransactionType(EnumClass):
-    INCOME: str = "income"
-    OUTCOME: str = "outcome"
-    TRANSFER: str = "transfer"
+class TransactionType(str, EnumClass):
+    INCOME: str = "Income"
+    OUTCOME: str = "Outcome"
+    TRANSFER: str = "Transfer"
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return self.value
 
 class Transaction(BaseModel):
@@ -32,7 +33,7 @@ class Transaction(BaseModel):
     account: RelationshipProperty = relationship("Account", back_populates="transactions")
     category: RelationshipProperty = relationship("Category", back_populates="transactions")
 
-    type: Column = Column(Enum(TransactionType), nullable=False)
+    type: Column = Column(Enum(TransactionType, values_callable=persist_enumeration_values), nullable=False)
     due_date: Column = Column(Date, nullable=False)
     due_time: Column = Column(Time, nullable=False)
     amount: Column = Column(Float, nullable=False)

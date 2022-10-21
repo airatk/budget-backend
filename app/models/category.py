@@ -9,13 +9,14 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.relationships import RelationshipProperty
 
 from .meta import BaseModel
+from .meta import persist_enumeration_values
 
 
-class CategoryType(EnumClass):
-    INCOME: str = "income"
-    OUTCOME: str = "outcome"
+class CategoryType(str, EnumClass):
+    INCOME: str = "Income"
+    OUTCOME: str = "Outcome"
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return self.value
 
 class Category(BaseModel):
@@ -33,4 +34,4 @@ class Category(BaseModel):
     transactions: RelationshipProperty = relationship("Transaction", back_populates="category")
 
     name: Column = Column(String, index=True, nullable=False)
-    type: Column = Column(Enum(CategoryType), nullable=False)
+    type: Column = Column(Enum(CategoryType, values_callable=persist_enumeration_values), nullable=False)

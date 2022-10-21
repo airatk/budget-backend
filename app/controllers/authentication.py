@@ -27,14 +27,14 @@ class AuthenticationData(BaseModel):
 
 @authentication_controller.post("/sign-in", response_model=AuthenticationData)
 async def sign_in(credentials: SignInCredentials, session: Session = Depends(define_local_session)):
-    user: User = session.query(User).filter(
-        User.username == credentials.username,
-        User.password == credentials.password
-    ).one_or_none()
+    user: User = session.query(User).\
+        filter(
+            User.username == credentials.username,
+            User.password == credentials.password
+        ).\
+        one_or_none()
 
     if user is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Provided creditials are wrong")
 
-    return AuthenticationData(
-        access_token=create_token(user_id=user.id)
-    )
+    return AuthenticationData(access_token=create_token(user_id=user.id))
