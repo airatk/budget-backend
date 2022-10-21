@@ -1,21 +1,14 @@
-from pydantic import BaseModel
-
 from fastapi import APIRouter
 from fastapi import Depends
 
 from app.dependencies.user import identify_user
 
+from app.schemas.budget import BudgetData
+
 from app.models import User
 
 
 budgets_controller: APIRouter = APIRouter(prefix="/budgets")
-
-
-class BudgetData(BaseModel):
-    id: int | None
-
-    class Config:
-        orm_mode = True
 
 
 @budgets_controller.get("/list", response_model=list[BudgetData])

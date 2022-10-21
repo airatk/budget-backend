@@ -17,13 +17,19 @@ async def identify_user(token: str = Security(APIKeyHeader(name="UserAccessToken
     (user_id, error_message) = decode_token(token)
 
     if error_message is not None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_message)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=error_message
+        )
 
     user: User | None = session.query(User).\
         filter(User.id == user_id).\
         one_or_none()
 
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The user does not seem to exist")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The user does not seem to exist"
+        )
 
     return user

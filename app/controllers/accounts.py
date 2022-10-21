@@ -1,9 +1,4 @@
-from datetime import date
-
 from sqlalchemy.orm import Session
-
-from pydantic import BaseModel
-from pydantic import Field
 
 from fastapi import APIRouter
 from fastapi import Depends
@@ -13,36 +8,17 @@ from fastapi import status
 from app.dependencies.session import define_local_session
 from app.dependencies.user import identify_user
 
+from app.schemas.account import AccountData
+from app.schemas.account import AccountBalance
+from app.schemas.account import AccountsSummary
+from app.schemas.account import DailyOutcomes
+
 from app.models import User
 from app.models import Account
-from app.models.account import CurrencyType
 from app.models.transaction import TransactionType
 
 
 accounts_controller: APIRouter = APIRouter(prefix="/accounts")
-
-
-class AccountData(BaseModel):
-    id: int | None
-    name: str = Field(min_length=1)
-    currency: CurrencyType
-    openning_balance: float = 0.00
-
-    class Config:
-        orm_mode = True
-
-class AccountBalance(BaseModel):
-    account: str
-    balance: float
-
-class AccountsSummary(BaseModel):
-    balance: float
-    incomes: float
-    outcomes: float
-
-class DailyOutcomes(BaseModel):
-    date: date
-    amount: float
 
 
 @accounts_controller.get("/summary", response_model=AccountsSummary)
@@ -110,7 +86,10 @@ async def update_account(account_data: AccountData, current_user: User = Depends
         one_or_none()
 
     if account is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No account with given `id` was found")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You don't have an account with given `id`"
+        )
 
     account.name = account_data.name
     account.currency = account_data.currency
@@ -130,7 +109,10 @@ async def delete_account(id: int, current_user: User = Depends(identify_user), s
         one_or_none()
 
     if account is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No account with given `id` was found")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You don't have an account with given `id`"
+        )
 
     session.delete(account)
     session.commit()

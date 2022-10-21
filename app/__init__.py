@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.controllers import authentication_controller
 from app.controllers import family_controller
-from app.controllers import user_controller
+from app.controllers import users_controller
 from app.controllers import accounts_controller
 from app.controllers import categories_controller
 from app.controllers import transactions_controller
@@ -39,7 +39,7 @@ api.add_middleware(
 
 api.include_router(authentication_controller, tags=[ "authentication" ])
 api.include_router(family_controller, tags=[ "family" ])
-api.include_router(user_controller, tags=[ "user" ])
+api.include_router(users_controller, tags=[ "user" ])
 api.include_router(accounts_controller, tags=[ "accounts" ])
 api.include_router(categories_controller, tags=[ "categories" ])
 api.include_router(transactions_controller, tags=[ "transactions" ])
