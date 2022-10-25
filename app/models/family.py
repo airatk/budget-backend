@@ -1,8 +1,9 @@
 from sqlalchemy import Column
 from sqlalchemy import BigInteger
 from sqlalchemy import String
+
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm.relationships import RelationshipProperty
+from sqlalchemy.orm import RelationshipProperty
 
 from .meta import BaseModel
 

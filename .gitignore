@@ -3,7 +3,7 @@ configurations/
 
 
 # Python & System files
-**/venv/
+**/env/
 **/__pycache__/
 
 **/.DS_Store

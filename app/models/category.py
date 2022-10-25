@@ -5,8 +5,9 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import BigInteger
 from sqlalchemy import String
 from sqlalchemy import Enum
+
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm.relationships import RelationshipProperty
+from sqlalchemy.orm import RelationshipProperty
 
 from .meta import BaseModel
 from .meta import persist_enumeration_values

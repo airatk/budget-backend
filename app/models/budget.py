@@ -3,8 +3,9 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import BigInteger
 from sqlalchemy import String
 from sqlalchemy import Float
+
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm.relationships import RelationshipProperty
+from sqlalchemy.orm import RelationshipProperty
 
 from .meta import BaseModel
 
