@@ -2,15 +2,16 @@ from datetime import date
 from datetime import time
 
 from pydantic import BaseModel
+from pydantic import PositiveInt
 from pydantic import PositiveFloat
 
 from app.models.transaction import TransactionType
 
 
 class TransactionData(BaseModel):
-    id: int | None
-    account_id: int
-    category_id: int
+    id: PositiveInt | None
+    account_id: PositiveInt
+    category_id: PositiveInt
     type: TransactionType
     due_date: date
     due_time: time
@@ -21,5 +22,5 @@ class TransactionData(BaseModel):
         orm_mode = True
 
 class TransactionsPeriod(BaseModel):
-    month: int
-    year: int
+    month: PositiveInt
+    year: PositiveInt

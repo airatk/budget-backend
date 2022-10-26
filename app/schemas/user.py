@@ -1,9 +1,10 @@
 from pydantic import BaseModel
+from pydantic import PositiveInt
 
 
 class UserData(BaseModel):
-    id: int
-    family_id: int | None
+    id: PositiveInt
+    family_id: PositiveInt | None
     username: str
 
     class Config:

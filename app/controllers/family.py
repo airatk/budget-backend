@@ -26,13 +26,13 @@ async def join_family(access_code: str, current_user: User = Depends(identify_us
     family: Family | None = session.query(Family).\
         filter(Family.access_code == access_code).\
         one_or_none()
-    
+
     if family is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="There is no family with given `access_code`"
         )
-    
+
     current_user.family = family
 
     session.commit()
@@ -90,7 +90,7 @@ async def delete_family(current_user: User = Depends(identify_user), session: Se
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="You are not a member of any family"
         )
-    
+
     session.delete(current_user.family)
     session.commit()
 

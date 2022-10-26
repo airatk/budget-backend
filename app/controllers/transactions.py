@@ -28,7 +28,7 @@ async def get_periods(current_user: User = Depends(identify_user), session: Sess
         ).\
         distinct().\
         all()
-    
+
     return [ TransactionsPeriod(year=period_entities[0], month=period_entities[1]) for period_entities in periods_entities ]
 
 @transactions_controller.get("/list", response_model=list[TransactionData])
@@ -40,7 +40,7 @@ async def get_transactions(year: int, month: int, current_user: User = Depends(i
             func.DATE_PART("MONTH", Transaction.due_date) == month
         ).\
         all()
-    
+
     return [ TransactionData.from_orm(obj=transaction) for transaction in transactions ]
 
 @transactions_controller.get("/item", response_model=TransactionData)
@@ -67,7 +67,7 @@ async def create_transaction(transaction_data: TransactionData, current_user: Us
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="You don't have an account with given `id`"
         )
-    
+
     if not any(transaction_data.category_id == category.id for category in current_user.categories):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
