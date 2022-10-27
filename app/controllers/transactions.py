@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy.sql import func
 
 from fastapi import APIRouter
 from fastapi import Depends
