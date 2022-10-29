@@ -33,4 +33,6 @@ async def sign_in(credentials: SignInCredentials, session: Session = Depends(def
             detail="Provided creditials are wrong"
         )
 
-    return AuthenticationData(access_token=create_token(user_id=user.id))
+    user_access_token: str = create_token(user_id=user.id)
+
+    return AuthenticationData(access_token=user_access_token)
