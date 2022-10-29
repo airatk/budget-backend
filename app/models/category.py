@@ -36,3 +36,6 @@ class Category(BaseModel):
 
     name: Column = Column(String, index=True, nullable=False)
     type: Column = Column(Enum(CategoryType, values_callable=persist_enumeration_values), nullable=False)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(id={self.id}, name={self.name})"

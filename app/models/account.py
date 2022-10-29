@@ -33,3 +33,6 @@ class Account(BaseModel):
     name: Column = Column(String, index=True, nullable=False)
     currency: Column = Column(Enum(CurrencyType, values_callable=persist_enumeration_values), nullable=False)
     openning_balance: Column = Column(Float, default=0.00, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(id={self.id}, name={self.name})"

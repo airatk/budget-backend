@@ -22,3 +22,6 @@ class User(BaseModel):
 
     username: Column = Column(String(30), unique=True, index=True, nullable=False)
     password: Column = Column(String, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(id={self.id}, username={self.username})"

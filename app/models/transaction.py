@@ -39,3 +39,6 @@ class Transaction(BaseModel):
     due_time: Column = Column(Time, nullable=False)
     amount: Column = Column(Float, nullable=False)
     note: Column = Column(String, default="", nullable=False)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(id={self.id}, amount={self.amount})"

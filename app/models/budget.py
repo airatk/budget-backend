@@ -23,3 +23,6 @@ class Budget(BaseModel):
 
     name: Column = Column(String, index=True, nullable=False)
     planned_outcomes: Column = Column(Float, default=0.00, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(id={self.id}, name={self.name})"

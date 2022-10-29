@@ -17,3 +17,6 @@ class Family(BaseModel):
     budgets: RelationshipProperty = relationship("Budget", back_populates="family")
 
     access_code: Column = Column(String(8), unique=True, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(id={self.id})"
