@@ -5,12 +5,12 @@ from fastapi import HTTPException
 from fastapi import status
 from fastapi import Depends
 
-from app.dependencies.session import define_local_session
+from models import User
 
-from app.schemas.authentication import SignInCredentials
+from app.dependencies.sessions import define_postgres_session
+
+from app.schemas.authentication import SignInCredentialsData
 from app.schemas.authentication import AuthenticationData
-
-from app.models import User
 
 from app.utilities.security import create_token
 
@@ -19,7 +19,10 @@ authentication_controller: APIRouter = APIRouter()
 
 
 @authentication_controller.post("/sign-in", response_model=AuthenticationData)
-async def sign_in(credentials: SignInCredentials, session: Session = Depends(define_local_session)):
+async def sign_in(
+    credentials: SignInCredentialsData,
+    session: Session = Depends(define_postgres_session)
+):
     user: User = session.query(User).\
         filter(
             User.username == credentials.username,

@@ -1,15 +1,25 @@
 from pydantic import BaseModel
-from pydantic import Field
 from pydantic import PositiveInt
 
-from app.models.category import CategoryType
+from models.category import CategoryType
+
+from .utilities.base_models import BaseUpdateModel
+from .utilities.types import NonEmptyStr
 
 
-class CategoryData(BaseModel):
-    id: PositiveInt | None
+class CategoryOutputData(BaseModel, orm_mode=True):
+    id: PositiveInt
     base_category_id: PositiveInt | None
-    name: str = Field(min_length=1)
+    name: NonEmptyStr
     type: CategoryType
 
-    class Config:
-        orm_mode = True
+class CategoryCreationData(BaseModel, anystr_strip_whitespace=True):
+    base_category_id: PositiveInt | None
+    name: NonEmptyStr
+    type: CategoryType
+
+class CategoryUpdateData(BaseUpdateModel, anystr_strip_whitespace=True):
+    id: PositiveInt
+    base_category_id: PositiveInt | None
+    name: NonEmptyStr | None
+    type: CategoryType | None

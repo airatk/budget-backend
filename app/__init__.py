@@ -9,15 +9,10 @@ from app.controllers import categories_controller
 from app.controllers import transactions_controller
 from app.controllers import budgets_controller
 
-from app.models.meta import BaseModel
-
-from app.utilities.database import engine
 from app.utilities.cors import ALLOWED_ORIGINS
 from app.utilities.cors import ALLOWED_METHODS
 from app.utilities.cors import ALLOWED_HEADERS
 
-
-BaseModel.metadata.create_all(bind=engine)
 
 api: FastAPI = FastAPI(
     title="Budget API",

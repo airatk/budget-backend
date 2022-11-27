@@ -2,7 +2,7 @@ from jwt import encode
 from jwt import decode
 from jwt import InvalidTokenError
 
-from app.utilities.constants import KEYS
+from core.settings import settings
 
 
 def create_token(*, user_id: int) -> str:
@@ -12,16 +12,16 @@ def create_token(*, user_id: int) -> str:
 
     return encode(
         payload=payload,
-        key=KEYS["JWT.ACCESS_SECRET_KEY"],
-        algorithm=KEYS["JWT.ALGORITHM"]
+        key=settings.JWT_ACCESS_SECRET_KEY,
+        algorithm=settings.JWT_ALGORITHM
     )
 
 def decode_token(token: str, /) -> tuple[int | None, str | None]:
     try:
         payload: dict[str, int] = decode(
             jwt=token,
-            key=KEYS["JWT.ACCESS_SECRET_KEY"],
-            algorithms=[ KEYS["JWT.ALGORITHM"] ]
+            key=settings.JWT_ACCESS_SECRET_KEY,
+            algorithms=[ settings.JWT_ALGORITHM ]
         )
     except InvalidTokenError:
         return (None, "Token is invalid")

@@ -1,28 +1,38 @@
 from sqlalchemy.orm import Session
 
+from pydantic import PositiveInt
+
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
 from fastapi import status
 
-from app.dependencies.session import define_local_session
+from models import User
+from models import Category
+
+from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
 
-from app.schemas.category import CategoryData
-
-from app.models import User
-from app.models import Category
+from app.schemas.category import CategoryOutputData
+from app.schemas.category import CategoryCreationData
+from app.schemas.category import CategoryUpdateData
 
 
 categories_controller: APIRouter = APIRouter(prefix="/categories")
 
 
-@categories_controller.get("/list", response_model=list[CategoryData])
-async def get_categories(current_user: User = Depends(identify_user)):
-    return [ CategoryData.from_orm(obj=category) for category in current_user.categories ]
+@categories_controller.get("/list", response_model=list[CategoryOutputData])
+async def get_categories(
+    current_user: User = Depends(identify_user)
+):
+    return current_user.categories
 
-@categories_controller.get("/item", response_model=CategoryData)
-async def get_category(id: int, current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
+@categories_controller.get("/item", response_model=CategoryOutputData)
+async def get_category(
+    id: PositiveInt,
+    current_user: User = Depends(identify_user),
+    session: Session = Depends(define_postgres_session)
+):
     category: Category | None = session.query(Category).\
         filter(
             Category.id == id,
@@ -36,10 +46,14 @@ async def get_category(id: int, current_user: User = Depends(identify_user), ses
             detail="You don't have a category with given `id`"
         )
 
-    return CategoryData.from_orm(obj=category)
+    return category
 
-@categories_controller.post("/create", response_model=str)
-async def create_category(category_data: CategoryData, current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
+@categories_controller.post("/create", response_model=CategoryOutputData)
+async def create_category(
+    category_data: CategoryCreationData,
+    current_user: User = Depends(identify_user),
+    session: Session = Depends(define_postgres_session)
+):
     category: Category = Category(
         user=current_user,
         base_category_id=category_data.base_category_id,
@@ -50,10 +64,14 @@ async def create_category(category_data: CategoryData, current_user: User = Depe
     session.add(category)
     session.commit()
 
-    return "Category was created"
+    return category
 
-@categories_controller.put("/update", response_model=str)
-async def update_category(category_data: CategoryData, current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
+@categories_controller.put("/update", response_model=CategoryOutputData)
+async def update_category(
+    category_data: CategoryUpdateData,
+    current_user: User = Depends(identify_user),
+    session: Session = Depends(define_postgres_session)
+):
     category: Category | None = session.query(Category).\
         filter(
             Category.id == category_data.id,
@@ -67,16 +85,19 @@ async def update_category(category_data: CategoryData, current_user: User = Depe
             detail="You don't have a category with given `id`"
         )
 
-    category.base_category_id = category_data.base_category_id
-    category.name = category_data.name
-    category.type = category_data.type
+    for (field, value) in category_data.dict().items():
+        setattr(category, field, value)
 
     session.commit()
 
-    return "Category was updated"
+    return category
 
 @categories_controller.delete("/delete", response_model=str)
-async def delete_category(id: int, current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
+async def delete_category(
+    id: PositiveInt,
+    current_user: User = Depends(identify_user),
+    session: Session = Depends(define_postgres_session)
+):
     category: Category | None = session.query(Category).\
         filter(
             Category.id == id,

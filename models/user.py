@@ -6,13 +6,10 @@ from sqlalchemy import String
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import RelationshipProperty
 
-from .meta import BaseModel
+from .utilities.base_model import BaseModel
 
 
 class User(BaseModel):
-    __tablename__: str = "user"
-
-    id: Column = Column(BigInteger, primary_key=True)
     family_id: Column = Column(BigInteger, ForeignKey("family.id", ondelete="SET NULL"))
 
     family: RelationshipProperty = relationship("Family", back_populates="members")

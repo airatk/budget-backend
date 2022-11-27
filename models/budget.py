@@ -7,13 +7,10 @@ from sqlalchemy import Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import RelationshipProperty
 
-from .meta import BaseModel
+from .utilities.base_model import BaseModel
 
 
 class Budget(BaseModel):
-    __tablename__: str = "budget"
-
-    id: Column = Column(BigInteger, primary_key=True)
     family_id: Column = Column(BigInteger, ForeignKey("family.id", ondelete="CASCADE"))
     user_id: Column = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"))
 

@@ -2,26 +2,13 @@ from logging.config import fileConfig
 
 from sqlalchemy import create_engine
 from sqlalchemy import pool
-from sqlalchemy.engine import URL
 
 from alembic import context
 
-from config import Config
+from core.settings import settings
 
-from app.models.meta import BaseModel
+from models.utilities.base_model import BaseModel
 
-
-KEYS_FILEPATH: str = "configurations/keys"
-KEYS: Config = Config(KEYS_FILEPATH)
-
-database_connection_url: URL = URL.create(
-    drivername=KEYS['DATABASE.DRIVER'],
-    username=KEYS['DATABASE.USERNAME'],
-    password=KEYS['DATABASE.PASSWORD'],
-    host=KEYS['DATABASE.HOST'],
-    port=KEYS['DATABASE.PORT'],
-    database=KEYS['DATABASE.NAME']
-)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -57,7 +44,7 @@ def run_migrations_offline() -> None:
 
     """
     context.configure(
-        url=database_connection_url,
+        url=settings.POSTGRES_URL,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={
@@ -77,7 +64,7 @@ def run_migrations_online() -> None:
 
     """
     connectable = create_engine(
-        url=database_connection_url,
+        url=settings.POSTGRES_URL,
         poolclass=pool.NullPool,
     )
 

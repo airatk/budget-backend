@@ -6,14 +6,14 @@ from fastapi import Security
 from fastapi import Depends
 from fastapi.security import APIKeyHeader
 
-from app.dependencies.session import define_local_session
+from models import User
 
-from app.models import User
+from app.dependencies.sessions import define_postgres_session
 
 from app.utilities.security import decode_token
 
 
-async def identify_user(token: str = Security(APIKeyHeader(name="UserAccessToken")), session: Session = Depends(define_local_session)) -> User:
+async def identify_user(token: str = Security(APIKeyHeader(name="UserAccessToken")), session: Session = Depends(define_postgres_session)) -> User:
     (user_id, error_message) = decode_token(token)
 
     if error_message is not None:

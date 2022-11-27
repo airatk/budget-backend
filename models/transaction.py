@@ -1,5 +1,3 @@
-from enum import Enum as EnumClass
-
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import BigInteger
@@ -12,22 +10,13 @@ from sqlalchemy import Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import RelationshipProperty
 
-from .meta import BaseModel
-from .meta import persist_enumeration_values
+from models.utilities.types import TransactionType
 
+from .utilities.base_model import BaseModel
+from .utilities.callables import persist_enumeration_values
 
-class TransactionType(str, EnumClass):
-    INCOME: str = "Income"
-    OUTCOME: str = "Outcome"
-    TRANSFER: str = "Transfer"
-
-    def __repr__(self) -> str:
-        return self.value
 
 class Transaction(BaseModel):
-    __tablename__: str = "transaction"
-
-    id: Column = Column(BigInteger, primary_key=True)
     account_id: Column = Column(BigInteger, ForeignKey("account.id", ondelete="CASCADE"), nullable=False)
     category_id: Column = Column(BigInteger, ForeignKey("category.id", ondelete="SET NULL"))
 

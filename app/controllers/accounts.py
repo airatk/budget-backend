@@ -1,5 +1,4 @@
 from typing import Any
-
 from datetime import datetime
 from datetime import date
 from datetime import timedelta
@@ -15,28 +14,33 @@ from fastapi import Depends
 from fastapi import HTTPException
 from fastapi import status
 
-from app.dependencies.session import define_local_session
+from models import User
+from models import Account
+from models import Transaction
+from models.utilities.types import TransactionType
+
+from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
 
-from app.schemas.account import AccountData
-from app.schemas.account import AccountBalance
-from app.schemas.account import AccountsSummary
+from app.schemas.account import AccountOutputData
+from app.schemas.account import AccountCreationData
+from app.schemas.account import AccountUpdateData
+from app.schemas.account import AccountBalanceData
+from app.schemas.account import AccountsSummaryData
 from app.schemas.account import SummaryPeriodType
-from app.schemas.account import PeriodSummary
-from app.schemas.account import DailyHighlight
-from app.schemas.account import TrendPoint
-
-from app.models import User
-from app.models import Account
-from app.models import Transaction
-from app.models.transaction import TransactionType
+from app.schemas.account import PeriodSummaryData
+from app.schemas.account import DailyHighlightData
+from app.schemas.account import TrendPointData
 
 
 accounts_controller: APIRouter = APIRouter(prefix="/accounts")
 
 
-@accounts_controller.get("/summary", response_model=list[PeriodSummary])
-async def get_summary(current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
+@accounts_controller.get("/summary", response_model=list[PeriodSummaryData])
+async def get_summary(
+    current_user: User = Depends(identify_user),
+    session: Session = Depends(define_postgres_session)
+):
     today_date: date = datetime.today().date()
 
     current_month_conditions: tuple[bool, ...] = (
@@ -53,7 +57,7 @@ async def get_summary(current_user: User = Depends(identify_user), session: Sess
         ).\
         filter(Transaction.account.has(user=current_user))
 
-    summary: list[PeriodSummary] = []
+    summary: list[PeriodSummaryData] = []
 
     for (period, period_conditions) in (
         (SummaryPeriodType.CURRENT_MONTH, current_month_conditions),
@@ -72,12 +76,12 @@ async def get_summary(current_user: User = Depends(identify_user), session: Sess
             ).\
             scalar() or 0.00
 
-        accounts_summary: AccountsSummary = AccountsSummary(
+        accounts_summary: AccountsSummaryData = AccountsSummaryData(
             balance=incomes - outcomes,
             incomes=incomes,
             outcomes=outcomes * (-1)
         )
-        period_summary: PeriodSummary = PeriodSummary(
+        period_summary: PeriodSummaryData = PeriodSummaryData(
             period=period,
             accounts_summary=accounts_summary
         )
@@ -86,8 +90,13 @@ async def get_summary(current_user: User = Depends(identify_user), session: Sess
 
     return summary
 
-@accounts_controller.get("/last-n-days", response_model=list[DailyHighlight])
-async def get_last_n_days_highlight(n_days: PositiveInt = 7, transaction_type: TransactionType = TransactionType.OUTCOME, current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
+@accounts_controller.get("/last-n-days", response_model=list[DailyHighlightData])
+async def get_last_n_days_highlight(
+    n_days: PositiveInt = 7,
+    transaction_type: TransactionType = TransactionType.OUTCOME,
+    current_user: User = Depends(identify_user),
+    session: Session = Depends(define_postgres_session)
+):
     today_date: date = datetime.today().date()
     first_date: date = today_date - timedelta(days=n_days - 1)
 
@@ -104,10 +113,10 @@ async def get_last_n_days_highlight(n_days: PositiveInt = 7, transaction_type: T
         order_by(Transaction.due_date).\
         all()
 
-    last_n_days_highlight: list[DailyHighlight] = []
+    last_n_days_highlight: list[DailyHighlightData] = []
 
     for day in range(first_date.day, today_date.day + 1):
-        daily_highlight: DailyHighlight = DailyHighlight(
+        daily_highlight: DailyHighlightData = DailyHighlightData(
             date=first_date.replace(day=day),
             amount=0.00
         )
@@ -121,8 +130,12 @@ async def get_last_n_days_highlight(n_days: PositiveInt = 7, transaction_type: T
 
     return last_n_days_highlight
 
-@accounts_controller.get("/monthly-trend", response_model=list[TrendPoint])
-async def get_monthly_trend(transaction_type: TransactionType = TransactionType.OUTCOME, current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
+@accounts_controller.get("/monthly-trend", response_model=list[TrendPointData])
+async def get_monthly_trend(
+    transaction_type: TransactionType = TransactionType.OUTCOME,
+    current_user: User = Depends(identify_user),
+    session: Session = Depends(define_postgres_session)
+):
     today_date: date = datetime.today().date()
 
     current_month_first_date: date = today_date.replace(day=1)
@@ -157,15 +170,15 @@ async def get_monthly_trend(transaction_type: TransactionType = TransactionType.
         order_by(all_transactions_by_days.c.day).\
         all()
 
-    previous_trend_point: TrendPoint = TrendPoint(
+    previous_trend_point: TrendPointData = TrendPointData(
         date=current_month_first_date.replace(day=current_month_first_date.day),
         current_month_amount=0.00,
         average_amount=0.00
     )
-    monthly_trend: list[TrendPoint] = []
+    monthly_trend: list[TrendPointData] = []
 
     for day in range(current_month_first_date.day, current_month_last_date.day + 1):
-        current_trend_point: TrendPoint = TrendPoint(
+        current_trend_point: TrendPointData = TrendPointData(
             date=current_month_first_date.replace(day=day),
             current_month_amount=previous_trend_point.current_month_amount,
             average_amount=previous_trend_point.average_amount
@@ -182,9 +195,11 @@ async def get_monthly_trend(transaction_type: TransactionType = TransactionType.
 
     return monthly_trend
 
-@accounts_controller.get("/balances", response_model=list[AccountBalance])
-async def get_balances(current_user: User = Depends(identify_user)):
-    balances: list[AccountBalance] = []
+@accounts_controller.get("/balances", response_model=list[AccountBalanceData])
+async def get_balances(
+    current_user: User = Depends(identify_user)
+):
+    balances: list[AccountBalanceData] = []
 
     for account in current_user.accounts:
         account_incomes: float = sum(
@@ -196,7 +211,7 @@ async def get_balances(current_user: User = Depends(identify_user)):
             if transaction.type == TransactionType.OUTCOME
         )
 
-        account_balance: AccountBalance = AccountBalance(
+        account_balance: AccountBalanceData = AccountBalanceData(
             account=account.name,
             balance=(account.openning_balance + account_incomes) - account_outcomes
         )
@@ -205,12 +220,18 @@ async def get_balances(current_user: User = Depends(identify_user)):
 
     return balances
 
-@accounts_controller.get("/list", response_model=list[AccountData])
-async def get_accounts(current_user: User = Depends(identify_user)):
-    return [ AccountData.from_orm(obj=account) for account in current_user.accounts ]
+@accounts_controller.get("/list", response_model=list[AccountOutputData])
+async def get_accounts(
+    current_user: User = Depends(identify_user)
+):
+    return current_user.accounts
 
-@accounts_controller.post("/create", response_model=str)
-async def create_account(account_data: AccountData, current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
+@accounts_controller.post("/create", response_model=AccountOutputData)
+async def create_account(
+    account_data: AccountCreationData,
+    current_user: User = Depends(identify_user),
+    session: Session = Depends(define_postgres_session)
+):
     account: Account = Account(
         user=current_user,
         name=account_data.name,
@@ -221,10 +242,14 @@ async def create_account(account_data: AccountData, current_user: User = Depends
     session.add(account)
     session.commit()
 
-    return "Account was created"
+    return account
 
-@accounts_controller.put("/update", response_model=str)
-async def update_account(account_data: AccountData, current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
+@accounts_controller.put("/update", response_model=AccountOutputData)
+async def update_account(
+    account_data: AccountUpdateData,
+    current_user: User = Depends(identify_user),
+    session: Session = Depends(define_postgres_session)
+):
     account: Account | None = session.query(Account).\
         filter(
             Account.id == account_data.id,
@@ -237,17 +262,20 @@ async def update_account(account_data: AccountData, current_user: User = Depends
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="You don't have an account with given `id`"
         )
-
-    account.name = account_data.name
-    account.currency = account_data.currency
-    account.openning_balance = account_data.openning_balance
+    
+    for (field, value) in account_data.dict().items():
+        setattr(account, field, value)
 
     session.commit()
 
-    return "Account was updated"
+    return account
 
 @accounts_controller.delete("/delete", response_model=str)
-async def delete_account(id: int, current_user: User = Depends(identify_user), session: Session = Depends(define_local_session)):
+async def delete_account(
+    id: PositiveInt,
+    current_user: User = Depends(identify_user),
+    session: Session = Depends(define_postgres_session)
+):
     account: Account | None = session.query(Account).\
         filter(
             Account.id == id,

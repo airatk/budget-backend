@@ -1,31 +1,30 @@
-from enum import Enum
-
 from pydantic import BaseModel
-from pydantic import Field
 from pydantic import NonNegativeFloat
 from pydantic import PositiveInt
 
-from .category import CategoryData
+from models.utilities.types import BudgetType
+
+from .utilities.base_models import BaseUpdateModel
+from .utilities.types import NonEmptyStr
+from .category import CategoryOutputData
 
 
-class BudgetType(str, Enum):
-    JOINT: str = "joint"
-    PERSONAL: str = "personal"
-
-    def __repr__(self) -> str:
-        return self.value
-
-class BudgetData(BaseModel):
-    id: PositiveInt | None
-    name: str = Field(min_length=1)
+class BudgetOutputData(BaseModel, orm_mode=True):
+    id: PositiveInt
+    name: NonEmptyStr
     planned_outcomes: NonNegativeFloat
+    type: BudgetType
+    categories: list[CategoryOutputData]
 
-class BudgetInputData(BudgetData):
+class BudgetCreationData(BaseModel, anystr_strip_whitespace=True):
+    name: NonEmptyStr
+    planned_outcomes: NonNegativeFloat
     type: BudgetType
     categories_ids: list[PositiveInt]
 
-class BudgetOutputData(BudgetData):
-    categories: list[CategoryData]
-
-    class Config:
-        orm_mode = True
+class BudgetUpdateData(BaseUpdateModel, anystr_strip_whitespace=True):
+    id: PositiveInt
+    name: NonEmptyStr | None
+    planned_outcomes: NonNegativeFloat | None
+    type: BudgetType | None
+    categories_ids: list[PositiveInt] | None

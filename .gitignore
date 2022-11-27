@@ -1,9 +1,8 @@
-# Project files
-configurations/
+# Project Files
+.env
+files/**/*-examples/
 
-
-# Python & System files
-**/env/
+# Python & System Files
+**/.venv/
 **/__pycache__/
-
 **/.DS_Store

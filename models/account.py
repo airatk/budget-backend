@@ -1,5 +1,3 @@
-from enum import Enum as EnumClass
-
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import BigInteger
@@ -10,21 +8,13 @@ from sqlalchemy import Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import RelationshipProperty
 
-from .meta import BaseModel
-from .meta import persist_enumeration_values
+from models.utilities.types import CurrencyType
 
+from .utilities.base_model import BaseModel
+from .utilities.callables import persist_enumeration_values
 
-class CurrencyType(str, EnumClass):
-    RUB: str = "RUB"
-    USD: str = "USD"
-
-    def __repr__(self) -> str:
-        return self.value
 
 class Account(BaseModel):
-    __tablename__: str = "account"
-
-    id: Column = Column(BigInteger, primary_key=True)
     user_id: Column = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
 
     user: RelationshipProperty = relationship("User", back_populates="accounts")

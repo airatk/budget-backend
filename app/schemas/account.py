@@ -1,55 +1,53 @@
-from enum import Enum
-
 from datetime import date
 
 from pydantic import BaseModel
-from pydantic import Field
 from pydantic import PositiveInt
 from pydantic import NonNegativeFloat
 from pydantic import NonPositiveFloat
 
-from app.models.account import CurrencyType
+from models.account import CurrencyType
+from models.utilities.types import SummaryPeriodType
+
+from .utilities.base_models import BaseUpdateModel
+from .utilities.types import NonEmptyStr
 
 
-class SummaryPeriodType(str, Enum):
-    CURRENT_MONTH: str = "Current Month"
-    CURRENT_YEAR: str = "Current Year"
-    ALL_TIME: str = "All Time"
-
-    def __repr__(self):
-        return self.value
-
-
-class AccountData(BaseModel):
-    id: PositiveInt | None
-    name: str = Field(min_length=1)
+class AccountOutputData(BaseModel, orm_mode=True):
+    id: PositiveInt
+    name: str
     currency: CurrencyType
     openning_balance: NonNegativeFloat = 0.00
 
-    class Config:
-        orm_mode = True
+class AccountCreationData(BaseModel, anystr_strip_whitespace=True):
+    name: NonEmptyStr
+    currency: CurrencyType
+    openning_balance: NonNegativeFloat = 0.00
 
-class AccountBalance(BaseModel):
+class AccountUpdateData(BaseUpdateModel, anystr_strip_whitespace=True):
+    id: PositiveInt
+    name: NonEmptyStr | None
+    currency: CurrencyType | None
+    openning_balance: NonNegativeFloat | None
+
+
+class AccountBalanceData(BaseModel):
     account: str
     balance: float
 
-class AccountsSummary(BaseModel):
+class AccountsSummaryData(BaseModel):
     balance: float = 0.00
     incomes: NonNegativeFloat
     outcomes: NonPositiveFloat
 
-class PeriodSummary(BaseModel):
+class PeriodSummaryData(BaseModel):
     period: SummaryPeriodType
-    accounts_summary: AccountsSummary
+    accounts_summary: AccountsSummaryData
 
-class DailyHighlight(BaseModel):
+class DailyHighlightData(BaseModel):
     date: date
     amount: NonNegativeFloat
 
-class TrendPoint(BaseModel):
+class TrendPointData(BaseModel):
     date: date
     current_month_amount: NonNegativeFloat
     average_amount: NonNegativeFloat
-
-    class Config:
-        orm_mode = True
