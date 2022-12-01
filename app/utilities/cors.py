@@ -1,6 +1,3 @@
-from typing import Sequence
-
-
-ALLOWED_ORIGINS: Sequence[str] = ("*",)
-ALLOWED_METHODS: Sequence[str] = ("GET", "POST", "PUT", "DELETE")
-ALLOWED_HEADERS: Sequence[str] = ("*",)
+ALLOWED_ORIGINS: tuple[str] = ( "*", )
+ALLOWED_METHODS: tuple[str] = ( "GET", "POST", "PUT", "DELETE" )
+ALLOWED_HEADERS: tuple[str] = ( "*", )

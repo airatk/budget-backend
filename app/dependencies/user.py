@@ -1,16 +1,10 @@
+from fastapi import Depends, HTTPException, Security, status
+from fastapi.security import APIKeyHeader
 from sqlalchemy.orm import Session
 
-from fastapi import HTTPException
-from fastapi import status
-from fastapi import Security
-from fastapi import Depends
-from fastapi.security import APIKeyHeader
-
-from models import User
-
 from app.dependencies.sessions import define_postgres_session
-
 from app.utilities.security import decode_token
+from models import User
 
 
 async def identify_user(token: str = Security(APIKeyHeader(name="UserAccessToken")), session: Session = Depends(define_postgres_session)) -> User:

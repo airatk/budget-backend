@@ -1,21 +1,15 @@
-from sqlalchemy.orm import Session
-
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import PositiveInt
-
-from fastapi import APIRouter
-from fastapi import Depends
-from fastapi import HTTPException
-from fastapi import status
-
-from models import User
-from models import Category
+from sqlalchemy.orm import Session
 
 from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
-
-from app.schemas.category import CategoryOutputData
-from app.schemas.category import CategoryCreationData
-from app.schemas.category import CategoryUpdateData
+from app.schemas.category import (
+    CategoryCreationData,
+    CategoryOutputData,
+    CategoryUpdateData
+)
+from models import Category, User
 
 
 categories_controller: APIRouter = APIRouter(prefix="/categories")

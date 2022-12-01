@@ -1,9 +1,6 @@
 from datetime import date
 
-from pydantic import BaseModel
-from pydantic import PositiveInt
-from pydantic import NonNegativeFloat
-from pydantic import NonPositiveFloat
+from pydantic import BaseModel, NonNegativeFloat, NonPositiveFloat, PositiveInt
 
 from models.account import CurrencyType
 from models.utilities.types import SummaryPeriodType

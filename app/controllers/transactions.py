@@ -1,23 +1,17 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import PositiveInt
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
-from pydantic import PositiveInt
-
-from fastapi import APIRouter
-from fastapi import Depends
-from fastapi import HTTPException
-from fastapi import status
-
-from models import User
-from models import Transaction
-
 from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
-
-from app.schemas.transaction import TransactionOutputData
-from app.schemas.transaction import TransactionCreationData
-from app.schemas.transaction import TransactionUpdateData
-from app.schemas.transaction import TransactionsPeriod
+from app.schemas.transaction import (
+    TransactionCreationData,
+    TransactionOutputData,
+    TransactionsPeriod,
+    TransactionUpdateData
+)
+from models import Transaction, User
 
 
 transactions_controller: APIRouter = APIRouter(prefix="/transactions")

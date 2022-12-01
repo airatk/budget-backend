@@ -1,18 +1,11 @@
-from sqlalchemy.orm import Session
-
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import PositiveInt
-
-from fastapi import APIRouter
-from fastapi import Depends
-from fastapi import HTTPException
-from fastapi import status
-
-from models import User
+from sqlalchemy.orm import Session
 
 from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
-
 from app.schemas.user import UserData
+from models import User
 
 
 users_controller: APIRouter = APIRouter(prefix="/users")

@@ -1,6 +1,4 @@
-from jwt import encode
-from jwt import decode
-from jwt import InvalidTokenError
+from jwt import InvalidTokenError, decode, encode
 
 from core.settings import settings
 

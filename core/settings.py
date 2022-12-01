@@ -1,8 +1,6 @@
 from typing import Any
 
-from pydantic import BaseSettings
-from pydantic import PostgresDsn
-from pydantic import validator
+from pydantic import BaseSettings, PostgresDsn, validator
 
 
 class Settings(BaseSettings):
@@ -29,7 +27,7 @@ class Settings(BaseSettings):
             password=values.get("POSTGRES_PASSWORD"),
             host=values.get("POSTGRES_HOST"),
             port=values.get("POSTGRES_PORT"),
-            path=f"/{values.get('POSTGRES_DATABASE')}"
+            path="/{0}".format(values.get("POSTGRES_DATABASE"))
         )
 
 

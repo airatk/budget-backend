@@ -1,14 +1,14 @@
-from sqlalchemy import Column
-from sqlalchemy import ForeignKey
-from sqlalchemy import BigInteger
-from sqlalchemy import Date
-from sqlalchemy import Time
-from sqlalchemy import String
-from sqlalchemy import Float
-from sqlalchemy import Enum
-
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import RelationshipProperty
+from sqlalchemy import (
+    BigInteger,
+    Column,
+    Date,
+    Enum,
+    Float,
+    ForeignKey,
+    String,
+    Time
+)
+from sqlalchemy.orm import RelationshipProperty, relationship
 
 from models.utilities.types import TransactionType
 
@@ -30,4 +30,4 @@ class Transaction(BaseModel):
     note: Column = Column(String, default="", nullable=False)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(id={self.id}, amount={self.amount})"
+        return "{0.__class__.__name__}(id={0.id}, amount={0.amount})".format(self)

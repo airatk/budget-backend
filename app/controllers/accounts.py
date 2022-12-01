@@ -1,36 +1,26 @@
+from datetime import date, datetime, timedelta
 from typing import Any
-from datetime import datetime
-from datetime import date
-from datetime import timedelta
 
-from sqlalchemy.orm import Session
-from sqlalchemy.orm import Query
-from sqlalchemy.sql import func
-
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import PositiveInt
-
-from fastapi import APIRouter
-from fastapi import Depends
-from fastapi import HTTPException
-from fastapi import status
-
-from models import User
-from models import Account
-from models import Transaction
-from models.utilities.types import TransactionType
+from sqlalchemy.orm import Query, Session
+from sqlalchemy.sql import func
 
 from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
-
-from app.schemas.account import AccountOutputData
-from app.schemas.account import AccountCreationData
-from app.schemas.account import AccountUpdateData
-from app.schemas.account import AccountBalanceData
-from app.schemas.account import AccountsSummaryData
-from app.schemas.account import SummaryPeriodType
-from app.schemas.account import PeriodSummaryData
-from app.schemas.account import DailyHighlightData
-from app.schemas.account import TrendPointData
+from app.schemas.account import (
+    AccountBalanceData,
+    AccountCreationData,
+    AccountOutputData,
+    AccountsSummaryData,
+    AccountUpdateData,
+    DailyHighlightData,
+    PeriodSummaryData,
+    SummaryPeriodType,
+    TrendPointData
+)
+from models import Account, Transaction, User
+from models.utilities.types import TransactionType
 
 
 accounts_controller: APIRouter = APIRouter(prefix="/accounts")
@@ -262,7 +252,7 @@ async def update_account(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="You don't have an account with given `id`"
         )
-    
+
     for (field, value) in account_data.dict().items():
         setattr(account, field, value)
 

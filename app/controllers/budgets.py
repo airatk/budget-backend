@@ -1,23 +1,16 @@
-from sqlalchemy.orm import Session
-
-from fastapi import APIRouter
-from fastapi import Depends
-from fastapi import HTTPException
-from fastapi import status
-
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import PositiveInt
-
-from models import User
-from models import Budget
-from models import Category
+from sqlalchemy.orm import Session
 
 from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
-
-from app.schemas.budget import BudgetType
-from app.schemas.budget import BudgetOutputData
-from app.schemas.budget import BudgetCreationData
-from app.schemas.budget import BudgetUpdateData
+from app.schemas.budget import (
+    BudgetCreationData,
+    BudgetOutputData,
+    BudgetType,
+    BudgetUpdateData
+)
+from models import Budget, Category, User
 
 
 budgets_controller: APIRouter = APIRouter(prefix="/budgets")

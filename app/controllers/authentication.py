@@ -1,18 +1,13 @@
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from fastapi import APIRouter
-from fastapi import HTTPException
-from fastapi import status
-from fastapi import Depends
-
-from models import User
-
 from app.dependencies.sessions import define_postgres_session
-
-from app.schemas.authentication import SignInCredentialsData
-from app.schemas.authentication import AuthenticationData
-
+from app.schemas.authentication import (
+    AuthenticationData,
+    SignInCredentialsData
+)
 from app.utilities.security import create_token
+from models import User
 
 
 authentication_controller: APIRouter = APIRouter()

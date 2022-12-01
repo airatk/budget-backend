@@ -1,22 +1,13 @@
+from random import choices
 from string import ascii_lowercase
 
-from random import choices
-
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-
-from fastapi import APIRouter
-from fastapi import Depends
-from fastapi import HTTPException
-from fastapi import status
-
-from models import User
-from models import Family
 
 from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
-
-from app.schemas.family import FamilyOutputData
-from app.schemas.family import FamilyInputData
+from app.schemas.family import FamilyInputData, FamilyOutputData
+from models import Family, User
 
 
 family_controller: APIRouter = APIRouter(prefix="/family")

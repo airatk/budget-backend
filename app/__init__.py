@@ -1,17 +1,20 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.controllers import authentication_controller
-from app.controllers import family_controller
-from app.controllers import users_controller
-from app.controllers import accounts_controller
-from app.controllers import categories_controller
-from app.controllers import transactions_controller
-from app.controllers import budgets_controller
-
-from app.utilities.cors import ALLOWED_ORIGINS
-from app.utilities.cors import ALLOWED_METHODS
-from app.utilities.cors import ALLOWED_HEADERS
+from app.controllers import (
+    accounts_controller,
+    authentication_controller,
+    budgets_controller,
+    categories_controller,
+    family_controller,
+    transactions_controller,
+    users_controller
+)
+from app.utilities.cors import (
+    ALLOWED_HEADERS,
+    ALLOWED_METHODS,
+    ALLOWED_ORIGINS
+)
 
 
 api: FastAPI = FastAPI(

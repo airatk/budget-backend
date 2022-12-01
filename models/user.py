@@ -1,12 +1,10 @@
-from sqlalchemy import Column
-from sqlalchemy import ForeignKey
-from sqlalchemy import BigInteger
-from sqlalchemy import String
-
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import RelationshipProperty
+from sqlalchemy import BigInteger, Column, ForeignKey, String
+from sqlalchemy.orm import RelationshipProperty, relationship
 
 from .utilities.base_model import BaseModel
+
+
+MAX_USERNAME_LENGTH: int = 30
 
 
 class User(BaseModel):
@@ -17,8 +15,8 @@ class User(BaseModel):
     categories: RelationshipProperty = relationship("Category", back_populates="user")
     budgets: RelationshipProperty = relationship("Budget", back_populates="user")
 
-    username: Column = Column(String(30), unique=True, index=True, nullable=False)
+    username: Column = Column(String(MAX_USERNAME_LENGTH), unique=True, index=True, nullable=False)
     password: Column = Column(String, nullable=False)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(id={self.id}, username={self.username})"
+        return "{0.__class__.__name__}(id={0.id}, username={0.username})".format(self)

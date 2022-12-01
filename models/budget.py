@@ -1,11 +1,5 @@
-from sqlalchemy import Column
-from sqlalchemy import ForeignKey
-from sqlalchemy import BigInteger
-from sqlalchemy import String
-from sqlalchemy import Float
-
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import RelationshipProperty
+from sqlalchemy import BigInteger, Column, Float, ForeignKey, String
+from sqlalchemy.orm import RelationshipProperty, relationship
 
 from .utilities.base_model import BaseModel
 
@@ -22,4 +16,4 @@ class Budget(BaseModel):
     planned_outcomes: Column = Column(Float, default=0.00, nullable=False)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(id={self.id}, name={self.name})"
+        return "{0.__class__.__name__}(id={0.id}, name={0.name})".format(self)

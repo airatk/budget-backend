@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
-from .utilities.types import NonEmptyStr
 from .user import UserData
+from .utilities.types import NonEmptyStr
 
 
 class FamilyOutputData(BaseModel, orm_mode=True):

@@ -1,17 +1,14 @@
 from re import sub
 
-from sqlalchemy import Column
-from sqlalchemy import MetaData
-from sqlalchemy import BigInteger
-
-from sqlalchemy.orm import declared_attr
-
+from sqlalchemy import BigInteger, Column, MetaData
 from sqlalchemy.ext.declarative import as_declarative
+from sqlalchemy.orm import declared_attr
 
 
 @as_declarative()
 class BaseModel:
     __name__: str
+    metadata: MetaData
 
     @declared_attr
     def __tablename__(cls):  # noqa: N805
@@ -19,7 +16,5 @@ class BaseModel:
         pre_snake_case_name = sub("([A-Z][a-z]+)", r" \1", pre_snake_case_name)
 
         return "_".join(pre_snake_case_name.lower().split())
-
-    metadata: MetaData
 
     id: Column = Column(BigInteger, primary_key=True)

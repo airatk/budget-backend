@@ -1,5 +1,4 @@
-from sqlalchemy.engine import create_engine
-from sqlalchemy.engine import Engine
+from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.orm import sessionmaker
 
 from core.settings import settings

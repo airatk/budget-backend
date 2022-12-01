@@ -1,11 +1,5 @@
-from sqlalchemy import Column
-from sqlalchemy import ForeignKey
-from sqlalchemy import BigInteger
-from sqlalchemy import String
-from sqlalchemy import Enum
-
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import RelationshipProperty
+from sqlalchemy import BigInteger, Column, Enum, ForeignKey, String
+from sqlalchemy.orm import RelationshipProperty, relationship
 
 from models.utilities.types import CategoryType
 
@@ -28,4 +22,4 @@ class Category(BaseModel):
     type: Column = Column(Enum(CategoryType, values_callable=persist_enumeration_values), nullable=False)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(id={self.id}, name={self.name})"
+        return "{0.__class__.__name__}(id={0.id}, name={0.name})".format(self)

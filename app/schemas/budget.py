@@ -1,12 +1,10 @@
-from pydantic import BaseModel
-from pydantic import NonNegativeFloat
-from pydantic import PositiveInt
+from pydantic import BaseModel, NonNegativeFloat, PositiveInt
 
 from models.utilities.types import BudgetType
 
+from .category import CategoryOutputData
 from .utilities.base_models import BaseUpdateModel
 from .utilities.types import NonEmptyStr
-from .category import CategoryOutputData
 
 
 class BudgetOutputData(BaseModel, orm_mode=True):
