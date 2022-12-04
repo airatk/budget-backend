@@ -8,6 +8,8 @@ MAX_USERNAME_LENGTH: int = 30
 
 
 class User(BaseModel):
+    id: Column = Column(BigInteger, primary_key=True)
+    
     family_id: Column = Column(BigInteger, ForeignKey("family.id", ondelete="SET NULL"))
 
     family: RelationshipProperty = relationship("Family", back_populates="members")

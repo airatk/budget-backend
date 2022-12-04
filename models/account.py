@@ -1,13 +1,14 @@
 from sqlalchemy import BigInteger, Column, Enum, Float, ForeignKey, String
 from sqlalchemy.orm import RelationshipProperty, relationship
 
-from models.utilities.types import CurrencyType
-
 from .utilities.base_model import BaseModel
 from .utilities.callables import persist_enumeration_values
+from .utilities.types import CurrencyType
 
 
 class Account(BaseModel):
+    id: Column = Column(BigInteger, primary_key=True)
+    
     user_id: Column = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
 
     user: RelationshipProperty = relationship("User", back_populates="accounts")

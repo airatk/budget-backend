@@ -16,5 +16,3 @@ class BaseModel:
         pre_snake_case_name = sub("([A-Z][a-z]+)", r" \1", pre_snake_case_name)
 
         return "_".join(pre_snake_case_name.lower().split())
-
-    id: Column = Column(BigInteger, primary_key=True)

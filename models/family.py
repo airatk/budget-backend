@@ -1,10 +1,12 @@
-from sqlalchemy import Column, String
+from sqlalchemy import BigInteger, Column, String
 from sqlalchemy.orm import RelationshipProperty, relationship
 
 from .utilities.base_model import BaseModel
 
 
 class Family(BaseModel):
+    id: Column = Column(BigInteger, primary_key=True)
+
     members: RelationshipProperty = relationship("User", back_populates="family")
     budgets: RelationshipProperty = relationship("Budget", back_populates="family")
 

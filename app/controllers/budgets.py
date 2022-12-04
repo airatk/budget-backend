@@ -7,10 +7,10 @@ from app.dependencies.user import identify_user
 from app.schemas.budget import (
     BudgetCreationData,
     BudgetOutputData,
-    BudgetType,
     BudgetUpdateData
 )
 from models import Budget, Category, User
+from models.utilities.types import BudgetType
 
 
 budgets_controller: APIRouter = APIRouter(prefix="/budgets")

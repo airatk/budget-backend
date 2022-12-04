@@ -1,6 +1,6 @@
 # Project Files
 .env
-files/**/*-examples/
+project-files/*-examples/
 
 # Python & System Files
 **/.venv/

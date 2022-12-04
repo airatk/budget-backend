@@ -5,6 +5,8 @@ from .utilities.base_model import BaseModel
 
 
 class Budget(BaseModel):
+    id: Column = Column(BigInteger, primary_key=True)
+    
     family_id: Column = Column(BigInteger, ForeignKey("family.id", ondelete="CASCADE"))
     user_id: Column = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"))
 
