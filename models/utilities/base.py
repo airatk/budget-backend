@@ -1,6 +1,6 @@
 from re import sub
 
-from sqlalchemy import BigInteger, Column, MetaData
+from sqlalchemy import MetaData
 from sqlalchemy.ext.declarative import as_declarative
 from sqlalchemy.orm import declared_attr
 

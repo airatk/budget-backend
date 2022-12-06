@@ -1,12 +1,12 @@
 from sqlalchemy import BigInteger, Column, Float, ForeignKey, String
 from sqlalchemy.orm import RelationshipProperty, relationship
 
-from .utilities.base_model import BaseModel
+from .utilities.base import BaseModel
 
 
 class Budget(BaseModel):
     id: Column = Column(BigInteger, primary_key=True)
-    
+
     family_id: Column = Column(BigInteger, ForeignKey("family.id", ondelete="CASCADE"))
     user_id: Column = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"))
 

@@ -1,8 +1,10 @@
 # Project Files
-.env
+.env*
 project-files/*-examples/
 
 # Python & System Files
 **/.venv/
 **/__pycache__/
+**/.mypy_cache
+**/.pytest_cache
 **/.DS_Store

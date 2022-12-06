@@ -10,7 +10,7 @@ from app.schemas.family import FamilyInputData, FamilyOutputData
 from models import Family, User
 
 
-family_controller: APIRouter = APIRouter(prefix="/family")
+family_controller: APIRouter = APIRouter(prefix="/family", tags=[ "family" ])
 
 
 @family_controller.get("/join", response_model=FamilyOutputData)

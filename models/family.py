@@ -1,7 +1,7 @@
 from sqlalchemy import BigInteger, Column, String
 from sqlalchemy.orm import RelationshipProperty, relationship
 
-from .utilities.base_model import BaseModel
+from .utilities.base import BaseModel
 
 
 class Family(BaseModel):

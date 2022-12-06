@@ -12,16 +12,16 @@ from app.schemas.category import (
 from models import Category, User
 
 
-categories_controller: APIRouter = APIRouter(prefix="/categories")
+category_controller: APIRouter = APIRouter(prefix="/category", tags=[ "category" ])
 
 
-@categories_controller.get("/list", response_model=list[CategoryOutputData])
+@category_controller.get("/list", response_model=list[CategoryOutputData])
 async def get_categories(
     current_user: User = Depends(identify_user)
 ):
     return current_user.categories
 
-@categories_controller.get("/item", response_model=CategoryOutputData)
+@category_controller.get("/item", response_model=CategoryOutputData)
 async def get_category(
     id: PositiveInt,
     current_user: User = Depends(identify_user),
@@ -42,7 +42,7 @@ async def get_category(
 
     return category
 
-@categories_controller.post("/create", response_model=CategoryOutputData)
+@category_controller.post("/create", response_model=CategoryOutputData)
 async def create_category(
     category_data: CategoryCreationData,
     current_user: User = Depends(identify_user),
@@ -60,7 +60,7 @@ async def create_category(
 
     return category
 
-@categories_controller.put("/update", response_model=CategoryOutputData)
+@category_controller.put("/update", response_model=CategoryOutputData)
 async def update_category(
     category_data: CategoryUpdateData,
     current_user: User = Depends(identify_user),
@@ -86,7 +86,7 @@ async def update_category(
 
     return category
 
-@categories_controller.delete("/delete", response_model=str)
+@category_controller.delete("/delete", response_model=str)
 async def delete_category(
     id: PositiveInt,
     current_user: User = Depends(identify_user),

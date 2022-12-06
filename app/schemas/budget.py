@@ -1,26 +1,26 @@
-from pydantic import BaseModel, NonNegativeFloat, PositiveInt
+from pydantic import NonNegativeFloat, PositiveInt
 
 from models.utilities.types import BudgetType
 
 from .category import CategoryOutputData
-from .utilities.base_models import BaseUpdateModel
+from .utilities.base import BaseData, BaseUpdateData
 from .utilities.types import NonEmptyStr
 
 
-class BudgetOutputData(BaseModel, orm_mode=True):
+class BudgetOutputData(BaseData, orm_mode=True):
     id: PositiveInt
     name: NonEmptyStr
     planned_outcomes: NonNegativeFloat
     type: BudgetType
     categories: list[CategoryOutputData]
 
-class BudgetCreationData(BaseModel, anystr_strip_whitespace=True):
+class BudgetCreationData(BaseData, anystr_strip_whitespace=True):
     name: NonEmptyStr
     planned_outcomes: NonNegativeFloat
     type: BudgetType
     categories_ids: list[PositiveInt]
 
-class BudgetUpdateData(BaseUpdateModel, anystr_strip_whitespace=True):
+class BudgetUpdateData(BaseUpdateData, anystr_strip_whitespace=True):
     id: PositiveInt
     name: NonEmptyStr | None
     planned_outcomes: NonNegativeFloat | None

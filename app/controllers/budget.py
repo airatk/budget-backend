@@ -13,10 +13,10 @@ from models import Budget, Category, User
 from models.utilities.types import BudgetType
 
 
-budgets_controller: APIRouter = APIRouter(prefix="/budgets")
+budget_controller: APIRouter = APIRouter(prefix="/budget", tags=[ "budget" ])
 
 
-@budgets_controller.get("/list", response_model=list[BudgetOutputData])
+@budget_controller.get("/list", response_model=list[BudgetOutputData])
 async def get_budgets(
     type: BudgetType,
     current_user: User = Depends(identify_user)
@@ -35,7 +35,7 @@ async def get_budgets(
 
     return budgets
 
-@budgets_controller.get("/item", response_model=BudgetOutputData)
+@budget_controller.get("/item", response_model=BudgetOutputData)
 async def get_budget(
     id: PositiveInt,
     current_user: User = Depends(identify_user),
@@ -56,7 +56,7 @@ async def get_budget(
 
     return budget
 
-@budgets_controller.post("/create", response_model=BudgetOutputData)
+@budget_controller.post("/create", response_model=BudgetOutputData)
 async def create_budget(
     budget_data: BudgetCreationData,
     current_user: User = Depends(identify_user),
@@ -83,7 +83,7 @@ async def create_budget(
 
     return budget
 
-@budgets_controller.put("/update", response_model=BudgetOutputData)
+@budget_controller.put("/update", response_model=BudgetOutputData)
 async def update_budget(
     budget_data: BudgetUpdateData,
     current_user: User = Depends(identify_user),
@@ -127,7 +127,7 @@ async def update_budget(
 
     return budget
 
-@budgets_controller.delete("/delete", response_model=str)
+@budget_controller.delete("/delete", response_model=str)
 async def delete_budget(
     id: PositiveInt,
     current_user: User = Depends(identify_user),

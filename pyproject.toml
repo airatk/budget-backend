@@ -1,0 +1,16 @@
+[project]
+name = "budget-api"
+version = "1.0.0"
+authors = [
+  { name="Airat K" }
+]
+readme = "README.md"
+requires-python = ">=3.11"
+
+[project.urls]
+"Homepage" = "https://github.com/airatk/budget-api"
+
+
+[tool.isort]
+multi_line_output = 3
+lines_after_imports = 2

@@ -8,16 +8,16 @@ from app.schemas.user import UserData
 from models import User
 
 
-users_controller: APIRouter = APIRouter(prefix="/users")
+user_controller: APIRouter = APIRouter(prefix="/user", tags=[ "user" ])
 
 
-@users_controller.get("/current", response_model=UserData)
+@user_controller.get("/current", response_model=UserData)
 async def get_current_user(
     current_user: User = Depends(identify_user)
 ):
     return current_user
 
-@users_controller.get("/relative", response_model=UserData)
+@user_controller.get("/relative", response_model=UserData)
 async def get_relative(
     id: PositiveInt,
     current_user: User = Depends(identify_user),
@@ -32,7 +32,7 @@ async def get_relative(
 
     if user is None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="You don't have a relative with given `id`"
         )
 

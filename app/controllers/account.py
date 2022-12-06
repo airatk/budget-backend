@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from pydantic import PositiveInt
 from sqlalchemy.orm import Query, Session
 from sqlalchemy.sql import func
@@ -19,14 +19,15 @@ from app.schemas.account import (
     SummaryPeriodType,
     TrendPointData
 )
+from app.services import AccountService
 from models import Account, Transaction, User
 from models.utilities.types import TransactionType
 
 
-accounts_controller: APIRouter = APIRouter(prefix="/accounts")
+account_controller: APIRouter = APIRouter(prefix="/account", tags=[ "account" ])
 
 
-@accounts_controller.get("/summary", response_model=list[PeriodSummaryData])
+@account_controller.get("/summary", response_model=list[PeriodSummaryData])
 async def get_summary(
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session)
@@ -56,13 +57,13 @@ async def get_summary(
     ):
         incomes: float = transactions_sum_query.filter(
                 Transaction.type == TransactionType.INCOME,
-                *(period_conditions or ())
+                *period_conditions
             ).\
             scalar() or 0.00
 
         outcomes: float = transactions_sum_query.filter(
                 Transaction.type == TransactionType.OUTCOME,
-                *(period_conditions or ())
+                *period_conditions
             ).\
             scalar() or 0.00
 
@@ -80,7 +81,7 @@ async def get_summary(
 
     return summary
 
-@accounts_controller.get("/last-n-days", response_model=list[DailyHighlightData])
+@account_controller.get("/last-n-days", response_model=list[DailyHighlightData])
 async def get_last_n_days_highlight(
     n_days: PositiveInt = 7,
     transaction_type: TransactionType = TransactionType.OUTCOME,
@@ -120,7 +121,7 @@ async def get_last_n_days_highlight(
 
     return last_n_days_highlight
 
-@accounts_controller.get("/monthly-trend", response_model=list[TrendPointData])
+@account_controller.get("/monthly-trend", response_model=list[TrendPointData])
 async def get_monthly_trend(
     transaction_type: TransactionType = TransactionType.OUTCOME,
     current_user: User = Depends(identify_user),
@@ -185,7 +186,7 @@ async def get_monthly_trend(
 
     return monthly_trend
 
-@accounts_controller.get("/balances", response_model=list[AccountBalanceData])
+@account_controller.get("/balances", response_model=list[AccountBalanceData])
 async def get_balances(
     current_user: User = Depends(identify_user)
 ):
@@ -193,12 +194,10 @@ async def get_balances(
 
     for account in current_user.accounts:
         account_incomes: float = sum(
-            transaction.amount for transaction in account.transactions
-            if transaction.type == TransactionType.INCOME
+            transaction.amount for transaction in account.transactions if transaction.type == TransactionType.INCOME
         )
         account_outcomes: float = sum(
-            transaction.amount for transaction in account.transactions
-            if transaction.type == TransactionType.OUTCOME
+            transaction.amount for transaction in account.transactions if transaction.type == TransactionType.OUTCOME
         )
 
         account_balance: AccountBalanceData = AccountBalanceData(
@@ -210,76 +209,46 @@ async def get_balances(
 
     return balances
 
-@accounts_controller.get("/list", response_model=list[AccountOutputData])
+@account_controller.get("/list", response_model=list[AccountOutputData])
 async def get_accounts(
     current_user: User = Depends(identify_user)
 ):
     return current_user.accounts
 
-@accounts_controller.post("/create", response_model=AccountOutputData)
+@account_controller.post("/create", response_model=AccountOutputData)
 async def create_account(
     account_data: AccountCreationData,
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session)
 ):
-    account: Account = Account(
-        user=current_user,
-        name=account_data.name,
-        currency=account_data.currency,
-        openning_balance=account_data.openning_balance
+    account_service: AccountService = AccountService(session=session)
+
+    return account_service.create(
+        record_data=account_data,
+        user=current_user
     )
 
-    session.add(account)
-    session.commit()
-
-    return account
-
-@accounts_controller.put("/update", response_model=AccountOutputData)
+@account_controller.patch("/update", response_model=AccountOutputData)
 async def update_account(
     account_data: AccountUpdateData,
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session)
 ):
-    account: Account | None = session.query(Account).\
-        filter(
-            Account.id == account_data.id,
-            Account.user == current_user
-        ).\
-        one_or_none()
+    account_service: AccountService = AccountService(session=session)
 
-    if account is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You don't have an account with given `id`"
-        )
+    return account_service.update(
+        account_data,
+        Account.user == current_user
+    )
 
-    for (field, value) in account_data.dict().items():
-        setattr(account, field, value)
-
-    session.commit()
-
-    return account
-
-@accounts_controller.delete("/delete", response_model=str)
+@account_controller.delete("/delete", response_model=str)
 async def delete_account(
     id: PositiveInt,
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session)
 ):
-    account: Account | None = session.query(Account).\
-        filter(
-            Account.id == id,
-            Account.user == current_user
-        ).\
-        one_or_none()
+    account_service: AccountService = AccountService(session=session)
 
-    if account is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You don't have an account with given `id`"
-        )
-
-    session.delete(account)
-    session.commit()
+    account_service.delete(id, Account.user == current_user)
 
     return "Account was deleted"

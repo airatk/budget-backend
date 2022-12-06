@@ -10,14 +10,14 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import RelationshipProperty, relationship
 
-from .utilities.base_model import BaseModel
+from .utilities.base import BaseModel
 from .utilities.callables import persist_enumeration_values
 from .utilities.types import TransactionType
 
 
 class Transaction(BaseModel):
     id: Column = Column(BigInteger, primary_key=True)
-    
+
     account_id: Column = Column(BigInteger, ForeignKey("account.id", ondelete="CASCADE"), nullable=False)
     category_id: Column = Column(BigInteger, ForeignKey("category.id", ondelete="SET NULL"))
 

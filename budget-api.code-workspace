@@ -9,18 +9,21 @@
         "python.linting.flake8Enabled": true,
         "python.linting.flake8Args": [
             "--inline-quotes=\"",
-            "--ignore=B008, C812, D100, D101, D102, D103, D104, D105, E201, E202, E302, E501, WPS110, WPS115, WPS125, WPS202, WPS204, WPS235, WPS300, WPS306, WPS339, WPS404, WPS451, WPS600, WPS609",
-            "--exclude=__init__.py, migrations/*"
+            "--ignore=B008, C812, C815, D100, D101, D102, D103, D104, D105, D107, E201, E202, E302, E501, WPS110, WPS115, WPS125, WPS202, WPS204, WPS235, WPS300, WPS306, WPS339, WPS404, WPS451, WPS600, WPS609",
+            "--exclude=__init__.py, migrations/*",
+            "--per-file-ignores=tests/test_*.py:S101"
         ],
         "python.linting.mypyEnabled": true,
         "python.linting.mypyArgs": [
             "--plugins=sqlalchemy.ext.mypy.plugin"
         ],
         "python.linting.banditEnabled": true,
+        "python.linting.banditArgs": [
+            "--exclude_dirs=tests"
+        ],
         "python.analysis.typeCheckingMode": "off",
     },
     "launch": {
-        "version": "0.2.0",
         "configurations": [
             {
                 "name": "Debug Launch",

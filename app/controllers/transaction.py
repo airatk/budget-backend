@@ -14,10 +14,10 @@ from app.schemas.transaction import (
 from models import Transaction, User
 
 
-transactions_controller: APIRouter = APIRouter(prefix="/transactions")
+transaction_controller: APIRouter = APIRouter(prefix="/transaction", tags=[ "transaction" ])
 
 
-@transactions_controller.get("/periods", response_model=list[TransactionsPeriod])
+@transaction_controller.get("/periods", response_model=list[TransactionsPeriod])
 async def get_periods(
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session)
@@ -32,7 +32,7 @@ async def get_periods(
 
     return [ TransactionsPeriod(year=period_entities[0], month=period_entities[1]) for period_entities in periods_entities ]
 
-@transactions_controller.get("/list", response_model=list[TransactionOutputData])
+@transaction_controller.get("/list", response_model=list[TransactionOutputData])
 async def get_transactions(
     year: PositiveInt,
     month: PositiveInt,
@@ -49,7 +49,7 @@ async def get_transactions(
 
     return transactions
 
-@transactions_controller.get("/item", response_model=TransactionOutputData)
+@transaction_controller.get("/item", response_model=TransactionOutputData)
 async def get_transaction(
     id: PositiveInt,
     current_user: User = Depends(identify_user),
@@ -70,7 +70,7 @@ async def get_transaction(
 
     return transaction
 
-@transactions_controller.post("/create", response_model=str)
+@transaction_controller.post("/create", response_model=str)
 async def create_transaction(
     transaction_data: TransactionCreationData,
     current_user: User = Depends(identify_user),
@@ -103,7 +103,7 @@ async def create_transaction(
 
     return "Transaction was created"
 
-@transactions_controller.put("/update", response_model=str)
+@transaction_controller.put("/update", response_model=str)
 async def update_transaction(
     transaction_data: TransactionUpdateData,
     current_user: User = Depends(identify_user),
@@ -129,7 +129,7 @@ async def update_transaction(
 
     return "Transaction was updated"
 
-@transactions_controller.delete("/delete", response_model=str)
+@transaction_controller.delete("/delete", response_model=str)
 async def delete_transaction(
     id: PositiveInt,
     current_user: User = Depends(identify_user),

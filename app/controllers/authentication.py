@@ -10,7 +10,7 @@ from app.utilities.security import create_token
 from models import User
 
 
-authentication_controller: APIRouter = APIRouter()
+authentication_controller: APIRouter = APIRouter(tags=[ "authentication" ])
 
 
 @authentication_controller.post("/sign-in", response_model=AuthenticationData)

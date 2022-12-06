@@ -2,13 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.controllers import (
-    accounts_controller,
+    account_controller,
     authentication_controller,
-    budgets_controller,
-    categories_controller,
+    budget_controller,
+    category_controller,
     family_controller,
-    transactions_controller,
-    users_controller
+    transaction_controller,
+    user_controller
 )
 from app.utilities.cors import (
     ALLOWED_HEADERS,
@@ -24,21 +24,24 @@ api: FastAPI = FastAPI(
     contact={
         "name": "Airat K",
         "url": "https://github.com/airatk"
+    },
+    swagger_ui_parameters={
+        "filter": True
     }
 )
 
 api.add_middleware(
-    CORSMiddleware,
+    middleware_class=CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_methods=ALLOWED_METHODS,
     allow_headers=ALLOWED_HEADERS,
     allow_credentials=True
 )
 
-api.include_router(authentication_controller, tags=[ "authentication" ])
-api.include_router(family_controller, tags=[ "family" ])
-api.include_router(users_controller, tags=[ "user" ])
-api.include_router(accounts_controller, tags=[ "accounts" ])
-api.include_router(categories_controller, tags=[ "categories" ])
-api.include_router(transactions_controller, tags=[ "transactions" ])
-api.include_router(budgets_controller, tags=[ "budgets" ])
+api.include_router(authentication_controller)
+api.include_router(family_controller)
+api.include_router(user_controller)
+api.include_router(account_controller)
+api.include_router(category_controller)
+api.include_router(transaction_controller)
+api.include_router(budget_controller)
