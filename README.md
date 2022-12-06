@@ -3,5 +3,6 @@ _web API for managing & planning both of joint & personal budgets_
 
 ### Stack
 * Python
-* FastAPI, Pydantic, SQLAlchemy, Alembic
-* PostgreSQL, Nginx
+* FastAPI, Pydantic, PyTest
+* PostgreSQL, SQLAlchemy, Alembic
+* Nginx

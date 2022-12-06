@@ -22,6 +22,10 @@
             "--exclude_dirs=tests"
         ],
         "python.analysis.typeCheckingMode": "off",
+        "python.testing.pytestArgs": [
+            "tests"
+        ],
+        "python.testing.pytestEnabled": true
     },
     "launch": {
         "configurations": [
