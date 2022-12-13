@@ -7,7 +7,10 @@ from app.utilities.security import decode_token
 from models import User
 
 
-async def identify_user(credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()), session: Session = Depends(define_postgres_session)) -> User:
+def identify_user(
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
+    session: Session = Depends(define_postgres_session)
+) -> User:
     (user_id, error_message) = decode_token(credentials.credentials)
 
     if error_message is not None:
