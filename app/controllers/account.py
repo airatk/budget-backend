@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from pydantic import PositiveInt
 from sqlalchemy.orm import Query, Session
 from sqlalchemy.sql import func
@@ -127,10 +127,12 @@ async def get_monthly_trend(
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session)
 ):
+    MONTHS_TOTAL_NUMBER: int = 12
+
     today_date: date = datetime.today().date()
 
     current_month_first_date: date = today_date.replace(day=1)
-    current_month_last_date: date = current_month_first_date.replace(month=current_month_first_date.month + 1) - timedelta(days=1)
+    current_month_last_date: date = current_month_first_date.replace(month=current_month_first_date.month % MONTHS_TOTAL_NUMBER + 1) - timedelta(days=1)
 
     all_transactions_by_days: Any = session.query(
             Transaction.due_date.label("date"),
@@ -215,7 +217,7 @@ async def get_accounts(
 ):
     return current_user.accounts
 
-@account_controller.post("/create", response_model=AccountOutputData)
+@account_controller.post("/create", response_model=AccountOutputData, status_code=status.HTTP_201_CREATED)
 async def create_account(
     account_data: AccountCreationData,
     current_user: User = Depends(identify_user),

@@ -1,5 +1,6 @@
 # Project Files
 .env*
+!.env-example
 project-files/*-examples/
 
 # Python & System Files
