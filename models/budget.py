@@ -1,21 +1,29 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import BigInteger, Column, Float, ForeignKey, String
-from sqlalchemy.orm import RelationshipProperty, relationship
+from sqlalchemy.orm import relationship
 
 from .utilities.base import BaseModel
 
 
+if TYPE_CHECKING:
+    from .family import Family
+    from .user import User
+    from .category import Category
+
+
 class Budget(BaseModel):
-    id: Column = Column(BigInteger, primary_key=True)
+    id: int = Column(BigInteger, primary_key=True)
 
-    family_id: Column = Column(BigInteger, ForeignKey("family.id", ondelete="CASCADE"))
-    user_id: Column = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"))
+    family_id: int = Column(BigInteger, ForeignKey("family.id", ondelete="CASCADE"))
+    user_id: int = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"))
 
-    family: RelationshipProperty = relationship("Family", back_populates="budgets")
-    user: RelationshipProperty = relationship("User", back_populates="budgets")
-    categories: RelationshipProperty = relationship("Category", back_populates="budget")
+    family: "Family" = relationship("Family", back_populates="budgets")
+    user: "User" = relationship("User", back_populates="budgets")
+    categories: list["Category"] = relationship("Category", back_populates="budget")
 
-    name: Column = Column(String, index=True, nullable=False)
-    planned_outcomes: Column = Column(Float, default=0.00, nullable=False)
+    name: str = Column(String, index=True, nullable=False)
+    planned_outcomes: float = Column(Float, default=0, nullable=False)
 
     def __repr__(self) -> str:
         return "{0.__class__.__name__}(id={0.id}, name={0.name})".format(self)

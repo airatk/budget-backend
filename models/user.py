@@ -1,24 +1,33 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import BigInteger, Column, ForeignKey, String
-from sqlalchemy.orm import RelationshipProperty, relationship
+from sqlalchemy.orm import relationship
 
 from .utilities.base import BaseModel
+
+
+if TYPE_CHECKING:
+    from .account import Account
+    from .budget import Budget
+    from .category import Category
+    from .family import Family
 
 
 MAX_USERNAME_LENGTH: int = 30
 
 
 class User(BaseModel):
-    id: Column = Column(BigInteger, primary_key=True)
+    id: int = Column(BigInteger, primary_key=True)
 
-    family_id: Column = Column(BigInteger, ForeignKey("family.id", ondelete="SET NULL"))
+    family_id: int = Column(BigInteger, ForeignKey("family.id", ondelete="SET NULL"))
 
-    family: RelationshipProperty = relationship("Family", back_populates="members")
-    accounts: RelationshipProperty = relationship("Account", back_populates="user", passive_deletes=True)
-    categories: RelationshipProperty = relationship("Category", back_populates="user", passive_deletes=True)
-    budgets: RelationshipProperty = relationship("Budget", back_populates="user", passive_deletes=True)
+    family: "Family" = relationship("Family", back_populates="members")
+    accounts: list["Account"] = relationship("Account", back_populates="user", passive_deletes=True)
+    categories: list["Category"] = relationship("Category", back_populates="user", passive_deletes=True)
+    budgets: list["Budget"] = relationship("Budget", back_populates="user", passive_deletes=True)
 
-    username: Column = Column(String(MAX_USERNAME_LENGTH), unique=True, index=True, nullable=False)
-    password: Column = Column(String, nullable=False)
+    username: str = Column(String(MAX_USERNAME_LENGTH), unique=True, index=True, nullable=False)
+    password: str = Column(String, nullable=False)
 
     def __repr__(self) -> str:
         return "{0.__class__.__name__}(id={0.id}, username={0.username})".format(self)
