@@ -1,10 +1,12 @@
 # Project Files
 .env*
 !.env-example
+tests/coverage-report-pages/
 project-files/*-examples/
 
 # Python & System Files
-**/.venv/
+.venv/
+.coverage
 **/__pycache__/
 **/.mypy_cache
 **/.pytest_cache

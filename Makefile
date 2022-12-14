@@ -1,3 +1,8 @@
+.PHONY: help
+help:
+	echo "`help` is not implemented yet."
+
+
 .PHONY: linted
 linted:
 	isort core/ models/ migrations/ app/ tests/
@@ -5,11 +10,23 @@ linted:
 
 .PHONY: tested
 tested:
-	pytest ./ -vv
+	coverage run -m pytest ./ -vv
 
 .PHONY: fails-tested
 fails-tested:
 	pytest ./ -vv --last-failed
+
+.PHONY: coverage-report
+coverage-report:
+	coverage report -m --skip-covered
+
+.PHONY: coverage-html-report
+coverage-html-report:
+	coverage report -m --precision=2 --directory=tests/coverage-report-pages/
+
+.PHONY: coverage-erased
+coverage-erased:
+	coverage erase
 
 
 .PHONY: new-migration
