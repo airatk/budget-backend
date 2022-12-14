@@ -8,7 +8,7 @@ class Family(BaseModel):
     id: Column = Column(BigInteger, primary_key=True)
 
     members: RelationshipProperty = relationship("User", back_populates="family")
-    budgets: RelationshipProperty = relationship("Budget", back_populates="family")
+    budgets: RelationshipProperty = relationship("Budget", back_populates="family", passive_deletes=True)
 
     access_code: Column = Column(String(8), unique=True, nullable=False)
 

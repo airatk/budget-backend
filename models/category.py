@@ -9,13 +9,13 @@ from .utilities.types import CategoryType
 class Category(BaseModel):
     id: Column = Column(BigInteger, primary_key=True)
 
-    user_id: Column = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"))
+    user_id: Column = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
     base_category_id: Column = Column(BigInteger, ForeignKey("category.id", ondelete="CASCADE"))
     budget_id: Column = Column(BigInteger, ForeignKey("budget.id", ondelete="SET NULL"))
 
     user: RelationshipProperty = relationship("User", back_populates="categories")
     base_category: RelationshipProperty = relationship("Category", back_populates="subcategories", remote_side=lambda: Category.id)
-    subcategories: RelationshipProperty = relationship("Category", back_populates="base_category")
+    subcategories: RelationshipProperty = relationship("Category", back_populates="base_category", passive_deletes=True)
     budget: RelationshipProperty = relationship("Budget", back_populates="categories")
     transactions: RelationshipProperty = relationship("Transaction", back_populates="category")
 

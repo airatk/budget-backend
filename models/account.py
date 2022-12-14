@@ -12,7 +12,7 @@ class Account(BaseModel):
     user_id: Column = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
 
     user: RelationshipProperty = relationship("User", back_populates="accounts")
-    transactions: RelationshipProperty = relationship("Transaction", back_populates="account")
+    transactions: RelationshipProperty = relationship("Transaction", back_populates="account", passive_deletes=True)
 
     name: Column = Column(String, index=True, nullable=False)
     currency: Column = Column(Enum(CurrencyType, values_callable=persist_enumeration_values), nullable=False)

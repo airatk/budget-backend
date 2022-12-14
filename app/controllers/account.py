@@ -1,3 +1,4 @@
+from calendar import monthrange
 from datetime import date, datetime, timedelta
 from typing import Any
 
@@ -127,12 +128,10 @@ async def get_monthly_trend(
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session)
 ):
-    MONTHS_TOTAL_NUMBER: int = 12
-
     today_date: date = datetime.today().date()
-
-    current_month_first_date: date = today_date.replace(day=1)
-    current_month_last_date: date = current_month_first_date.replace(month=current_month_first_date.month % MONTHS_TOTAL_NUMBER + 1) - timedelta(days=1)
+    (_, current_month_days_number) = monthrange(year=today_date.year, month=today_date.month)
+    current_month_first_date: date = date(year=today_date.year, month=today_date.month, day=1)
+    current_month_last_date: date = date(year=today_date.year, month=today_date.month, day=current_month_days_number)
 
     all_transactions_by_days: Any = session.query(
             Transaction.due_date.label("date"),
@@ -164,13 +163,13 @@ async def get_monthly_trend(
         all()
 
     previous_trend_point: TrendPointData = TrendPointData(
-        date=current_month_first_date.replace(day=current_month_first_date.day),
+        date=current_month_first_date,
         current_month_amount=0.00,
         average_amount=0.00
     )
     monthly_trend: list[TrendPointData] = []
 
-    for day in range(current_month_first_date.day, current_month_last_date.day + 1):
+    for day in range(1, current_month_days_number + 1):
         current_trend_point: TrendPointData = TrendPointData(
             date=current_month_first_date.replace(day=day),
             current_month_amount=previous_trend_point.current_month_amount,

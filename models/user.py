@@ -13,9 +13,9 @@ class User(BaseModel):
     family_id: Column = Column(BigInteger, ForeignKey("family.id", ondelete="SET NULL"))
 
     family: RelationshipProperty = relationship("Family", back_populates="members")
-    accounts: RelationshipProperty = relationship("Account", back_populates="user")
-    categories: RelationshipProperty = relationship("Category", back_populates="user")
-    budgets: RelationshipProperty = relationship("Budget", back_populates="user")
+    accounts: RelationshipProperty = relationship("Account", back_populates="user", passive_deletes=True)
+    categories: RelationshipProperty = relationship("Category", back_populates="user", passive_deletes=True)
+    budgets: RelationshipProperty = relationship("Budget", back_populates="user", passive_deletes=True)
 
     username: Column = Column(String(MAX_USERNAME_LENGTH), unique=True, index=True, nullable=False)
     password: Column = Column(String, nullable=False)
