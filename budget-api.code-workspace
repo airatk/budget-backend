@@ -1,31 +1,31 @@
 {
     "folders": [
         {
-            "path": "."
-        }
+            "path": ".",
+        },
     ],
     "settings": {
         "python.linting.enabled": true,
         "python.linting.flake8Enabled": true,
         "python.linting.flake8Args": [
             "--inline-quotes=\"",
-            "--ignore=B008, C812, C815, D100, D101, D102, D103, D104, D105, D107, E201, E202, E302, E501, WPS110, WPS115, WPS125, WPS202, WPS204, WPS235, WPS300, WPS306, WPS339, WPS404, WPS451, WPS600, WPS609",
+            "--ignore=B008, D100, D101, D102, D103, D105, D107, E302, E501, WPS115, WPS300, WPS306, WPS404, WPS600",
             "--exclude=__init__.py, migrations/*",
-            "--per-file-ignores=tests/test_*.py:S101"
+            "--per-file-ignores=tests/**/test_*.py:S101",
         ],
         "python.linting.mypyEnabled": true,
         "python.linting.mypyArgs": [
-            "--plugins=sqlalchemy.ext.mypy.plugin"
+            "--plugins=sqlalchemy.ext.mypy.plugin",
         ],
         "python.linting.banditEnabled": true,
         "python.linting.banditArgs": [
-            "--exclude_dirs=tests"
+            "--exclude_dirs=tests",
         ],
         "python.analysis.typeCheckingMode": "off",
         "python.testing.pytestArgs": [
-            "tests"
+            "tests",
         ],
-        "python.testing.pytestEnabled": true
+        "python.testing.pytestEnabled": true,
     },
     "launch": {
         "configurations": [
@@ -37,10 +37,10 @@
                 "args": [
                     "app:api",
                     "--host", "0.0.0.0",
-                    "--port", "8000"
+                    "--port", "8000",
                 ],
-                "justMyCode": true
-            }
-        ]
-    }
+                "justMyCode": true,
+            },
+        ],
+    },
 }

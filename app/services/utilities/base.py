@@ -15,26 +15,34 @@ class BaseService(Generic[Model]):
         self.model_class = model_class
         self.session = session
 
-    def get_one_or_none(self, id: int, *additional_conditions: bool) -> Model | None:
-        query: Any = select(self.model_class).where(
-            self.model_class.id == id,
-            *additional_conditions
-        )
+    def get_or_none(self, *conditions: bool) -> Model | None:
+        query: Any = select(self.model_class).where(*conditions)
 
         return self.session.scalar(query)
 
-    def get_one(self, id: int, *additional_conditions: bool) -> Model:
-        record: Model | None = self.get_one_or_none(id, *additional_conditions)
+    def get(self, *conditions: bool) -> Model:
+        record: Model | None = self.get_or_none(*conditions)
 
         if record is None:
             raise NotImplementedError
 
         return record
 
+    def get_by_id(self, record_id: int, *additional_conditions: bool) -> Model:
+        return self.get(
+            self.model_class.id == record_id,
+            *additional_conditions,
+        )
+
+    def get_list(self, *conditions) -> list[Model]:
+        query: Any = select(self.model_class).where(*conditions)
+
+        return self.session.scalars(query)
+
     def create(self, record_data: BaseData, **additional_attributes: Any) -> Model:
         record: Model = self.model_class(
             **record_data.dict(),
-            **additional_attributes
+            **additional_attributes,
         )
 
         self.session.add(record)
@@ -44,13 +52,10 @@ class BaseService(Generic[Model]):
         return record
 
     def update(self, record_data: BaseUpdateData, *additional_conditions: bool) -> Model:
-        record: Model = self.get_one(
-            record_data.id,
-            *additional_conditions
-        )
+        record: Model = self.get_by_id(record_data.id, *additional_conditions)
 
-        for (field, value) in record_data.dict().items():
-            setattr(record, field, value)
+        for (field, datum) in record_data.dict().items():
+            setattr(record, field, datum)
 
         self.session.add(record)
         self.session.commit()
@@ -58,8 +63,8 @@ class BaseService(Generic[Model]):
 
         return record
 
-    def delete(self, id: int, *additional_conditions: bool):
-        record: Model = self.get_one(id, *additional_conditions)
+    def delete(self, record_id: int, *additional_conditions: bool):
+        record: Model = self.get_by_id(record_id, *additional_conditions)
 
         self.session.delete(record)
         self.session.commit()

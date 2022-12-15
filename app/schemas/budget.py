@@ -11,7 +11,6 @@ class BudgetOutputData(BaseData, orm_mode=True):
     id: PositiveInt
     name: NonEmptyStr
     planned_outcomes: NonNegativeFloat
-    type: BudgetType
     categories: list[CategoryOutputData]
 
 class BudgetCreationData(BaseData, anystr_strip_whitespace=True):

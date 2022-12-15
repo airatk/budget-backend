@@ -16,7 +16,7 @@ def define_test_postgres_session() -> Generator[TestPostgresSession, None, None]
 
 def identify_test_user(
     # MARK: The original session getter should be used for correct dependency override
-    session: Session = Depends(define_postgres_session)
+    session: Session = Depends(define_postgres_session),
 ) -> User:
     return session.query(User).\
         filter(User.username == "test-user").\

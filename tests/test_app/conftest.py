@@ -11,7 +11,7 @@ from models.utilities.base import BaseModel
 from ..mock.databases import fill_up_test_database, test_postgres_engine
 from ..mock.dependencies import (
     define_test_postgres_session,
-    identify_test_user
+    identify_test_user,
 )
 
 

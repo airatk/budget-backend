@@ -7,9 +7,9 @@ from .utilities.base import BaseModel
 
 
 if TYPE_CHECKING:
+    from .category import Category
     from .family import Family
     from .user import User
-    from .category import Category
 
 
 class Budget(BaseModel):

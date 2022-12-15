@@ -9,5 +9,5 @@ postgres_engine: Engine = create_engine(url=settings.POSTGRES_URL)
 PostgresSession: sessionmaker = sessionmaker(
     bind=postgres_engine,
     autocommit=False,
-    autoflush=False
+    autoflush=False,
 )

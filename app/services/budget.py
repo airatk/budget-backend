@@ -9,5 +9,5 @@ class BudgetService(BaseService[Budget]):
     def __init__(self, session: Session):
         super().__init__(
             model_class=Budget,
-            session=session
+            session=session,
         )

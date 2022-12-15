@@ -9,5 +9,5 @@ class AccountService(BaseService[Account]):
     def __init__(self, session: Session):
         super().__init__(
             model_class=Account,
-            session=session
+            session=session,
         )

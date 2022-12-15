@@ -13,12 +13,12 @@ class AccountOutputData(BaseData, orm_mode=True):
     id: PositiveInt
     name: str
     currency: CurrencyType
-    openning_balance: NonNegativeFloat = 0.00
+    openning_balance: NonNegativeFloat = 0
 
 class AccountCreationData(BaseData, anystr_strip_whitespace=True):
     name: NonEmptyStr
     currency: CurrencyType
-    openning_balance: NonNegativeFloat = 0.00
+    openning_balance: NonNegativeFloat = 0
 
 class AccountUpdateData(BaseUpdateData, anystr_strip_whitespace=True):
     id: PositiveInt
@@ -31,14 +31,11 @@ class AccountBalanceData(BaseData):
     account: str
     balance: float
 
-class AccountsSummaryData(BaseData):
-    balance: float = 0.00
-    incomes: NonNegativeFloat
-    outcomes: NonPositiveFloat
-
 class PeriodSummaryData(BaseData):
     period: SummaryPeriodType
-    accounts_summary: AccountsSummaryData
+    balance: float = 0
+    incomes: NonNegativeFloat
+    outcomes: NonPositiveFloat
 
 class DailyHighlightData(BaseData):
     date: date

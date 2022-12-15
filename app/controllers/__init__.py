@@ -4,4 +4,5 @@ from .budget import budget_controller
 from .category import category_controller
 from .family import family_controller
 from .transaction import transaction_controller
+from .trend import trend_controller
 from .user import user_controller

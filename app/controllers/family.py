@@ -10,14 +10,14 @@ from app.schemas.family import FamilyInputData, FamilyOutputData
 from models import Family, User
 
 
-family_controller: APIRouter = APIRouter(prefix="/family", tags=[ "family" ])
+family_controller: APIRouter = APIRouter(prefix="/family", tags=["family"])
 
 
 @family_controller.get("/join", response_model=FamilyOutputData)
 async def join_family(
     access_code: str,
     current_user: User = Depends(identify_user),
-    session: Session = Depends(define_postgres_session)
+    session: Session = Depends(define_postgres_session),
 ):
     family: Family | None = session.query(Family).\
         filter(Family.access_code == access_code).\
@@ -26,7 +26,7 @@ async def join_family(
     if family is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="There is no family with given `access_code`"
+            detail="There is no family with given `access_code`",
         )
 
     current_user.family = family
@@ -37,12 +37,12 @@ async def join_family(
 
 @family_controller.get("/current", response_model=FamilyOutputData)
 async def get_family(
-    current_user: User = Depends(identify_user)
+    current_user: User = Depends(identify_user),
 ):
     if current_user.family is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You are not a member of any family"
+            detail="You are not a member of any family",
         )
 
     return current_user.family
@@ -50,19 +50,19 @@ async def get_family(
 @family_controller.post("/create", response_model=str)
 async def create_family(
     current_user: User = Depends(identify_user),
-    session: Session = Depends(define_postgres_session)
+    session: Session = Depends(define_postgres_session),
 ):
     if current_user.family is not None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You are already a member of a family"
+            detail="You are already a member of a family",
         )
 
     access_code: str = "".join(choices(ascii_lowercase, k=8))
 
     family: Family = Family(
         access_code=access_code,
-        members=[ current_user ]
+        members=[current_user],
     )
 
     session.add(family)
@@ -74,12 +74,12 @@ async def create_family(
 async def update_family(
     family_data: FamilyInputData,
     current_user: User = Depends(identify_user),
-    session: Session = Depends(define_postgres_session)
+    session: Session = Depends(define_postgres_session),
 ):
     if current_user.family is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You are not a member of any family"
+            detail="You are not a member of any family",
         )
 
     current_user.family.access_code = family_data.access_code
@@ -91,12 +91,12 @@ async def update_family(
 @family_controller.delete("/delete", response_model=str)
 async def delete_family(
     current_user: User = Depends(identify_user),
-    session: Session = Depends(define_postgres_session)
+    session: Session = Depends(define_postgres_session),
 ):
     if current_user.family is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You are not a member of any family"
+            detail="You are not a member of any family",
         )
 
     session.delete(current_user.family)

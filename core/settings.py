@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     POSTGRES_URL: PostgresDsn | None
 
     @validator("POSTGRES_URL", pre=True)
-    def assemble_postgres_dsn(cls, value: str | None, values: dict[str, Any]) -> str:  # noqa: N805
+    def assemble_postgres_dsn(cls, value: str | None, values: dict[str, Any]) -> str:  # noqa: N805, WPS110
         if isinstance(value, str):
             return value
 
@@ -27,7 +27,7 @@ class Settings(BaseSettings):
             password=values.get("POSTGRES_PASSWORD"),
             host=values.get("POSTGRES_HOST"),
             port=values.get("POSTGRES_PORT"),
-            path="/{0}".format(values.get("POSTGRES_DATABASE"))
+            path="/{0}".format(values.get("POSTGRES_DATABASE")),
         )
 
 

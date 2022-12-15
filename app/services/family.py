@@ -9,5 +9,5 @@ class FamilyService(BaseService[Family]):
     def __init__(self, session: Session):
         super().__init__(
             model_class=Family,
-            session=session
+            session=session,
         )

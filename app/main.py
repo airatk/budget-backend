@@ -8,12 +8,13 @@ from app.controllers import (
     category_controller,
     family_controller,
     transaction_controller,
-    user_controller
+    trend_controller,
+    user_controller,
 )
 from app.utilities.cors import (
     ALLOWED_HEADERS,
     ALLOWED_METHODS,
-    ALLOWED_ORIGINS
+    ALLOWED_ORIGINS,
 )
 
 
@@ -23,11 +24,11 @@ api: FastAPI = FastAPI(
     version="1.0.0",
     contact={
         "name": "Airat K",
-        "url": "https://github.com/airatk"
+        "url": "https://github.com/airatk",
     },
     swagger_ui_parameters={
-        "filter": True
-    }
+        "filter": True,
+    },
 )
 
 api.add_middleware(
@@ -35,12 +36,13 @@ api.add_middleware(
     allow_origins=ALLOWED_ORIGINS,
     allow_methods=ALLOWED_METHODS,
     allow_headers=ALLOWED_HEADERS,
-    allow_credentials=True
+    allow_credentials=True,
 )
 
 api.include_router(authentication_controller)
 api.include_router(family_controller)
 api.include_router(user_controller)
+api.include_router(trend_controller)
 api.include_router(account_controller)
 api.include_router(category_controller)
 api.include_router(transaction_controller)

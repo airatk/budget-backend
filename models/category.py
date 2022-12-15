@@ -9,9 +9,9 @@ from .utilities.types import CategoryType
 
 
 if TYPE_CHECKING:
-    from .user import User
     from .budget import Budget
     from .transaction import Transaction
+    from .user import User
 
 
 class Category(BaseModel):
