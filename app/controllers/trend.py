@@ -59,7 +59,7 @@ async def get_summary(
                 Transaction.type == TransactionType.OUTCOME,
                 *period_conditions,
             ).\
-            scalar() or 0.00
+            scalar() or 0
 
         period_summary: PeriodSummaryData = PeriodSummaryData(
             period=period,

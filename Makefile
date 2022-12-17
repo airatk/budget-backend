@@ -12,10 +12,6 @@ linted:
 tested:
 	coverage run -m pytest ./ -vv
 
-.PHONY: fails-tested
-fails-tested:
-	pytest ./ -vv --last-failed
-
 .PHONY: coverage-report
 coverage-report:
 	coverage report -m --skip-covered
