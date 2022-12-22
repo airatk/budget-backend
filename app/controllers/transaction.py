@@ -88,12 +88,14 @@ async def create_transaction(
 @transaction_controller.put("/update", response_model=TransactionOutputData)
 async def update_transaction(
     transaction_data: TransactionUpdateData,
+    transaction_id: PositiveInt = Query(alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ):
     transaction_service: TransactionService = TransactionService(session=session)
 
     return transaction_service.update(
+        transaction_id,
         transaction_data,
         Transaction.account(user=current_user),
     )
@@ -107,7 +109,7 @@ async def delete_transaction(
     transaction_service: TransactionService = TransactionService(session=session)
 
     transaction_service.delete(
-        Transaction.id == transaction_id,
+        transaction_id,
         Transaction.account(user=current_user),
     )
 

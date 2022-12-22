@@ -6,11 +6,13 @@ help:
 .PHONY: linted
 linted:
 	isort core/ models/ migrations/ app/ tests/
+	mypy .
+	flake8 .
 
 
 .PHONY: tested
 tested:
-	coverage run -m pytest ./ -vv
+	coverage run -m pytest tests/ -vv --durations=6
 
 .PHONY: coverage-report
 coverage-report:

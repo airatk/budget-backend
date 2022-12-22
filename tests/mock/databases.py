@@ -1,16 +1,17 @@
 from itertools import chain
+from json import load as load_from_json
+from typing import Type, TypeAlias
 
 from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.orm import sessionmaker
 
 from models import Account, Budget, Category, Family, Transaction, User
 from models.utilities.base import BaseModel
-from models.utilities.types import CategoryType, CurrencyType, TransactionType
 
 from .settings import test_settings
 
 
-test_postgres_engine: Engine = create_engine(url=test_settings.POSTGRES_URL)
+test_postgres_engine: Engine = create_engine(url=test_settings.POSTGRES_URL)  # type: ignore [arg-type]
 
 TestPostgresSession: sessionmaker = sessionmaker(
     bind=test_postgres_engine,
@@ -19,64 +20,34 @@ TestPostgresSession: sessionmaker = sessionmaker(
 )
 
 
-def fill_up_test_database():
+DatabaseMapping: TypeAlias = tuple[Type[BaseModel], str, str]
+
+def fill_up_test_database():  # noqa: WPS210
+    generic_json_file_path: str = "tests/mock/data/{0}.json"
+    data_mapping: tuple[DatabaseMapping, ...] = (
+        (User, "users", "user_id_seq"),
+        (Family, "families", "family_id_seq"),
+        (Account, "accounts", "account_id_seq"),
+        (Category, "categories", "category_id_seq"),
+        (Budget, "budgets", "budget_id_seq"),
+        (Transaction, "transactions", "transaction_id_seq"),
+    )
+
+    tables: list[list[BaseModel]] = []
+    sequence_data: dict[str, int] = {}
+
+    for (model, data_type, sequence_id) in data_mapping:
+        with open(file=generic_json_file_path.format(data_type), mode="r") as json_file:
+            tables.append([
+                model(**json_list_item_data) for json_list_item_data in load_from_json(json_file)
+            ])
+
+        sequence_data[sequence_id] = len(tables[-1]) + 1
+
     with TestPostgresSession() as test_postgres_session:
-        users: list[User] = [
-            User(id=1, username="test-user", password="test-password"),  # noqa: S106
-            User(id=2, username="family-member", password="test-password"),  # noqa: S106
-        ]
-        families: list[Family] = [
-            Family(id=1, access_code="password", members=users),
-        ]
-        accounts: list[Account] = [
-            Account(id=1, user=users[0], name="Account 1", currency=CurrencyType.RUB, openning_balance=0),
-            Account(id=2, user=users[0], name="Account 2", currency=CurrencyType.RUB, openning_balance=0),
-            Account(id=3, user=users[0], name="Account 3", currency=CurrencyType.RUB, openning_balance=0),
-
-            Account(id=4, user=users[1], name="Account 1", currency=CurrencyType.RUB, openning_balance=0),
-        ]
-        categories: list[Category] = [
-            Category(id=1, user=users[0], name="Category 1", type=CategoryType.INCOME),
-            Category(id=2, user=users[0], name="Category 2", type=CategoryType.INCOME),
-            Category(id=3, user=users[0], name="Category 3", type=CategoryType.OUTCOME),
-            Category(id=4, user=users[0], name="Category 4", type=CategoryType.OUTCOME),
-
-            Category(id=5, user=users[1], name="Category 1", type=CategoryType.INCOME),
-            Category(id=6, user=users[1], name="Category 2", type=CategoryType.OUTCOME),
-        ]
-        budgets: list[Budget] = [
-            Budget(id=1, family=families[0], categories=categories, name="Budget 1", planned_outcomes=100_000),
-            Budget(id=2, user=users[0], categories=categories, name="Budget 2", planned_outcomes=20_000),
-        ]
-        transactions: list[Transaction] = [
-            Transaction(id=1, account=accounts[0], category=categories[0], type=TransactionType.INCOME, due_date="2022-12-12", due_time="10:40", amount=100, note="Note"),
-            Transaction(id=2, account=accounts[0], category=categories[0], type=TransactionType.OUTCOME, due_date="2022-12-12", due_time="10:40", amount=100, note="Note"),
-            Transaction(id=3, account=accounts[0], category=categories[0], type=TransactionType.TRANSFER, due_date="2022-12-12", due_time="10:40", amount=100, note="Note"),
-        ]
-
-        tables: tuple[list[BaseModel]] = (
-            users,
-            families,
-            accounts,
-            categories,
-            budgets,
-            transactions,
-        )
-        sequence_next_values: tuple[int] = tuple(
-            len(table) + 1 for table in tables
-        )
-        sequence_ids: tuple[str] = (
-            "user_id_seq",
-            "family_id_seq",
-            "account_id_seq",
-            "category_id_seq",
-            "budget_id_seq",
-            "transaction_id_seq",
-        )
-
         test_postgres_session.add_all(chain(*tables))
 
-        for (sequence_id, next_sequence_value) in zip(sequence_ids, sequence_next_values):
+        for (sequence_id, next_sequence_value) in sequence_data.items():  # noqa: WPS440
             test_postgres_session.execute(
                 "ALTER SEQUENCE {0} RESTART WITH {1}".format(sequence_id, next_sequence_value),
             )

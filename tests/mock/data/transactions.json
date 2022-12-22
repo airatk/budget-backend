@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "account_id": 1,
+        "category_id": 1,
+        "type": "Income",
+        "due_date": "2022-12-12",
+        "due_time": "10:40",
+        "amount": 100,
+        "note": "Note"
+    },
+    {
+        "id": 2,
+        "account_id": 1,
+        "category_id": 1,
+        "type": "Outcome",
+        "due_date": "2022-12-12",
+        "due_time": "10:40",
+        "amount": 100,
+        "note": "Note"
+    },
+    {
+        "id": 3,
+        "account_id": 1,
+        "category_id": 1,
+        "type": "Transfer",
+        "due_date": "2022-12-12",
+        "due_time": "10:40",
+        "amount": 100,
+        "note": "Note"
+    }
+]

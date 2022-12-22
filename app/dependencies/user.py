@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.dependencies.sessions import define_postgres_session
 from app.services import UserService
-from app.utilities.security import decode_token
+from core.security import decode_token
 from models import User
 
 
@@ -14,7 +14,7 @@ def identify_user(
 ) -> User:
     (user_id, error_message) = decode_token(credentials.credentials)
 
-    if error_message is not None:
+    if user_id is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=error_message,

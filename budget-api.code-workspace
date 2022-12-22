@@ -8,24 +8,18 @@
         "python.linting.enabled": true,
         "python.linting.flake8Enabled": true,
         "python.linting.flake8Args": [
-            "--inline-quotes=\"",
-            "--ignore=B008, D100, D101, D102, D103, D105, D107, E302, E501, WPS115, WPS300, WPS306, WPS404, WPS600",
-            "--exclude=__init__.py, migrations/*",
-            "--per-file-ignores=tests/**/test_*.py: S101, WPS226",
-        ],
-        "python.linting.mypyEnabled": true,
-        "python.linting.mypyArgs": [
-            "--plugins=sqlalchemy.ext.mypy.plugin",
+            "--config", ".flake8",
         ],
         "python.linting.banditEnabled": true,
         "python.linting.banditArgs": [
             "--exclude_dirs=tests",
         ],
+        "python.linting.mypyEnabled": true,
         "python.analysis.typeCheckingMode": "off",
+        "python.testing.pytestEnabled": true,
         "python.testing.pytestArgs": [
             "tests",
         ],
-        "python.testing.pytestEnabled": true,
     },
     "launch": {
         "configurations": [

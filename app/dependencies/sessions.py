@@ -1,8 +1,10 @@
 from typing import Generator
 
+from sqlalchemy.orm import Session
+
 from core.databases import PostgresSession
 
 
-def define_postgres_session() -> Generator[PostgresSession, None, None]:
+def define_postgres_session() -> Generator[Session, None, None]:
     with PostgresSession() as postgres_session:
         yield postgres_session

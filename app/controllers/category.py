@@ -51,12 +51,14 @@ async def create_category(
 @category_controller.put("/update", response_model=CategoryOutputData)
 async def update_category(
     category_data: CategoryUpdateData,
+    category_id: PositiveInt = Query(alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ):
     category_service: CategoryService = CategoryService(session=session)
 
     return category_service.update(
+        category_id,
         category_data,
         Category.user == current_user,
     )

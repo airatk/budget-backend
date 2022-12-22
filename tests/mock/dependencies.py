@@ -9,7 +9,7 @@ from models import User
 from .databases import TestPostgresSession
 
 
-def define_test_postgres_session() -> Generator[TestPostgresSession, None, None]:
+def define_test_postgres_session() -> Generator[Session, None, None]:
     with TestPostgresSession() as test_postgres_session:
         yield test_postgres_session
 
@@ -17,7 +17,7 @@ def define_test_postgres_session() -> Generator[TestPostgresSession, None, None]
 def identify_test_user(
     # MARK: The original session getter should be used for correct dependency override
     session: Session = Depends(define_postgres_session),
-) -> User:
+) -> User | None:
     return session.query(User).\
         filter(User.username == "test-user").\
         one_or_none()

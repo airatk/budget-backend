@@ -14,8 +14,6 @@ if TYPE_CHECKING:
 
 
 class Account(BaseModel):
-    id: int = Column(BigInteger, primary_key=True)
-
     user_id: int = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
 
     user: "User" = relationship("User", back_populates="accounts")

@@ -1,0 +1,14 @@
+[
+    {
+        "id": 1,
+        "family_id": 1,
+        "name": "Budget 1",
+        "planned_outcomes": 100000
+    },
+    {
+        "id": 2,
+        "user_id": 1,
+        "name": "Budget 2",
+        "planned_outcomes": 20000
+    }
+]

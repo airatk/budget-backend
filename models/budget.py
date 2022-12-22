@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import BigInteger, Column, Float, ForeignKey, String
 from sqlalchemy.orm import relationship
@@ -13,13 +13,11 @@ if TYPE_CHECKING:
 
 
 class Budget(BaseModel):
-    id: int = Column(BigInteger, primary_key=True)
+    family_id: int | None = Column(BigInteger, ForeignKey("family.id", ondelete="CASCADE"))
+    user_id: int | None = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"))
 
-    family_id: int = Column(BigInteger, ForeignKey("family.id", ondelete="CASCADE"))
-    user_id: int = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"))
-
-    family: "Family" = relationship("Family", back_populates="budgets")
-    user: "User" = relationship("User", back_populates="budgets")
+    family: Optional["Family"] = relationship("Family", back_populates="budgets")
+    user: Optional["User"] = relationship("User", back_populates="budgets")
     categories: list["Category"] = relationship("Category", back_populates="budget")
 
     name: str = Column(String, index=True, nullable=False)

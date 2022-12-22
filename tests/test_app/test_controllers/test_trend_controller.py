@@ -27,7 +27,7 @@ def test_get_summary(test_client: TestClient):
     param(TransactionType.INCOME.value),
     param(TransactionType.OUTCOME.value),
     param(TransactionType.TRANSFER.value),
-    param("non-existing_type", marks=mark.xfail),
+    param("non_existing_type", marks=mark.xfail),
 ))
 def test_get_last_n_days_highlight(test_client: TestClient, n_days: Any, transaction_type: Any):
     response: Response = test_client.get(

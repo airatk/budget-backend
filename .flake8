@@ -1,0 +1,30 @@
+[flake8]
+ignore =
+    B008,
+    D100,
+    D101,
+    D102,
+    D103,
+    D105,
+    D107,
+    E302,
+    E501,
+    WPS115,
+    WPS300,
+    WPS306,
+    WPS404,
+    WPS600,
+
+exclude =
+    .venv/,
+    __init__.py,
+    migrations/*,
+
+per-file-ignores =
+    tests/**/test_*.py:
+        S101,
+        WPS226,
+        WPS317,
+        WPS432,
+
+inline-quotes = "

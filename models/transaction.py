@@ -24,8 +24,6 @@ if TYPE_CHECKING:
 
 
 class Transaction(BaseModel):
-    id: int = Column(BigInteger, primary_key=True)
-
     account_id: int = Column(BigInteger, ForeignKey("account.id", ondelete="CASCADE"), nullable=False)
     category_id: int = Column(BigInteger, ForeignKey("category.id", ondelete="SET NULL"))
 
@@ -36,7 +34,7 @@ class Transaction(BaseModel):
     due_date: date = Column(Date, nullable=False)
     due_time: time = Column(Time, nullable=False)
     amount: float = Column(Float, nullable=False)
-    note: Column = Column(String, default="", nullable=False)
+    note: str = Column(String, default="", nullable=False)
 
     def __repr__(self) -> str:
         return "{0.__class__.__name__}(id={0.id}, amount={0.amount})".format(self)

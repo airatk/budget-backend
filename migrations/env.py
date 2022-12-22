@@ -1,34 +1,28 @@
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import create_engine, pool
+from alembic.config import Config
+from sqlalchemy import create_engine, pool, MetaData
+from sqlalchemy.engine import Engine
 
 from core.settings import settings
 from models.utilities.base import BaseModel
 
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
-config = context.config
+# Alembic Config object to access the values within
+# the .ini file in use.
+config: Config = context.config
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
+# Interpret the config file for Python logging,
+# to set up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = BaseModel.metadata
-
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
+# Model's MetaData object to support 'autogenerate'.
+target_metadata: MetaData = BaseModel.metadata
 
 
-def run_migrations_offline() -> None:
+def run_migrations_offline():
     """Run migrations in 'offline' mode.
 
     This configures the context with just a URL
@@ -38,14 +32,14 @@ def run_migrations_offline() -> None:
 
     Calls to context.execute() here emit the given string to the
     script output.
-
     """
+
     context.configure(
         url=settings.POSTGRES_URL,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={
-            "paramstyle": "named"
+            "paramstyle": "named",
         },
     )
 
@@ -53,15 +47,15 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
-def run_migrations_online() -> None:
+def run_migrations_online():
     """Run migrations in 'online' mode.
 
     In this scenario we need to create an Engine
     and associate a connection with the context.
-
     """
-    connectable = create_engine(
-        url=settings.POSTGRES_URL,
+
+    connectable: Engine = create_engine(
+        url=settings.POSTGRES_URL,  # type: ignore [arg-type]
         poolclass=pool.NullPool,
     )
 

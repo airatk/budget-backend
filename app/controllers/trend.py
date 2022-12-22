@@ -4,8 +4,9 @@ from typing import Any
 
 from fastapi import APIRouter, Depends
 from pydantic import PositiveInt
+from sqlalchemy import Boolean
 from sqlalchemy.orm import Query, Session
-from sqlalchemy.sql import func
+from sqlalchemy.sql import ColumnElement, func
 
 from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
@@ -28,14 +29,14 @@ async def get_summary(
 ):
     today_date: date = datetime.today().date()
 
-    current_month_conditions: tuple[bool, ...] = (
+    current_month_conditions: tuple[ColumnElement[Boolean], ...] = (
         func.DATE_PART("YEAR", Transaction.due_date) == today_date.year,
         func.DATE_PART("MONTH", Transaction.due_date) == today_date.month,
     )
-    current_year_conditions: tuple[bool, ...] = (
+    current_year_conditions: tuple[ColumnElement[Boolean], ...] = (
         func.DATE_PART("YEAR", Transaction.due_date) == today_date.year,
     )
-    all_time_conditions: tuple[bool, ...] = ()
+    all_time_conditions: tuple[ColumnElement[Boolean], ...] = ()
 
     transactions_sum_query: Query = session.query(
             func.SUM(Transaction.amount),

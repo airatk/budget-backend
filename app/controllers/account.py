@@ -62,12 +62,14 @@ async def create_account(
 @account_controller.patch("/update", response_model=AccountOutputData)
 async def update_account(
     account_data: AccountUpdateData,
+    accaount_id: PositiveInt = Query(alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ):
     account_service: AccountService = AccountService(session=session)
 
     return account_service.update(
+        accaount_id,
         account_data,
         Account.user == current_user,
     )

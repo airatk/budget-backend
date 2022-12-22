@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import PositiveInt
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.dependencies.sessions import define_postgres_session
@@ -41,7 +42,7 @@ async def get_budget(
         Budget.user == current_user or Budget.family == current_user.family,
     )
 
-@budget_controller.post("/create", response_model=BudgetOutputData)
+@budget_controller.post("/create", response_model=BudgetOutputData, status_code=status.HTTP_201_CREATED)
 async def create_budget(
     budget_data: BudgetCreationData,
     current_user: User = Depends(identify_user),
@@ -50,7 +51,10 @@ async def create_budget(
     category_service: CategoryService = CategoryService(session=session)
 
     categories: list[Category] = category_service.get_list(
-        Category.id.in_(budget_data.categories_ids) or Category.base_category.in_(budget_data.categories_ids),
+        or_(
+            Category.id.in_(budget_data.categories_ids),
+            Category.base_category_id.in_(budget_data.categories_ids),
+        ),
         Category.user == current_user,
     )
     forbidden_category_ids: set[int] = set(budget_data.categories_ids) - {category.id for category in categories}
@@ -80,12 +84,13 @@ async def create_budget(
 @budget_controller.put("/update", response_model=BudgetOutputData)
 async def update_budget(
     budget_data: BudgetUpdateData,
+    budget_id: int = Query(alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session)
 ):
     budget: Budget | None = session.query(Budget).\
         filter(
-            Budget.id == budget_data.id, (
+            Budget.id == budget_id, (
                 Budget.user == current_user and Budget.family.is_(None)
             ) or (
                 Budget.family == current_user.family and Budget.user.is_(None)

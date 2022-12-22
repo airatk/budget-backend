@@ -27,7 +27,6 @@ class TransactionCreationData(BaseData, anystr_strip_whitespace=True):
     note: str = ""
 
 class TransactionUpdateData(BaseUpdateData, anystr_strip_whitespace=True):
-    id: PositiveInt
     account_id: PositiveInt | None
     category_id: PositiveInt | None
     type: TransactionType | None

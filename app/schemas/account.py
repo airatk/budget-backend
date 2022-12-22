@@ -1,30 +1,28 @@
 from datetime import date
 
-from pydantic import NonNegativeFloat, NonPositiveFloat, PositiveInt
+from pydantic import Field, NonNegativeFloat, NonPositiveFloat, PositiveInt
 
 from models.account import CurrencyType
 from models.utilities.types import SummaryPeriodType
 
 from .utilities.base import BaseData, BaseUpdateData
-from .utilities.types import NonEmptyStr
 
 
 class AccountOutputData(BaseData, orm_mode=True):
     id: PositiveInt
     name: str
     currency: CurrencyType
-    openning_balance: NonNegativeFloat = 0
+    openning_balance: int = 0
 
 class AccountCreationData(BaseData, anystr_strip_whitespace=True):
-    name: NonEmptyStr
+    name: str = Field(..., min_length=1)
     currency: CurrencyType
-    openning_balance: NonNegativeFloat = 0
+    openning_balance: int = 0
 
 class AccountUpdateData(BaseUpdateData, anystr_strip_whitespace=True):
-    id: PositiveInt
-    name: NonEmptyStr | None
+    name: str | None = Field(None, min_length=1)
     currency: CurrencyType | None
-    openning_balance: NonNegativeFloat | None
+    openning_balance: int | None
 
 
 class AccountBalanceData(BaseData):

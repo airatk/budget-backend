@@ -18,6 +18,7 @@ lines_after_imports = 2
 
 [tool.mypy]
 plugins = "sqlalchemy.ext.mypy.plugin"
+check_untyped_defs = true
 
 [tool.pytest.ini_options]
 xfail_strict = true

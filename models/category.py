@@ -15,8 +15,6 @@ if TYPE_CHECKING:
 
 
 class Category(BaseModel):
-    id: int = Column(BigInteger, primary_key=True)
-
     user_id: int = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
     base_category_id: int = Column(BigInteger, ForeignKey("category.id", ondelete="CASCADE"))
     budget_id: int = Column(BigInteger, ForeignKey("budget.id", ondelete="SET NULL"))
