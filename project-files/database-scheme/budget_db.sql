@@ -9,6 +9,11 @@ CREATE TYPE "category_type" AS ENUM (
   'outcome'
 );
 
+CREATE TYPE "budget_type" AS ENUM (
+  'joint',
+  'personal'
+);
+
 CREATE TABLE "family" (
   "id" integer PRIMARY KEY,
   "access_code" integer
@@ -24,8 +29,8 @@ CREATE TABLE "user" (
 
 CREATE TABLE "budget" (
   "id" integer PRIMARY KEY,
-  "family_id" integer,
   "user_id" integer,
+  "type" budget_type,
   "name" string,
   "planned_outcomes" float
 );
@@ -59,8 +64,6 @@ CREATE TABLE "transaction" (
 );
 
 ALTER TABLE "user" ADD FOREIGN KEY ("family_id") REFERENCES "family" ("id");
-
-ALTER TABLE "budget" ADD FOREIGN KEY ("family_id") REFERENCES "family" ("id");
 
 ALTER TABLE "account" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
 

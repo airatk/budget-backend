@@ -2,7 +2,7 @@ from logging.config import fileConfig
 
 from alembic import context
 from alembic.config import Config
-from sqlalchemy import create_engine, pool, MetaData
+from sqlalchemy import MetaData, create_engine, pool
 from sqlalchemy.engine import Engine
 
 from core.settings import settings

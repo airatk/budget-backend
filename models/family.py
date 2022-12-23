@@ -7,13 +7,11 @@ from .utilities.base import BaseModel
 
 
 if TYPE_CHECKING:
-    from .budget import Budget
     from .user import User
 
 
 class Family(BaseModel):
     members: "User" = relationship("User", back_populates="family")
-    budgets: "Budget" = relationship("Budget", back_populates="family", passive_deletes=True)
 
     access_code: str = Column(String(8), unique=True, nullable=False)
 

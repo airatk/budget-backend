@@ -45,11 +45,10 @@ def upgrade() -> None:
     op.create_index(op.f('ix_account_name'), 'account', ['name'], unique=False)
     op.create_table('budget',
     sa.Column('id', sa.BigInteger(), nullable=False),
-    sa.Column('family_id', sa.BigInteger(), nullable=True),
     sa.Column('user_id', sa.BigInteger(), nullable=True),
     sa.Column('name', sa.String(), nullable=False),
+    sa.Column('type', sa.Enum('joint', 'personal', name='budgettype'), nullable=False),
     sa.Column('planned_outcomes', sa.Float(), nullable=False),
-    sa.ForeignKeyConstraint(['family_id'], ['family.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )

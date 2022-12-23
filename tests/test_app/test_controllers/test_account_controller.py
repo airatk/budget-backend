@@ -203,7 +203,7 @@ class TestUpdateAccount:
     def test_with_wrong_id(
         self,
         test_client: TestClient,
-        test_account_id: int,
+        test_account_id: Any,
     ):
         response: Response = self._make_request(
             test_client=test_client,
@@ -287,7 +287,7 @@ class TestDeleteAccount:
     def test_with_wrong_id(
         self,
         test_client: TestClient,
-        test_account_id: int,
+        test_account_id: Any,
     ):
         response: Response = self._make_request(
             test_client=test_client,
