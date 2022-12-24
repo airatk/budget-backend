@@ -6,9 +6,12 @@ from httpx import Response
 from pytest import mark, param
 
 from models.utilities.types import BudgetType, CategoryType
+from tests.test_app.test_controllers.utilities.base_test_class import (
+    BaseTestClass,
+)
 
 
-class TestGetBudgets:
+class TestGetBudgets(BaseTestClass, http_method="GET", api_endpoint="/budget/list"):
     @mark.parametrize("test_type", (
         param(
             "personal",
@@ -20,9 +23,9 @@ class TestGetBudgets:
         test_client: TestClient,
         test_type: Any,
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_type=test_type,
+            type=test_type,
         )
 
         assert response.status_code == status.HTTP_200_OK, response.text
@@ -31,7 +34,7 @@ class TestGetBudgets:
 
     @mark.parametrize("test_type", (
         param(
-            "non_existing_budget_type",
+            "non_existing_type",
             id="incorrect_data",
         ),
     ))
@@ -40,27 +43,15 @@ class TestGetBudgets:
         test_client: TestClient,
         test_type: Any,
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_type=test_type,
+            type=test_type,
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
-    def _make_request(
-        self,
-        test_client: TestClient,
-        test_type: Any,
-    ) -> Response:
-        return test_client.get(
-            url="/budget/list",
-            params={
-                "type": test_type,
-            },
-        )
 
-
-class TestGetBudget:
+class TestGetBudget(BaseTestClass, http_method="GET", api_endpoint="/budget/item"):
     @mark.parametrize("test_id, expected_data", (
         param(
             2,
@@ -87,15 +78,15 @@ class TestGetBudget:
             id="budget_2",
         ),
     ))
-    def test_get_budget(
+    def test_with_correct_id(
         self,
         test_client: TestClient,
         test_id: int,
         expected_data: dict[str, Any],
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_id=test_id,
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_200_OK, response.text
@@ -113,9 +104,9 @@ class TestGetBudget:
         test_client: TestClient,
         test_id: int,
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_id=test_id,
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
@@ -143,27 +134,15 @@ class TestGetBudget:
         test_client: TestClient,
         test_id: Any,
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_id=test_id,
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
-    def _make_request(
-        self,
-        test_client: TestClient,
-        test_id: Any,
-    ) -> Response:
-        return test_client.get(
-            url="/budget/item",
-            params={
-                "id": test_id,
-            },
-        )
 
-
-class TestCreateBudget:
+class TestCreateBudget(BaseTestClass, http_method="POST", api_endpoint="/budget/create"):
     @mark.parametrize("test_data, expected_data", (
         param(
             {
@@ -218,7 +197,7 @@ class TestCreateBudget:
         test_data: dict[str, Any],
         expected_data: dict[str, Any],
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
             test_data=test_data,
         )
@@ -269,25 +248,15 @@ class TestCreateBudget:
         test_client: TestClient,
         test_data: dict[str, Any],
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
             test_data=test_data,
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
-    def _make_request(
-        self,
-        test_client: TestClient,
-        test_data: dict[str, Any],
-    ) -> Response:
-        return test_client.post(
-            url="/budget/create",
-            json=test_data,
-        )
 
-
-class TestUpdateAccount:
+class TestUpdateBudget(BaseTestClass, http_method="PATCH", api_endpoint="/budget/update"):
     @mark.parametrize("test_id, test_data, expected_data", (
         param(
             1,
@@ -321,10 +290,10 @@ class TestUpdateAccount:
         test_data: dict[str, Any],
         expected_data: dict[str, Any],
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_id=test_id,
             test_data=test_data,
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_200_OK, response.text
@@ -366,10 +335,10 @@ class TestUpdateAccount:
         test_id: int,
         test_data: dict[str, Any],
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_id=test_id,
             test_data=test_data,
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
@@ -385,10 +354,9 @@ class TestUpdateAccount:
         test_client: TestClient,
         test_id: int,
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_id=test_id,
-            test_data={},
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
@@ -416,30 +384,15 @@ class TestUpdateAccount:
         test_client: TestClient,
         test_id: Any,
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_id=test_id,
-            test_data={},
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
-    def _make_request(
-        self,
-        test_client: TestClient,
-        test_id: Any,
-        test_data: dict[str, Any],
-    ) -> Response:
-        return test_client.patch(
-            url="/budget/update",
-            params={
-                "id": test_id,
-            },
-            json=test_data,
-        )
 
-
-class TestDeleteAccount:
+class TestDeleteBudget(BaseTestClass, http_method="DELETE", api_endpoint="/budget/delete"):
     @mark.parametrize("test_id", (
         param(
             1,
@@ -451,9 +404,9 @@ class TestDeleteAccount:
         test_client: TestClient,
         test_id: int,
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_id=test_id,
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_200_OK, response.text
@@ -470,9 +423,9 @@ class TestDeleteAccount:
         test_client: TestClient,
         test_id: int,
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_id=test_id,
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
@@ -500,21 +453,9 @@ class TestDeleteAccount:
         test_client: TestClient,
         test_id: Any,
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_id=test_id,
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
-
-    def _make_request(
-        self,
-        test_client: TestClient,
-        test_id: Any,
-    ) -> Response:
-        return test_client.delete(
-            url="/budget/delete",
-            params={
-                "id": test_id,
-            },
-        )

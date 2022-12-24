@@ -8,6 +8,9 @@ from httpx import Response
 from pytest import mark, param
 
 from models.utilities.types import TransactionType
+from tests.test_app.test_controllers.utilities.base_test_class import (
+    BaseTestClass,
+)
 
 
 def test_get_summary(test_client: TestClient):
@@ -16,31 +19,6 @@ def test_get_summary(test_client: TestClient):
     assert response.status_code == status.HTTP_200_OK, response.text
     assert isinstance(response.json(), list)
     assert len(response.json()) == 3
-
-@mark.parametrize("n_days", (
-    param(1),
-    param(0, marks=mark.xfail),
-    param("string", marks=mark.xfail),
-    param(None, marks=mark.xfail),
-))
-@mark.parametrize("transaction_type", (
-    param(TransactionType.INCOME.value),
-    param(TransactionType.OUTCOME.value),
-    param(TransactionType.TRANSFER.value),
-    param("non_existing_type", marks=mark.xfail),
-))
-def test_get_last_n_days_highlight(test_client: TestClient, n_days: Any, transaction_type: Any):
-    response: Response = test_client.get(
-        url="/trend/last-n-days",
-        params={
-            "n_days": n_days,
-            "transaction_type": transaction_type,
-        },
-    )
-
-    assert response.status_code == status.HTTP_200_OK, response.text
-    assert isinstance(response.json(), list)
-    assert len(response.json()) == n_days
 
 def test_get_monthly_trend(test_client: TestClient):
     today_date: date = datetime.today().date()
@@ -51,3 +29,61 @@ def test_get_monthly_trend(test_client: TestClient):
     assert response.status_code == status.HTTP_200_OK, response.text
     assert isinstance(response.json(), list)
     assert len(response.json()) == current_month_days_number
+
+
+class TestGetLastNDaysHighlight(BaseTestClass, http_method="GET", api_endpoint="/trend/last-n-days"):
+    @mark.parametrize("test_n_days", (
+        4,
+        None,
+        14,
+    ))
+    @mark.parametrize("test_type", (
+        TransactionType.INCOME.value,
+        TransactionType.OUTCOME.value,
+        TransactionType.TRANSFER.value,
+    ))
+    def test_with_correct_data(
+        self,
+        test_client: TestClient,
+        test_n_days: int | None,
+        test_type: str,
+    ):
+        response: Response = self.request(
+            test_client=test_client,
+            n_days=test_n_days,
+            transaction_type=test_type,
+        )
+
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert isinstance(response.json(), list)
+        assert len(response.json()) == test_n_days
+
+    @mark.parametrize("test_n_days", (
+        param(
+            3,
+            id="lower",
+        ),
+        param(
+            15,
+            id="greater",
+        ),
+        param(
+            "string",
+            id="string_id",
+        ),
+        param(
+            None,
+            id="with_no_id",
+        ),
+    ))
+    def test_with_wrong_id(
+        self,
+        test_client: TestClient,
+        test_n_days: Any,
+    ):
+        response: Response = self.request(
+            test_client=test_client,
+            n_days=test_n_days,
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text

@@ -4,9 +4,12 @@ from httpx import Response
 from pytest import mark, param
 
 from core.security import create_token
+from tests.test_app.test_controllers.utilities.base_test_class import (
+    BaseTestClass,
+)
 
 
-class TestSignIn:
+class TestSignIn(BaseTestClass, http_method="GET", api_endpoint="/sign-in"):
     @mark.parametrize("test_credentials, expected_token", (
         param(
             ("test-user", "test-password"),
@@ -25,7 +28,7 @@ class TestSignIn:
         test_credentials: tuple[str, str],
         expected_token: str,
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
             test_credentials=test_credentials,
         )
@@ -46,7 +49,7 @@ class TestSignIn:
         test_client: TestClient,
         test_credentials: tuple[str, str],
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
             test_credentials=test_credentials,
         )
@@ -55,13 +58,3 @@ class TestSignIn:
         assert response.json() == {
             "detail": "Provided creditials are wrong",
         }
-
-    def _make_request(
-        self,
-        test_client: TestClient,
-        test_credentials: tuple[str, str],
-    ) -> Response:
-        return test_client.get(
-            url="/sign-in",
-            auth=test_credentials,
-        )

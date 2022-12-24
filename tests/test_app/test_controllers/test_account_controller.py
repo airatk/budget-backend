@@ -6,25 +6,27 @@ from httpx import Response
 from pytest import mark, param
 
 from models.utilities.types import CurrencyType
+from tests.test_app.test_controllers.utilities.base_test_class import (
+    BaseTestClass,
+)
 
 
-class TestGetMethods:
-    def test_get_balances(self, test_client: TestClient):
-        response: Response = test_client.get("/account/balances")
+def test_get_balances(test_client: TestClient):
+    response: Response = test_client.get("/account/balances")
 
-        assert response.status_code == status.HTTP_200_OK, response.text
-        assert isinstance(response.json(), list)
-        assert response.json()
+    assert response.status_code == status.HTTP_200_OK, response.text
+    assert isinstance(response.json(), list)
+    assert response.json()
 
-    def test_get_accounts(self, test_client: TestClient):
-        response: Response = test_client.get("/account/list")
+def test_get_accounts(test_client: TestClient):
+    response: Response = test_client.get("/account/list")
 
-        assert response.status_code == status.HTTP_200_OK, response.text
-        assert isinstance(response.json(), list)
-        assert response.json()
+    assert response.status_code == status.HTTP_200_OK, response.text
+    assert isinstance(response.json(), list)
+    assert response.json()
 
 
-class TestCreateAccount:
+class TestCreateAccount(BaseTestClass, http_method="POST", api_endpoint="/account/create"):
     @mark.parametrize("test_data, expected_data", (
         param(
             {
@@ -47,7 +49,7 @@ class TestCreateAccount:
         test_data: dict[str, Any],
         expected_data: dict[str, Any],
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
             test_data=test_data,
         )
@@ -67,7 +69,7 @@ class TestCreateAccount:
         param(
             {
                 "name": "Test Account Name",
-                "currency": "non_existing_currency",
+                "currency": "non_existing_type",
                 "openning_balance": 260000,
             },
             id="wrong_currency",
@@ -78,26 +80,16 @@ class TestCreateAccount:
         test_client: TestClient,
         test_data: dict[str, Any],
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
             test_data=test_data,
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
-    def _make_request(
-        self,
-        test_client: TestClient,
-        test_data: dict[str, Any],
-    ) -> Response:
-        return test_client.post(
-            url="/account/create",
-            json=test_data,
-        )
 
-
-class TestUpdateAccount:
-    @mark.parametrize("test_account_id, test_data, expected_data", (
+class TestUpdateAccount(BaseTestClass, http_method="PATCH", api_endpoint="/account/update"):
+    @mark.parametrize("test_id, test_data, expected_data", (
         param(
             1,
             {
@@ -117,23 +109,21 @@ class TestUpdateAccount:
     def test_with_correct_data(
         self,
         test_client: TestClient,
-        test_account_id: int,
+        test_id: int,
         test_data: dict[str, Any],
         expected_data: dict[str, Any],
     ):
-        response: Response = test_client.patch(
-            url="/account/update",
-            params={
-                "id": test_account_id,
-            },
-            json=test_data,
+        response: Response = self.request(
+            test_client=test_client,
+            test_data=test_data,
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_200_OK, response.text
         assert isinstance(response.json(), dict)
         assert response.json() == expected_data
 
-    @mark.parametrize("test_account_id, test_data", (
+    @mark.parametrize("test_id, test_data", (
         param(
             1,
             {
@@ -144,7 +134,7 @@ class TestUpdateAccount:
         param(
             1,
             {
-                "currency": "non_existing_currency",
+                "currency": "non_existing_type",
             },
             id="wrong_currency",
         ),
@@ -152,18 +142,18 @@ class TestUpdateAccount:
     def test_with_wrong_data(
         self,
         test_client: TestClient,
-        test_account_id: int,
+        test_id: int,
         test_data: dict[str, Any],
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_account_id=test_account_id,
             test_data=test_data,
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
-    @mark.parametrize("test_account_id", (
+    @mark.parametrize("test_id", (
         param(
             999999,
             id="non_existing_id",
@@ -172,17 +162,16 @@ class TestUpdateAccount:
     def test_with_non_existing_id(
         self,
         test_client: TestClient,
-        test_account_id: int,
+        test_id: int,
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_account_id=test_account_id,
-            test_data={},
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
-    @mark.parametrize("test_account_id", (
+    @mark.parametrize("test_id", (
         param(
             0,
             id="zero_id",
@@ -203,33 +192,18 @@ class TestUpdateAccount:
     def test_with_wrong_id(
         self,
         test_client: TestClient,
-        test_account_id: Any,
+        test_id: Any,
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_account_id=test_account_id,
-            test_data={},
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
-    def _make_request(
-        self,
-        test_client: TestClient,
-        test_account_id: Any,
-        test_data: dict[str, Any],
-    ) -> Response:
-        return test_client.patch(
-            url="/account/update",
-            params={
-                "id": test_account_id,
-            },
-            json=test_data,
-        )
 
-
-class TestDeleteAccount:
-    @mark.parametrize("test_account_id", (
+class TestDeleteAccount(BaseTestClass, http_method="DELETE", api_endpoint="/account/delete"):
+    @mark.parametrize("test_id", (
         param(
             1,
             id="correct_id",
@@ -238,17 +212,17 @@ class TestDeleteAccount:
     def test_with_correct_id(
         self,
         test_client: TestClient,
-        test_account_id: int,
+        test_id: int,
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_account_id=test_account_id,
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == "Account was deleted"
 
-    @mark.parametrize("test_account_id", (
+    @mark.parametrize("test_id", (
         param(
             999999,
             id="non_existing_id",
@@ -257,16 +231,16 @@ class TestDeleteAccount:
     def test_with_non_existing_id(
         self,
         test_client: TestClient,
-        test_account_id: int,
+        test_id: int,
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_account_id=test_account_id,
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_200_OK, response.text
 
-    @mark.parametrize("test_account_id", (
+    @mark.parametrize("test_id", (
         param(
             0,
             id="zero_id",
@@ -287,23 +261,11 @@ class TestDeleteAccount:
     def test_with_wrong_id(
         self,
         test_client: TestClient,
-        test_account_id: Any,
+        test_id: Any,
     ):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_account_id=test_account_id,
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
-
-    def _make_request(
-        self,
-        test_client: TestClient,
-        test_account_id: Any,
-    ) -> Response:
-        return test_client.delete(
-            url="/account/delete",
-            params={
-                "id": test_account_id,
-            },
-        )

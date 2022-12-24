@@ -5,6 +5,10 @@ from fastapi.testclient import TestClient
 from httpx import Response
 from pytest import mark, param
 
+from tests.test_app.test_controllers.utilities.base_test_class import (
+    BaseTestClass,
+)
+
 
 def test_get_current_user(test_client: TestClient):
     response: Response = test_client.get("/user/current")
@@ -17,7 +21,7 @@ def test_get_current_user(test_client: TestClient):
     }
 
 
-class TestGetRelative:
+class TestGetRelative(BaseTestClass, http_method="GET", api_endpoint="/user/relative"):
     @mark.parametrize("test_data", (
         param(
             {
@@ -28,9 +32,9 @@ class TestGetRelative:
         ),
     ))
     def test_with_correct_id(self, test_client: TestClient, test_data: Any):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_id=test_data["id"],
+            id=test_data["id"],
         )
 
         assert response.status_code == status.HTTP_200_OK, response.text
@@ -41,9 +45,9 @@ class TestGetRelative:
         }
 
     def test_with_self_id(self, test_client: TestClient):
-        response: Response = self._make_request(
+        response: Response = self.request(
             test_client=test_client,
-            test_id=1,
+            id=1,
         )
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST, response.text
@@ -67,22 +71,10 @@ class TestGetRelative:
             id="none_id",
         ),
     ))
-    def test_failure_get_relative(self, test_client: TestClient, test_id: Any):
-        response: Response = self._make_request(
+    def test_with_wrong_id(self, test_client: TestClient, test_id: Any):
+        response: Response = self.request(
             test_client=test_client,
-            test_id=test_id,
+            id=test_id,
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-
-    def _make_request(
-        self,
-        test_client: TestClient,
-        test_id: Any,
-    ) -> Response:
-        return test_client.get(
-            url="/user/relative",
-            params={
-                "id": test_id,
-            },
-        )
