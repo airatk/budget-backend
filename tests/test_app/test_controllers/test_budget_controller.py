@@ -13,10 +13,7 @@ from tests.test_app.test_controllers.utilities.base_test_class import (
 
 class TestGetBudgets(BaseTestClass, http_method="GET", api_endpoint="/budget/list"):
     @mark.parametrize("test_type", (
-        param(
-            "personal",
-            id="correct_data",
-        ),
+        BudgetType.PERSONAL.value,
     ))
     def test_with_correct_data(
         self,
@@ -33,10 +30,7 @@ class TestGetBudgets(BaseTestClass, http_method="GET", api_endpoint="/budget/lis
         assert response.json()
 
     @mark.parametrize("test_type", (
-        param(
-            "non_existing_type",
-            id="incorrect_data",
-        ),
+        param("non_existing_type", id="wrong_data"),
     ))
     def test_with_wrong_data(
         self,
@@ -94,10 +88,7 @@ class TestGetBudget(BaseTestClass, http_method="GET", api_endpoint="/budget/item
         assert response.json() == expected_data
 
     @mark.parametrize("test_id", (
-        param(
-            999999,
-            id="non_existing_id",
-        ),
+        999999,
     ))
     def test_with_non_existing_id(
         self,
@@ -112,22 +103,10 @@ class TestGetBudget(BaseTestClass, http_method="GET", api_endpoint="/budget/item
         assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
 
     @mark.parametrize("test_id", (
-        param(
-            0,
-            id="zero_id",
-        ),
-        param(
-            -1,
-            id="negative_id",
-        ),
-        param(
-            "string",
-            id="string_id",
-        ),
-        param(
-            None,
-            id="none_id",
-        ),
+        0,
+        -1,
+        "string",
+        None,
     ))
     def test_with_wrong_id(
         self,
@@ -344,10 +323,7 @@ class TestUpdateBudget(BaseTestClass, http_method="PATCH", api_endpoint="/budget
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
     @mark.parametrize("test_id", (
-        param(
-            999999,
-            id="non_existing_id",
-        ),
+        999999,
     ))
     def test_with_non_existing_id(
         self,
@@ -362,22 +338,10 @@ class TestUpdateBudget(BaseTestClass, http_method="PATCH", api_endpoint="/budget
         assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
 
     @mark.parametrize("test_id", (
-        param(
-            0,
-            id="zero_id",
-        ),
-        param(
-            -1,
-            id="negative_id",
-        ),
-        param(
-            "string",
-            id="string_id",
-        ),
-        param(
-            None,
-            id="none_id",
-        ),
+        0,
+        -1,
+        "string",
+        None,
     ))
     def test_with_wrong_id(
         self,
@@ -394,10 +358,7 @@ class TestUpdateBudget(BaseTestClass, http_method="PATCH", api_endpoint="/budget
 
 class TestDeleteBudget(BaseTestClass, http_method="DELETE", api_endpoint="/budget/delete"):
     @mark.parametrize("test_id", (
-        param(
-            1,
-            id="correct_id",
-        ),
+        1,
     ))
     def test_with_correct_id(
         self,
@@ -413,10 +374,7 @@ class TestDeleteBudget(BaseTestClass, http_method="DELETE", api_endpoint="/budge
         assert response.json() == "Budget was deleted"
 
     @mark.parametrize("test_id", (
-        param(
-            999999,
-            id="non_existing_id",
-        ),
+        999999,
     ))
     def test_with_non_existing_id(
         self,
@@ -431,22 +389,10 @@ class TestDeleteBudget(BaseTestClass, http_method="DELETE", api_endpoint="/budge
         assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
 
     @mark.parametrize("test_id", (
-        param(
-            0,
-            id="zero_id",
-        ),
-        param(
-            -1,
-            id="negative_id",
-        ),
-        param(
-            "string",
-            id="string_id",
-        ),
-        param(
-            None,
-            id="none_id",
-        ),
+        0,
+        -1,
+        "string",
+        None,
     ))
     def test_with_wrong_id(
         self,

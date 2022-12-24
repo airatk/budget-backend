@@ -154,10 +154,7 @@ class TestUpdateAccount(BaseTestClass, http_method="PATCH", api_endpoint="/accou
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
     @mark.parametrize("test_id", (
-        param(
-            999999,
-            id="non_existing_id",
-        ),
+        999999,
     ))
     def test_with_non_existing_id(
         self,
@@ -172,22 +169,10 @@ class TestUpdateAccount(BaseTestClass, http_method="PATCH", api_endpoint="/accou
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
     @mark.parametrize("test_id", (
-        param(
-            0,
-            id="zero_id",
-        ),
-        param(
-            -1,
-            id="negative_id",
-        ),
-        param(
-            "string",
-            id="string_id",
-        ),
-        param(
-            None,
-            id="none_id",
-        ),
+        0,
+        -1,
+        "string",
+        None,
     ))
     def test_with_wrong_id(
         self,
@@ -204,10 +189,7 @@ class TestUpdateAccount(BaseTestClass, http_method="PATCH", api_endpoint="/accou
 
 class TestDeleteAccount(BaseTestClass, http_method="DELETE", api_endpoint="/account/delete"):
     @mark.parametrize("test_id", (
-        param(
-            1,
-            id="correct_id",
-        ),
+        1,
     ))
     def test_with_correct_id(
         self,
@@ -223,10 +205,7 @@ class TestDeleteAccount(BaseTestClass, http_method="DELETE", api_endpoint="/acco
         assert response.json() == "Account was deleted"
 
     @mark.parametrize("test_id", (
-        param(
-            999999,
-            id="non_existing_id",
-        ),
+        999999,
     ))
     def test_with_non_existing_id(
         self,
@@ -241,22 +220,10 @@ class TestDeleteAccount(BaseTestClass, http_method="DELETE", api_endpoint="/acco
         assert response.status_code == status.HTTP_200_OK, response.text
 
     @mark.parametrize("test_id", (
-        param(
-            0,
-            id="zero_id",
-        ),
-        param(
-            -1,
-            id="negative_id",
-        ),
-        param(
-            "string",
-            id="string_id",
-        ),
-        param(
-            None,
-            id="none_id",
-        ),
+        0,
+        -1,
+        "string",
+        None,
     ))
     def test_with_wrong_id(
         self,

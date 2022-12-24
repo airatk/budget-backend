@@ -56,27 +56,14 @@ class TestGetLastNDaysHighlight(BaseTestClass, http_method="GET", api_endpoint="
 
         assert response.status_code == status.HTTP_200_OK, response.text
         assert isinstance(response.json(), list)
-        assert len(response.json()) == test_n_days
+        assert len(response.json()) == test_n_days or 7
 
     @mark.parametrize("test_n_days", (
-        param(
-            3,
-            id="lower",
-        ),
-        param(
-            15,
-            id="greater",
-        ),
-        param(
-            "string",
-            id="string_id",
-        ),
-        param(
-            None,
-            id="with_no_id",
-        ),
+        param(3, id="lower"),
+        param(15, id="greater"),
+        param("string"),
     ))
-    def test_with_wrong_id(
+    def test_with_wrong_data(
         self,
         test_client: TestClient,
         test_n_days: Any,

@@ -54,22 +54,10 @@ class TestGetRelative(BaseTestClass, http_method="GET", api_endpoint="/user/rela
         assert response.json() == "Provided `id` belongs to the user himself"
 
     @mark.parametrize("test_id", (
-        param(
-            0,
-            id="zero_id",
-        ),
-        param(
-            -1,
-            id="negative_id",
-        ),
-        param(
-            "string",
-            id="string_id",
-        ),
-        param(
-            None,
-            id="none_id",
-        ),
+        0,
+        -1,
+        "string",
+        None,
     ))
     def test_with_wrong_id(self, test_client: TestClient, test_id: Any):
         response: Response = self.request(
