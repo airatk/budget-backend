@@ -11,8 +11,11 @@ from app.schemas.account import (
     AccountUpdateData,
 )
 from app.services import AccountService
+from app.utilities.exceptions import CouldNotAccessRecord, CouldNotFindRecord
 from models import Account, User
 from models.utilities.types import TransactionType
+
+from .utilities.callables import sum_transactions_of_given_type
 
 
 account_controller: APIRouter = APIRouter(prefix="/account", tags=["account"])
@@ -22,23 +25,19 @@ account_controller: APIRouter = APIRouter(prefix="/account", tags=["account"])
 async def get_balances(
     current_user: User = Depends(identify_user),
 ):
-    balances: list[AccountBalanceData] = []
-
-    for account in current_user.accounts:
-        account_incomes: float = sum(
-            transaction.amount for transaction in account.transactions if transaction.type == TransactionType.INCOME
-        )
-        account_outcomes: float = sum(
-            transaction.amount for transaction in account.transactions if transaction.type == TransactionType.OUTCOME
-        )
-        account_balance: AccountBalanceData = AccountBalanceData(
+    return [
+        AccountBalanceData(
             account=account.name,
-            balance=account.openning_balance + account_incomes - account_outcomes,
-        )
-
-        balances.append(account_balance)
-
-    return balances
+            balance=sum_transactions_of_given_type(
+                transactions=account.transactions,
+                transaction_type=TransactionType.INCOME,
+                initial_amount=account.openning_balance,
+            ) - sum_transactions_of_given_type(
+                transactions=account.transactions,
+                transaction_type=TransactionType.OUTCOME,
+            ),
+        ) for account in current_user.accounts
+    ]
 
 @account_controller.get("/list", response_model=list[AccountOutputData])
 async def get_accounts(
@@ -62,29 +61,39 @@ async def create_account(
 @account_controller.patch("/update", response_model=AccountOutputData)
 async def update_account(
     account_data: AccountUpdateData,
-    accaount_id: PositiveInt = Query(alias="id"),
+    account_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ):
     account_service: AccountService = AccountService(session=session)
+    account: Account | None = account_service.get_by_id(account_id)
+
+    if account is None:
+        raise CouldNotFindRecord(account_id, Account)
+
+    if account.user != current_user:
+        raise CouldNotAccessRecord(account_id, Account)
 
     return account_service.update(
-        accaount_id,
-        account_data,
-        Account.user == current_user,
+        record=account,
+        record_data=account_data,
     )
 
 @account_controller.delete("/delete", response_model=str)
 async def delete_account(
-    account_id: PositiveInt = Query(alias="id"),
+    account_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ):
     account_service: AccountService = AccountService(session=session)
+    account: Account | None = account_service.get_by_id(account_id)
 
-    account_service.delete(
-        account_id,
-        Account.user == current_user,
-    )
+    if account is None:
+        raise CouldNotFindRecord(account_id, Account)
+
+    if account.user != current_user:
+        raise CouldNotAccessRecord(account_id, Account)
+
+    account_service.delete(account)
 
     return "Account was deleted"

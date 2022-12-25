@@ -216,7 +216,7 @@ class TestDeleteAccount(ControllerMethodTestClass, http_method="DELETE", api_end
             id=test_id,
         )
 
-        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
 
     @mark.parametrize("test_id", (
         0,
