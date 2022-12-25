@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import PositiveInt
 from sqlalchemy.orm import Session
 
@@ -20,13 +20,22 @@ async def get_current_user(
 
 @user_controller.get("/relative", response_model=UserData)
 async def get_relative(
-    relative_id: PositiveInt = Query(alias="id"),
+    relative_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ):
     user_service: UserService = UserService(session=session)
 
-    return user_service.get_relative_by_id(
-        relative_id=relative_id,
-        user=current_user,
-    )
+    user: User | None = user_service.get_by_id(relative_id)
+
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+
+    if user.family != current_user.family:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    return user
