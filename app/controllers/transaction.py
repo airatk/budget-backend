@@ -12,7 +12,14 @@ from app.schemas.transaction import (
     TransactionUpdateData,
 )
 from app.services import TransactionService
+from app.utilities.exceptions import CouldNotAccessRecord, CouldNotFindRecord
 from models import Transaction, User
+
+from .utilities.constants import (
+    TRANSACTION_MAXIMAL_MONTH,
+    TRANSACTION_MINIMAL_MONTH,
+    TRANSACTION_MINIMAL_YEAR,
+)
 
 
 transaction_controller: APIRouter = APIRouter(prefix="/transaction", tags=["transaction"])
@@ -23,20 +30,15 @@ async def get_periods(
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ):
-    periods_entities: list[tuple[int, int]] = session.query(
-            Transaction.account.has(user=current_user),
-            func.DATE_PART("YEAR", Transaction.due_date),
-            func.DATE_PART("MONTH", Transaction.due_date),
-        ).\
-        distinct().\
-        all()
+    transaction_service: TransactionService = TransactionService(session=session)
+    periods_entities: list[tuple[int, int]] = transaction_service.get_transaction_periods_of_user(current_user)
 
     return [TransactionsPeriod(year=period_entities[0], month=period_entities[1]) for period_entities in periods_entities]
 
 @transaction_controller.get("/list", response_model=list[TransactionOutputData])
 async def get_transactions(
-    year: PositiveInt,
-    month: PositiveInt,
+    year: int = Query(..., ge=TRANSACTION_MINIMAL_YEAR),
+    month: int = Query(..., ge=TRANSACTION_MINIMAL_MONTH, le=TRANSACTION_MAXIMAL_MONTH),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ):
@@ -50,18 +52,22 @@ async def get_transactions(
 
 @transaction_controller.get("/item", response_model=TransactionOutputData)
 async def get_transaction(
-    transaction_id: PositiveInt = Query(alias="id"),
+    transaction_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ):
     transaction_service: TransactionService = TransactionService(session=session)
+    transaction: Transaction | None = transaction_service.get_by_id(transaction_id)
 
-    return transaction_service.get_by_id(
-        transaction_id,
-        Transaction.account.has(user=current_user),
-    )
+    if transaction is None:
+        raise CouldNotFindRecord(transaction_id, Transaction)
 
-@transaction_controller.post("/create", response_model=TransactionOutputData)
+    if transaction.account.user != current_user:
+        raise CouldNotAccessRecord(transaction_id, Transaction)
+
+    return transaction
+
+@transaction_controller.post("/create", response_model=TransactionOutputData, status_code=status.HTTP_201_CREATED)
 async def create_transaction(
     transaction_data: TransactionCreationData,
     current_user: User = Depends(identify_user),
@@ -85,32 +91,42 @@ async def create_transaction(
         record_data=transaction_data,
     )
 
-@transaction_controller.put("/update", response_model=TransactionOutputData)
+@transaction_controller.patch("/update", response_model=TransactionOutputData)
 async def update_transaction(
     transaction_data: TransactionUpdateData,
-    transaction_id: PositiveInt = Query(alias="id"),
+    transaction_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ):
     transaction_service: TransactionService = TransactionService(session=session)
+    transaction: Transaction | None = transaction_service.get_by_id(transaction_id)
+
+    if transaction is None:
+        raise CouldNotFindRecord(transaction_id, Transaction)
+
+    if transaction.account.user != current_user:
+        raise CouldNotAccessRecord(transaction_id, Transaction)
 
     return transaction_service.update(
-        transaction_id,
-        transaction_data,
-        Transaction.account(user=current_user),
+        record=transaction,
+        record_data=transaction_data,
     )
 
 @transaction_controller.delete("/delete", response_model=str)
 async def delete_transaction(
-    transaction_id: PositiveInt = Query(alias="id"),
+    transaction_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ):
     transaction_service: TransactionService = TransactionService(session=session)
+    transaction: Transaction | None = transaction_service.get_by_id(transaction_id)
 
-    transaction_service.delete(
-        transaction_id,
-        Transaction.account(user=current_user),
-    )
+    if transaction is None:
+        raise CouldNotFindRecord(transaction_id, Transaction)
 
-    return "Category was deleted"
+    if transaction.account.user != current_user:
+        raise CouldNotAccessRecord(transaction_id, Transaction)
+
+    transaction_service.delete(transaction)
+
+    return "Transaction was deleted"

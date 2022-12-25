@@ -56,5 +56,7 @@ class TestSignIn(ControllerMethodTestClass, http_method="GET", api_endpoint="/si
 
         assert response.status_code == status.HTTP_403_FORBIDDEN, response.text
         assert response.json() == {
-            "detail": "Provided creditials are wrong",
+            "detail": {
+                "message": "Provided creditials are wrong",
+            },
         }

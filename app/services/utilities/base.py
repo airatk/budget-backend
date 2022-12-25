@@ -17,14 +17,14 @@ class BaseService(Generic[Model]):
         self.session = session
 
     def get_list(self, *conditions) -> list[Model]:
-        query: Any = select(self.model_class).where(*conditions)
-
-        return self.session.scalars(query).all()
+        return self.session.scalars(
+            select(self.model_class).where(*conditions),
+        ).all()
 
     def get(self, *conditions: ColumnElement[Boolean]) -> Model | None:
-        query: Any = select(self.model_class).where(*conditions)
-
-        return self.session.scalar(query)
+        return self.session.scalar(
+            select(self.model_class).where(*conditions),
+        )
 
     def get_by_id(self, record_id: int) -> Model | None:
         return self.get(
