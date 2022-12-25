@@ -14,7 +14,7 @@ def create_token(*, user_id: int) -> str:
         algorithm=settings.JWT_ALGORITHM,
     )
 
-def decode_token(token: str) -> tuple[int | None, str | None]:
+def decode_token(token: str) -> tuple[int, str]:
     try:
         payload: dict[str, int] = decode(
             jwt=token,
@@ -22,6 +22,6 @@ def decode_token(token: str) -> tuple[int | None, str | None]:
             algorithms=[settings.JWT_ALGORITHM],
         )
     except InvalidTokenError:
-        return (None, "Token is invalid")
+        return (0, "Token is invalid")
 
-    return (payload["user_id"], None)
+    return (payload["user_id"], "")
