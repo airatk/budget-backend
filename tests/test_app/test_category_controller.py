@@ -216,6 +216,7 @@ class TestUpdateCategory(ControllerMethodTestClass, http_method="PATCH", api_end
     ):
         response: Response = self.request(
             test_client=test_client,
+            test_data={},
             id=test_id,
         )
 

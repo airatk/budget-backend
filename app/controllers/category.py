@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, status
 from pydantic import PositiveInt
 from sqlalchemy.orm import Session
 
@@ -10,6 +10,7 @@ from app.schemas.category import (
     CategoryUpdateData,
 )
 from app.services import CategoryService
+from app.utilities.exceptions import CouldNotAccessRecord, CouldNotFindRecord
 from models import Category, User
 
 
@@ -24,18 +25,22 @@ async def get_categories(
 
 @category_controller.get("/item", response_model=CategoryOutputData)
 async def get_category(
-    category_id: PositiveInt = Query(alias="id"),
+    category_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ):
     category_service: CategoryService = CategoryService(session=session)
+    category: Category | None = category_service.get_by_id(category_id)
 
-    return category_service.get_by_id(
-        category_id,
-        Category.user == current_user,
-    )
+    if category is None:
+        raise CouldNotFindRecord(category_id, Category)
 
-@category_controller.post("/create", response_model=CategoryOutputData)
+    if category.user != current_user:
+        raise CouldNotAccessRecord(category_id, Category)
+
+    return category
+
+@category_controller.post("/create", response_model=CategoryOutputData, status_code=status.HTTP_201_CREATED)
 async def create_category(
     category_data: CategoryCreationData,
     current_user: User = Depends(identify_user),
@@ -48,32 +53,42 @@ async def create_category(
         user=current_user,
     )
 
-@category_controller.put("/update", response_model=CategoryOutputData)
+@category_controller.patch("/update", response_model=CategoryOutputData)
 async def update_category(
     category_data: CategoryUpdateData,
-    category_id: PositiveInt = Query(alias="id"),
+    category_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ):
     category_service: CategoryService = CategoryService(session=session)
+    category: Category | None = category_service.get_by_id(category_id)
+
+    if category is None:
+        raise CouldNotFindRecord(category_id, Category)
+
+    if category.user != current_user:
+        raise CouldNotAccessRecord(category_id, Category)
 
     return category_service.update(
-        category_id,
-        category_data,
-        Category.user == current_user,
+        record=category,
+        record_data=category_data,
     )
 
 @category_controller.delete("/delete", response_model=str)
 async def delete_category(
-    category_id: PositiveInt = Query(alias="id"),
+    category_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ):
     category_service: CategoryService = CategoryService(session=session)
+    category: Category | None = category_service.get_by_id(category_id)
 
-    category_service.delete(
-        category_id,
-        Category.user == current_user,
-    )
+    if category is None:
+        raise CouldNotFindRecord(category_id, Category)
+
+    if category.user != current_user:
+        raise CouldNotAccessRecord(category_id, Category)
+
+    category_service.delete(category)
 
     return "Category was deleted"

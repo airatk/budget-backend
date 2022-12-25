@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 
 from app.dependencies.sessions import define_postgres_session
 from app.services import UserService
+from app.utilities.exceptions import UserUnauthorised
 from core.security import decode_token
 from models import User
-from app.utilities.exceptions import UserUnauthorised
 
 
 def identify_user(
