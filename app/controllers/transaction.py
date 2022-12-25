@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query, status
 from pydantic import PositiveInt
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
@@ -13,7 +13,7 @@ from app.schemas.transaction import (
 )
 from app.services import TransactionService
 from app.utilities.exceptions import CouldNotAccessRecord, CouldNotFindRecord
-from models import Transaction, User
+from models import Account, Category, Transaction, User
 
 from .utilities.constants import (
     TRANSACTION_MAXIMAL_MONTH,
@@ -74,16 +74,10 @@ async def create_transaction(
     session: Session = Depends(define_postgres_session),
 ):
     if not any(transaction_data.account_id == account.id for account in current_user.accounts):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You don't have an account with given `id`",
-        )
+        raise CouldNotFindRecord(transaction_data.account_id, Account)
 
     if not any(transaction_data.category_id == category.id for category in current_user.categories):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You don't have a category with given `id`",
-        )
+        raise CouldNotFindRecord(transaction_data.category_id, Category)
 
     transaction_service: TransactionService = TransactionService(session=session)
 

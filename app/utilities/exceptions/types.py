@@ -48,6 +48,14 @@ class CouldNotAccessRecords(BaseApiException):
         )
 
 
+class UserUnauthorised(BaseApiException):
+    def __init__(self, message: str):
+        super().__init__(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            message=message,
+        )
+
+
 class WrongCredentials(BaseApiException):
     def __init__(self):
         super().__init__(
@@ -56,9 +64,9 @@ class WrongCredentials(BaseApiException):
         )
 
 
-class UserUnauthorised(BaseApiException):
-    def __init__(self, message: str):
+class SelfIsNotRelative(BaseApiException):
+    def __init__(self):
         super().__init__(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            message="Provided `id` belongs to the user himself",
         )

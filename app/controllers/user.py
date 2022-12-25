@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query
 from pydantic import PositiveInt
 from sqlalchemy.orm import Session
 
@@ -6,6 +6,11 @@ from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
 from app.schemas.user import UserData
 from app.services import UserService
+from app.utilities.exceptions import (
+    CouldNotAccessRecord,
+    CouldNotFindRecord,
+    SelfIsNotRelative,
+)
 from models import User
 
 
@@ -24,18 +29,16 @@ async def get_relative(
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ):
-    user_service: UserService = UserService(session=session)
+    if relative_id == current_user.id:
+        raise SelfIsNotRelative()
 
+    user_service: UserService = UserService(session=session)
     user: User | None = user_service.get_by_id(relative_id)
 
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-        )
+        raise CouldNotFindRecord(relative_id, User)
 
     if user.family != current_user.family:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-        )
+        raise CouldNotAccessRecord(relative_id, User)
 
     return user

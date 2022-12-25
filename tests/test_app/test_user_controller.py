@@ -51,7 +51,11 @@ class TestGetRelative(ControllerMethodTestClass, http_method="GET", api_endpoint
         )
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST, response.text
-        assert response.json() == "Provided `id` belongs to the user himself"
+        assert response.json() == {
+            "detail": {
+                "message": "Provided `id` belongs to the user himself",
+            },
+        }
 
     @mark.parametrize("test_id", (
         0,
