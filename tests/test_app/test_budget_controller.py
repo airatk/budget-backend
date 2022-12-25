@@ -333,6 +333,7 @@ class TestUpdateBudget(ControllerMethodTestClass, http_method="PATCH", api_endpo
     ):
         response: Response = self.request(
             test_client=test_client,
+            test_data={},
             id=test_id,
         )
 

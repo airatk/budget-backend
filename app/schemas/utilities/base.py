@@ -4,10 +4,10 @@ from pydantic import BaseModel
 
 
 class BaseData(BaseModel):
-    ...  # noqa: WPS428, WPS604
+    """Base class for data of input & output."""
 
 
-class BaseUpdateData(BaseModel):
+class BaseUpdateData(BaseData):
     def dict(self, **keyword_arguments) -> dict[str, Any]:
         keyword_arguments["exclude_unset"] = True
 

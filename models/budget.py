@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import BigInteger, Column, Float, ForeignKey, String, Enum
+from sqlalchemy import BigInteger, Column, Enum, Float, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from .utilities.base import BaseModel
