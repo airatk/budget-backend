@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 from httpx import Response
 from pytest import mark, param
 
-from tests.test_app.test_controllers.utilities.base_test_class import (
+from tests.test_app.utilities.controller_method_test_class import (
     ControllerMethodTestClass,
 )
 
