@@ -7,13 +7,14 @@ from pytest import mark, param
 
 from models.utilities.types import BudgetType, CategoryType
 from tests.test_app.test_controllers.utilities.base_test_class import (
-    BaseTestClass,
+    ControllerMethodTestClass,
 )
 
 
-class TestGetBudgets(BaseTestClass, http_method="GET", api_endpoint="/budget/list"):
+class TestGetBudgets(ControllerMethodTestClass, http_method="GET", api_endpoint="/budget/list"):
     @mark.parametrize("test_type", (
         BudgetType.PERSONAL.value,
+        BudgetType.JOINT.value,
     ))
     def test_with_correct_data(
         self,
@@ -30,7 +31,8 @@ class TestGetBudgets(BaseTestClass, http_method="GET", api_endpoint="/budget/lis
         assert response.json()
 
     @mark.parametrize("test_type", (
-        param("non_existing_type", id="wrong_data"),
+        "non_existing_type",
+        None,
     ))
     def test_with_wrong_data(
         self,
@@ -45,7 +47,7 @@ class TestGetBudgets(BaseTestClass, http_method="GET", api_endpoint="/budget/lis
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
 
-class TestGetBudget(BaseTestClass, http_method="GET", api_endpoint="/budget/item"):
+class TestGetBudget(ControllerMethodTestClass, http_method="GET", api_endpoint="/budget/item"):
     @mark.parametrize("test_id, expected_data", (
         param(
             2,
@@ -104,7 +106,6 @@ class TestGetBudget(BaseTestClass, http_method="GET", api_endpoint="/budget/item
 
     @mark.parametrize("test_id", (
         0,
-        -1,
         "string",
         None,
     ))
@@ -121,7 +122,7 @@ class TestGetBudget(BaseTestClass, http_method="GET", api_endpoint="/budget/item
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
 
-class TestCreateBudget(BaseTestClass, http_method="POST", api_endpoint="/budget/create"):
+class TestCreateBudget(ControllerMethodTestClass, http_method="POST", api_endpoint="/budget/create"):
     @mark.parametrize("test_data, expected_data", (
         param(
             {
@@ -235,7 +236,7 @@ class TestCreateBudget(BaseTestClass, http_method="POST", api_endpoint="/budget/
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
 
-class TestUpdateBudget(BaseTestClass, http_method="PATCH", api_endpoint="/budget/update"):
+class TestUpdateBudget(ControllerMethodTestClass, http_method="PATCH", api_endpoint="/budget/update"):
     @mark.parametrize("test_id, test_data, expected_data", (
         param(
             1,
@@ -339,7 +340,6 @@ class TestUpdateBudget(BaseTestClass, http_method="PATCH", api_endpoint="/budget
 
     @mark.parametrize("test_id", (
         0,
-        -1,
         "string",
         None,
     ))
@@ -356,7 +356,7 @@ class TestUpdateBudget(BaseTestClass, http_method="PATCH", api_endpoint="/budget
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
 
-class TestDeleteBudget(BaseTestClass, http_method="DELETE", api_endpoint="/budget/delete"):
+class TestDeleteBudget(ControllerMethodTestClass, http_method="DELETE", api_endpoint="/budget/delete"):
     @mark.parametrize("test_id", (
         1,
     ))
@@ -390,7 +390,6 @@ class TestDeleteBudget(BaseTestClass, http_method="DELETE", api_endpoint="/budge
 
     @mark.parametrize("test_id", (
         0,
-        -1,
         "string",
         None,
     ))

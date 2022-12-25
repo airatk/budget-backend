@@ -7,7 +7,7 @@ from pytest import mark, param
 
 from models.utilities.types import CurrencyType
 from tests.test_app.test_controllers.utilities.base_test_class import (
-    BaseTestClass,
+    ControllerMethodTestClass,
 )
 
 
@@ -26,7 +26,7 @@ def test_get_accounts(test_client: TestClient):
     assert response.json()
 
 
-class TestCreateAccount(BaseTestClass, http_method="POST", api_endpoint="/account/create"):
+class TestCreateAccount(ControllerMethodTestClass, http_method="POST", api_endpoint="/account/create"):
     @mark.parametrize("test_data, expected_data", (
         param(
             {
@@ -88,7 +88,7 @@ class TestCreateAccount(BaseTestClass, http_method="POST", api_endpoint="/accoun
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
 
-class TestUpdateAccount(BaseTestClass, http_method="PATCH", api_endpoint="/account/update"):
+class TestUpdateAccount(ControllerMethodTestClass, http_method="PATCH", api_endpoint="/account/update"):
     @mark.parametrize("test_id, test_data, expected_data", (
         param(
             1,
@@ -170,7 +170,6 @@ class TestUpdateAccount(BaseTestClass, http_method="PATCH", api_endpoint="/accou
 
     @mark.parametrize("test_id", (
         0,
-        -1,
         "string",
         None,
     ))
@@ -187,7 +186,7 @@ class TestUpdateAccount(BaseTestClass, http_method="PATCH", api_endpoint="/accou
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
 
-class TestDeleteAccount(BaseTestClass, http_method="DELETE", api_endpoint="/account/delete"):
+class TestDeleteAccount(ControllerMethodTestClass, http_method="DELETE", api_endpoint="/account/delete"):
     @mark.parametrize("test_id", (
         1,
     ))
@@ -221,7 +220,6 @@ class TestDeleteAccount(BaseTestClass, http_method="DELETE", api_endpoint="/acco
 
     @mark.parametrize("test_id", (
         0,
-        -1,
         "string",
         None,
     ))

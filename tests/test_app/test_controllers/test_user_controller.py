@@ -6,7 +6,7 @@ from httpx import Response
 from pytest import mark, param
 
 from tests.test_app.test_controllers.utilities.base_test_class import (
-    BaseTestClass,
+    ControllerMethodTestClass,
 )
 
 
@@ -21,7 +21,7 @@ def test_get_current_user(test_client: TestClient):
     }
 
 
-class TestGetRelative(BaseTestClass, http_method="GET", api_endpoint="/user/relative"):
+class TestGetRelative(ControllerMethodTestClass, http_method="GET", api_endpoint="/user/relative"):
     @mark.parametrize("test_data", (
         param(
             {
@@ -55,7 +55,6 @@ class TestGetRelative(BaseTestClass, http_method="GET", api_endpoint="/user/rela
 
     @mark.parametrize("test_id", (
         0,
-        -1,
         "string",
         None,
     ))

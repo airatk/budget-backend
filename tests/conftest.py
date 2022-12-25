@@ -1,3 +1,5 @@
+from calendar import monthrange
+from datetime import date, datetime
 from typing import Generator
 
 from fastapi.testclient import TestClient
@@ -29,3 +31,10 @@ def test_client() -> Generator[TestClient, None, None]:
 
     with TestClient(app=api) as api_test_client:
         yield api_test_client
+
+
+@fixture
+def current_month_days_number() -> int:
+    today_date: date = datetime.today().date()
+
+    return monthrange(year=today_date.year, month=today_date.month)[1]

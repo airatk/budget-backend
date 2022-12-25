@@ -1,5 +1,3 @@
-from calendar import monthrange
-from datetime import date, datetime
 from typing import Any
 
 from fastapi import status
@@ -9,7 +7,7 @@ from pytest import mark, param
 
 from models.utilities.types import TransactionType
 from tests.test_app.test_controllers.utilities.base_test_class import (
-    BaseTestClass,
+    ControllerMethodTestClass,
 )
 
 
@@ -20,10 +18,7 @@ def test_get_summary(test_client: TestClient):
     assert isinstance(response.json(), list)
     assert len(response.json()) == 3
 
-def test_get_monthly_trend(test_client: TestClient):
-    today_date: date = datetime.today().date()
-    (_, current_month_days_number) = monthrange(year=today_date.year, month=today_date.month)
-
+def test_get_monthly_trend(test_client: TestClient, current_month_days_number: int):
     response: Response = test_client.get("/trend/current-month")
 
     assert response.status_code == status.HTTP_200_OK, response.text
@@ -31,11 +26,11 @@ def test_get_monthly_trend(test_client: TestClient):
     assert len(response.json()) == current_month_days_number
 
 
-class TestGetLastNDaysHighlight(BaseTestClass, http_method="GET", api_endpoint="/trend/last-n-days"):
+class TestGetLastNDaysHighlight(ControllerMethodTestClass, http_method="GET", api_endpoint="/trend/last-n-days"):
     @mark.parametrize("test_n_days", (
-        4,
-        None,
-        14,
+        param(4),
+        param(None, id="default"),
+        param(14),
     ))
     @mark.parametrize("test_type", (
         TransactionType.INCOME.value,

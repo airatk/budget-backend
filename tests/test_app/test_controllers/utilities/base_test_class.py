@@ -5,7 +5,7 @@ from httpx import Response
 from httpx._client import USE_CLIENT_DEFAULT  # noqa: WPS436
 
 
-class BaseTestClass:
+class ControllerMethodTestClass:
     http_method: str
     api_endpoint: str
 
@@ -29,7 +29,7 @@ class BaseTestClass:
         return test_client.request(
             method=self.http_method,
             url=self.api_endpoint,
-            json=test_data or None,
+            json=test_data,
             params=query_parameters or None,
             auth=test_credentials or USE_CLIENT_DEFAULT,
         )

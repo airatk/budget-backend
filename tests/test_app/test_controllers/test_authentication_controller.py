@@ -5,11 +5,11 @@ from pytest import mark, param
 
 from core.security import create_token
 from tests.test_app.test_controllers.utilities.base_test_class import (
-    BaseTestClass,
+    ControllerMethodTestClass,
 )
 
 
-class TestSignIn(BaseTestClass, http_method="GET", api_endpoint="/sign-in"):
+class TestSignIn(ControllerMethodTestClass, http_method="GET", api_endpoint="/sign-in"):
     @mark.parametrize("test_credentials, expected_token", (
         param(
             ("test-user", "test-password"),

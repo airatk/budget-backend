@@ -7,7 +7,7 @@ from pytest import mark, param
 
 from models.utilities.types import CategoryType
 from tests.test_app.test_controllers.utilities.base_test_class import (
-    BaseTestClass,
+    ControllerMethodTestClass,
 )
 
 
@@ -19,7 +19,7 @@ def test_get_categories(test_client: TestClient):
     assert response.json()
 
 
-class TestGetCategory(BaseTestClass, http_method="GET", api_endpoint="/category/item"):
+class TestGetCategory(ControllerMethodTestClass, http_method="GET", api_endpoint="/category/item"):
     @mark.parametrize("test_id, expected_data", (
         param(
             1,
@@ -64,7 +64,6 @@ class TestGetCategory(BaseTestClass, http_method="GET", api_endpoint="/category/
 
     @mark.parametrize("test_id", (
         0,
-        -1,
         "string",
         None,
     ))
@@ -81,7 +80,7 @@ class TestGetCategory(BaseTestClass, http_method="GET", api_endpoint="/category/
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
 
-class TestCreateCategory(BaseTestClass, http_method="POST", api_endpoint="/category/create"):
+class TestCreateCategory(ControllerMethodTestClass, http_method="POST", api_endpoint="/category/create"):
     @mark.parametrize("test_data, expected_data", (
         param(
             {
@@ -143,7 +142,7 @@ class TestCreateCategory(BaseTestClass, http_method="POST", api_endpoint="/categ
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
 
-class TestUpdateAccount(BaseTestClass, http_method="PATCH", api_endpoint="/category/update"):
+class TestUpdateCategory(ControllerMethodTestClass, http_method="PATCH", api_endpoint="/category/update"):
     @mark.parametrize("test_id, test_data, expected_data", (
         param(
             1,
@@ -224,7 +223,6 @@ class TestUpdateAccount(BaseTestClass, http_method="PATCH", api_endpoint="/categ
 
     @mark.parametrize("test_id", (
         0,
-        -1,
         "string",
         None,
     ))
@@ -241,7 +239,7 @@ class TestUpdateAccount(BaseTestClass, http_method="PATCH", api_endpoint="/categ
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
 
-class TestDeleteCategory(BaseTestClass, http_method="DELETE", api_endpoint="/category/delete"):
+class TestDeleteCategory(ControllerMethodTestClass, http_method="DELETE", api_endpoint="/category/delete"):
     @mark.parametrize("test_id", (
         1,
     ))
@@ -256,7 +254,7 @@ class TestDeleteCategory(BaseTestClass, http_method="DELETE", api_endpoint="/cat
         )
 
         assert response.status_code == status.HTTP_200_OK, response.text
-        assert response.json() == "Budget was deleted"
+        assert response.json() == "Category was deleted"
 
     @mark.parametrize("test_id", (
         999999,
@@ -275,7 +273,6 @@ class TestDeleteCategory(BaseTestClass, http_method="DELETE", api_endpoint="/cat
 
     @mark.parametrize("test_id", (
         0,
-        -1,
         "string",
         None,
     ))
