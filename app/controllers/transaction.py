@@ -106,7 +106,7 @@ async def update_transaction(
         record_data=transaction_data,
     )
 
-@transaction_controller.delete("/delete", response_model=str)
+@transaction_controller.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_transaction(
     transaction_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
@@ -122,5 +122,3 @@ async def delete_transaction(
         raise CouldNotAccessRecord(transaction_id, Transaction)
 
     transaction_service.delete(transaction)
-
-    return "Transaction was deleted"

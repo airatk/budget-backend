@@ -200,8 +200,7 @@ class TestDeleteAccount(ControllerMethodTestClass, http_method="DELETE", api_end
             id=test_id,
         )
 
-        assert response.status_code == status.HTTP_200_OK, response.text
-        assert response.json() == "Account was deleted"
+        assert response.status_code == status.HTTP_204_NO_CONTENT, response.text
 
     @mark.parametrize("test_id", (
         999999,

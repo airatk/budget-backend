@@ -79,7 +79,7 @@ async def update_account(
         record_data=account_data,
     )
 
-@account_controller.delete("/delete", response_model=str)
+@account_controller.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_account(
     account_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
@@ -95,5 +95,3 @@ async def delete_account(
         raise CouldNotAccessRecord(account_id, Account)
 
     account_service.delete(account)
-
-    return "Account was deleted"

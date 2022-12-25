@@ -74,7 +74,7 @@ async def update_category(
         record_data=category_data,
     )
 
-@category_controller.delete("/delete", response_model=str)
+@category_controller.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_category(
     category_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
@@ -90,5 +90,3 @@ async def delete_category(
         raise CouldNotAccessRecord(category_id, Category)
 
     category_service.delete(category)
-
-    return "Category was deleted"

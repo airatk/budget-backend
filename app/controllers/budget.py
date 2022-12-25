@@ -97,7 +97,7 @@ async def update_budget(
         **relationship_attributes,
     )
 
-@budget_controller.delete("/delete", response_model=str)
+@budget_controller.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_budget(
     budget_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
@@ -113,5 +113,3 @@ async def delete_budget(
         raise CouldNotAccessRecord(budget_id, Budget)
 
     budget_service.delete(budget)
-
-    return "Budget was deleted"
