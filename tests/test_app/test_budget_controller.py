@@ -14,7 +14,7 @@ from tests.test_app.utilities.controller_method_test_class import (
 class TestGetBudgets(ControllerMethodTestClass, http_method="GET", api_endpoint="/budget/list"):
     @mark.parametrize("test_type, expected_items_number", (
         param(BudgetType.PERSONAL.value, 1),
-        param(BudgetType.JOINT.value, 2),
+        param(BudgetType.JOINT.value, 1),
     ))
     def test_with_correct_data(
         self,
@@ -54,7 +54,7 @@ class TestGetBudget(ControllerMethodTestClass, http_method="GET", api_endpoint="
             2,
             {
                 "id": 2,
-                "name": "Budget 2",
+                "name": "Budget 1",
                 "type": BudgetType.JOINT.value,
                 "planned_outcomes": 200000,
                 "categories": [
@@ -90,51 +90,64 @@ class TestGetBudget(ControllerMethodTestClass, http_method="GET", api_endpoint="
         assert isinstance(response.json(), dict)
         assert response.json() == expected_data
 
-    @mark.parametrize("test_id", (
-        999999,
-    ))
-    def test_with_non_existing_id(
-        self,
-        test_client: TestClient,
-        test_id: int,
-    ):
-        response: Response = self.request(
-            test_client=test_client,
-            id=test_id,
-        )
-
-        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
-
-    @mark.parametrize("test_id", (
-        0,
-        "string",
-        None,
+    @mark.parametrize("test_id, expected_status_code", (
+        param(
+            999999,
+            status.HTTP_404_NOT_FOUND,
+            id="non_existing",
+        ),
+        param(
+            3,
+            status.HTTP_403_FORBIDDEN,
+            id="forbidden_id",
+        ),
+        param(
+            4,
+            status.HTTP_403_FORBIDDEN,
+            id="forbidden_id",
+        ),
+        param(
+            0,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
+        param(
+            "string",
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
+        param(
+            None,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
     ))
     def test_with_wrong_id(
         self,
         test_client: TestClient,
         test_id: Any,
+        expected_status_code: int,
     ):
         response: Response = self.request(
             test_client=test_client,
             id=test_id,
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
+        assert response.status_code == expected_status_code, response.text
 
 
 class TestCreateBudget(ControllerMethodTestClass, http_method="POST", api_endpoint="/budget/create"):
     @mark.parametrize("test_data, expected_data", (
         param(
             {
-                "name": "Budget 3",
+                "name": "Budget 5",
                 "planned_outcomes": 200000,
                 "type": BudgetType.PERSONAL.value,
                 "category_ids": [1],
             },
             {
-                "id": 3,
-                "name": "Budget 3",
+                "id": 5,
+                "name": "Budget 5",
                 "type": BudgetType.PERSONAL.value,
                 "planned_outcomes": 200000,
                 "categories": [
@@ -146,18 +159,18 @@ class TestCreateBudget(ControllerMethodTestClass, http_method="POST", api_endpoi
                     },
                 ],
             },
-            id="budget_3",
+            id="budget_5",
         ),
         param(
             {
-                "name": "Budget 4",
+                "name": "Budget 6",
                 "planned_outcomes": 200000,
                 "type": BudgetType.JOINT.value,
                 "category_ids": [1],
             },
             {
-                "id": 4,
-                "name": "Budget 4",
+                "id": 6,
+                "name": "Budget 6",
                 "type": BudgetType.JOINT.value,
                 "planned_outcomes": 200000,
                 "categories": [
@@ -169,7 +182,7 @@ class TestCreateBudget(ControllerMethodTestClass, http_method="POST", api_endpoi
                     },
                 ],
             },
-            id="budget_4",
+            id="budget_6",
         ),
     ))
     def test_with_correct_data(
@@ -235,6 +248,29 @@ class TestCreateBudget(ControllerMethodTestClass, http_method="POST", api_endpoi
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
+
+    @mark.parametrize("test_data", (
+        param(
+            {
+                "name": "Budget 5",
+                "planned_outcomes": 200000,
+                "type": BudgetType.PERSONAL.value,
+                "category_ids": [5],
+            },
+            id="wrong_category_ids",
+        ),
+    ))
+    def test_with_wrong_ids(
+        self,
+        test_client: TestClient,
+        test_data: dict[str, Any],
+    ):
+        response: Response = self.request(
+            test_client=test_client,
+            test_data=test_data,
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST, response.text
 
 
 class TestUpdateBudget(ControllerMethodTestClass, http_method="PATCH", api_endpoint="/budget/update"):
@@ -324,13 +360,61 @@ class TestUpdateBudget(ControllerMethodTestClass, http_method="PATCH", api_endpo
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
-    @mark.parametrize("test_id", (
-        999999,
+    @mark.parametrize("test_id, test_data", (
+        param(
+            1,
+            {
+                "category_ids": [5],
+            },
+            id="wrong_category_ids",
+        ),
     ))
-    def test_with_non_existing_id(
+    def test_with_wrong_ids(
         self,
         test_client: TestClient,
         test_id: int,
+        test_data: dict[str, Any],
+    ):
+        response: Response = self.request(
+            test_client=test_client,
+            test_data=test_data,
+            id=test_id,
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST, response.text
+
+    @mark.parametrize("test_id, expected_status_code", (
+        param(
+            999999,
+            status.HTTP_404_NOT_FOUND,
+            id="non_existing",
+        ),
+        param(
+            3,
+            status.HTTP_403_FORBIDDEN,
+            id="forbidden_id",
+        ),
+        param(
+            0,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
+        param(
+            "string",
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
+        param(
+            None,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
+    ))
+    def test_with_wrong_id(
+        self,
+        test_client: TestClient,
+        test_id: Any,
+        expected_status_code: int,
     ):
         response: Response = self.request(
             test_client=test_client,
@@ -338,24 +422,7 @@ class TestUpdateBudget(ControllerMethodTestClass, http_method="PATCH", api_endpo
             id=test_id,
         )
 
-        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
-
-    @mark.parametrize("test_id", (
-        0,
-        "string",
-        None,
-    ))
-    def test_with_wrong_id(
-        self,
-        test_client: TestClient,
-        test_id: Any,
-    ):
-        response: Response = self.request(
-            test_client=test_client,
-            id=test_id,
-        )
-
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
+        assert response.status_code == expected_status_code, response.text
 
 
 class TestDeleteBudget(ControllerMethodTestClass, http_method="DELETE", api_endpoint="/budget/delete"):
@@ -374,34 +441,42 @@ class TestDeleteBudget(ControllerMethodTestClass, http_method="DELETE", api_endp
 
         assert response.status_code == status.HTTP_204_NO_CONTENT, response.text
 
-    @mark.parametrize("test_id", (
-        999999,
-    ))
-    def test_with_non_existing_id(
-        self,
-        test_client: TestClient,
-        test_id: int,
-    ):
-        response: Response = self.request(
-            test_client=test_client,
-            id=test_id,
-        )
-
-        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
-
-    @mark.parametrize("test_id", (
-        0,
-        "string",
-        None,
+    @mark.parametrize("test_id, expected_status_code", (
+        param(
+            999999,
+            status.HTTP_404_NOT_FOUND,
+            id="non_existing",
+        ),
+        param(
+            3,
+            status.HTTP_403_FORBIDDEN,
+            id="forbidden_id",
+        ),
+        param(
+            0,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
+        param(
+            "string",
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
+        param(
+            None,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
     ))
     def test_with_wrong_id(
         self,
         test_client: TestClient,
         test_id: Any,
+        expected_status_code: int,
     ):
         response: Response = self.request(
             test_client=test_client,
             id=test_id,
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
+        assert response.status_code == expected_status_code, response.text

@@ -10,5 +10,11 @@
         "family_id": 1,
         "username": "family-member",
         "password": "test-password"
+    },
+    {
+        "id": 3,
+        "family_id": null,
+        "username": "not-family-member",
+        "password": "test-password"
     }
 ]

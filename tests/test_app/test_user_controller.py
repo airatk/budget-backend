@@ -57,15 +57,42 @@ class TestGetRelative(ControllerMethodTestClass, http_method="GET", api_endpoint
             },
         }
 
-    @mark.parametrize("test_id", (
-        0,
-        "string",
-        None,
+    @mark.parametrize("test_id, expected_status_code", (
+        param(
+            999999,
+            status.HTTP_404_NOT_FOUND,
+            id="non_existing",
+        ),
+        param(
+            3,
+            status.HTTP_403_FORBIDDEN,
+            id="forbidden_id",
+        ),
+        param(
+            0,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
+        param(
+            "string",
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
+        param(
+            None,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
     ))
-    def test_with_wrong_id(self, test_client: TestClient, test_id: Any):
+    def test_with_wrong_id(
+        self,
+        test_client: TestClient,
+        test_id: Any,
+        expected_status_code: int,
+    ):
         response: Response = self.request(
             test_client=test_client,
             id=test_id,
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == expected_status_code, response.text

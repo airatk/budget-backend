@@ -153,37 +153,46 @@ class TestUpdateAccount(ControllerMethodTestClass, http_method="PATCH", api_endp
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
-    @mark.parametrize("test_id", (
-        999999,
-    ))
-    def test_with_non_existing_id(
-        self,
-        test_client: TestClient,
-        test_id: int,
-    ):
-        response: Response = self.request(
-            test_client=test_client,
-            id=test_id,
-        )
-
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
-
-    @mark.parametrize("test_id", (
-        0,
-        "string",
-        None,
+    @mark.parametrize("test_id, expected_status_code", (
+        param(
+            999999,
+            status.HTTP_404_NOT_FOUND,
+            id="non_existing",
+        ),
+        param(
+            4,
+            status.HTTP_403_FORBIDDEN,
+            id="forbidden_id",
+        ),
+        param(
+            0,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
+        param(
+            "string",
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
+        param(
+            None,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
     ))
     def test_with_wrong_id(
         self,
         test_client: TestClient,
         test_id: Any,
+        expected_status_code: int,
     ):
         response: Response = self.request(
             test_client=test_client,
+            test_data={},
             id=test_id,
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
+        assert response.status_code == expected_status_code, response.text
 
 
 class TestDeleteAccount(ControllerMethodTestClass, http_method="DELETE", api_endpoint="/account/delete"):
@@ -202,34 +211,42 @@ class TestDeleteAccount(ControllerMethodTestClass, http_method="DELETE", api_end
 
         assert response.status_code == status.HTTP_204_NO_CONTENT, response.text
 
-    @mark.parametrize("test_id", (
-        999999,
-    ))
-    def test_with_non_existing_id(
-        self,
-        test_client: TestClient,
-        test_id: int,
-    ):
-        response: Response = self.request(
-            test_client=test_client,
-            id=test_id,
-        )
-
-        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
-
-    @mark.parametrize("test_id", (
-        0,
-        "string",
-        None,
+    @mark.parametrize("test_id, expected_status_code", (
+        param(
+            999999,
+            status.HTTP_404_NOT_FOUND,
+            id="non_existing",
+        ),
+        param(
+            4,
+            status.HTTP_403_FORBIDDEN,
+            id="forbidden_id",
+        ),
+        param(
+            0,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
+        param(
+            "string",
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
+        param(
+            None,
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_id",
+        ),
     ))
     def test_with_wrong_id(
         self,
         test_client: TestClient,
         test_id: Any,
+        expected_status_code: int,
     ):
         response: Response = self.request(
             test_client=test_client,
             id=test_id,
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
+        assert response.status_code == expected_status_code, response.text

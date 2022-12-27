@@ -28,5 +28,15 @@
         "due_time": "10:40",
         "amount": 400,
         "note": "Note"
+    },
+    {
+        "id": 4,
+        "account_id": 4,
+        "category_id": 5,
+        "type": "Transfer",
+        "due_date": "2022-12-12",
+        "due_time": "10:40",
+        "amount": 400,
+        "note": "Note"
     }
 ]

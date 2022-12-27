@@ -32,10 +32,14 @@ async def get_budgets(
     budget_service: BudgetService = BudgetService(session=session)
 
     if budget_type is BudgetType.PERSONAL:
-        return current_user.budgets
+        return budget_service.get_list(
+            Budget.type == budget_type,
+            Budget.user == current_user,
+        )
 
     if budget_type is BudgetType.JOINT:
         return budget_service.get_list(
+            Budget.type == budget_type,
             or_(
                 Budget.user == current_user,
                 Budget.user.has(family=current_user.family),

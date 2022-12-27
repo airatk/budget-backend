@@ -9,7 +9,21 @@
     {
         "id": 2,
         "user_id": 2,
+        "name": "Budget 1",
+        "type": "joint",
+        "planned_outcomes": 200000
+    },
+    {
+        "id": 3,
+        "user_id": 2,
         "name": "Budget 2",
+        "type": "personal",
+        "planned_outcomes": 200000
+    },
+    {
+        "id": 4,
+        "user_id": 3,
+        "name": "Budget 1",
         "type": "joint",
         "planned_outcomes": 200000
     }
