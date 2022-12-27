@@ -24,7 +24,7 @@ account_controller: APIRouter = APIRouter(prefix="/account", tags=["account"])
 @account_controller.get("/balances", response_model=list[AccountBalanceData])
 async def get_balances(
     current_user: User = Depends(identify_user),
-):
+) -> list[AccountBalanceData]:
     return [
         AccountBalanceData(
             account=account.name,
@@ -42,7 +42,7 @@ async def get_balances(
 @account_controller.get("/list", response_model=list[AccountOutputData])
 async def get_accounts(
     current_user: User = Depends(identify_user),
-):
+) -> list[Account]:
     return current_user.accounts
 
 @account_controller.post("/create", response_model=AccountOutputData, status_code=status.HTTP_201_CREATED)
@@ -50,7 +50,7 @@ async def create_account(
     account_data: AccountCreationData,
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> Account:
     account_service: AccountService = AccountService(session=session)
 
     return account_service.create(
@@ -64,7 +64,7 @@ async def update_account(
     account_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> Account:
     account_service: AccountService = AccountService(session=session)
     account: Account | None = account_service.get_by_id(account_id)
 

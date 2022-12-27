@@ -16,9 +16,9 @@ from app.utilities.exceptions import CouldNotAccessRecord, CouldNotFindRecord
 from models import Account, Category, Transaction, User
 
 from .utilities.constants import (
-    TRANSACTION_MAXIMAL_MONTH,
-    TRANSACTION_MINIMAL_MONTH,
-    TRANSACTION_MINIMAL_YEAR,
+    MAX_TRANSACTION_MONTH,
+    MIN_TRANSACTION_MONTH,
+    MIN_TRANSACTION_YEAR,
 )
 
 
@@ -29,19 +29,19 @@ transaction_controller: APIRouter = APIRouter(prefix="/transaction", tags=["tran
 async def get_periods(
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> list[TransactionsPeriod]:
     transaction_service: TransactionService = TransactionService(session=session)
-    periods_entities: list[tuple[int, int]] = transaction_service.get_transaction_periods_of_user(current_user)
+    periods_entities: list[tuple[int, int]] = transaction_service.get_user_transaction_periods(current_user)
 
-    return [TransactionsPeriod(year=period_entities[0], month=period_entities[1]) for period_entities in periods_entities]
+    return [TransactionsPeriod(year=year, month=month) for (year, month) in periods_entities]
 
 @transaction_controller.get("/list", response_model=list[TransactionOutputData])
 async def get_transactions(
-    year: int = Query(..., ge=TRANSACTION_MINIMAL_YEAR),
-    month: int = Query(..., ge=TRANSACTION_MINIMAL_MONTH, le=TRANSACTION_MAXIMAL_MONTH),
+    year: int = Query(..., ge=MIN_TRANSACTION_YEAR),
+    month: int = Query(..., ge=MIN_TRANSACTION_MONTH, le=MAX_TRANSACTION_MONTH),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> list[Transaction]:
     transaction_service: TransactionService = TransactionService(session=session)
 
     return transaction_service.get_list(
@@ -55,7 +55,7 @@ async def get_transaction(
     transaction_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> Transaction:
     transaction_service: TransactionService = TransactionService(session=session)
     transaction: Transaction | None = transaction_service.get_by_id(transaction_id)
 
@@ -72,7 +72,7 @@ async def create_transaction(
     transaction_data: TransactionCreationData,
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> Transaction:
     if not any(transaction_data.account_id == account.id for account in current_user.accounts):
         raise CouldNotFindRecord(transaction_data.account_id, Account)
 
@@ -91,7 +91,7 @@ async def update_transaction(
     transaction_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> Transaction:
     transaction_service: TransactionService = TransactionService(session=session)
     transaction: Transaction | None = transaction_service.get_by_id(transaction_id)
 

@@ -27,9 +27,9 @@ coverage-erased:
 	coverage erase
 
 
-.PHONY: new-migration
-new-migration:
-	alembic revision --autogenerate -m ${message}
+.PHONY: migration
+migration:
+	alembic revision --autogenerate -m "${message}"
 
 .PHONY: migrated
 migrated:

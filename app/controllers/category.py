@@ -20,7 +20,7 @@ category_controller: APIRouter = APIRouter(prefix="/category", tags=["category"]
 @category_controller.get("/list", response_model=list[CategoryOutputData])
 async def get_categories(
     current_user: User = Depends(identify_user),
-):
+) -> list[Category]:
     return current_user.categories
 
 @category_controller.get("/item", response_model=CategoryOutputData)
@@ -28,7 +28,7 @@ async def get_category(
     category_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> Category:
     category_service: CategoryService = CategoryService(session=session)
     category: Category | None = category_service.get_by_id(category_id)
 
@@ -45,7 +45,7 @@ async def create_category(
     category_data: CategoryCreationData,
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> Category:
     category_service: CategoryService = CategoryService(session=session)
 
     return category_service.create(
@@ -59,7 +59,7 @@ async def update_category(
     category_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> Category:
     category_service: CategoryService = CategoryService(session=session)
     category: Category | None = category_service.get_by_id(category_id)
 

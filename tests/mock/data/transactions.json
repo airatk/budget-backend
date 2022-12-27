@@ -6,7 +6,7 @@
         "type": "Income",
         "due_date": "2022-12-12",
         "due_time": "10:40",
-        "amount": 100,
+        "amount": 300,
         "note": "Note"
     },
     {
@@ -16,7 +16,7 @@
         "type": "Outcome",
         "due_date": "2022-12-12",
         "due_time": "10:40",
-        "amount": 100,
+        "amount": 200,
         "note": "Note"
     },
     {
@@ -26,7 +26,7 @@
         "type": "Transfer",
         "due_date": "2022-12-12",
         "due_time": "10:40",
-        "amount": 100,
+        "amount": 400,
         "note": "Note"
     }
 ]

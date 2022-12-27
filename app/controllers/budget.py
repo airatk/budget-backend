@@ -2,6 +2,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, Query, status
 from pydantic import PositiveInt
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.dependencies.sessions import define_postgres_session
@@ -26,22 +27,37 @@ budget_controller: APIRouter = APIRouter(prefix="/budget", tags=["budget"])
 async def get_budgets(
     budget_type: BudgetType = Query(..., alias="type"),
     current_user: User = Depends(identify_user),
-):
-    return [budget for budget in current_user.budgets if budget.type == budget_type]
+    session: Session = Depends(define_postgres_session),
+) -> list[Budget]:
+    budget_service: BudgetService = BudgetService(session=session)
+
+    if budget_type is BudgetType.PERSONAL:
+        return current_user.budgets
+
+    if budget_type is BudgetType.JOINT:
+        return budget_service.get_list(
+            or_(
+                Budget.user == current_user,
+                Budget.user.has(family=current_user.family),
+            ),
+        )
 
 @budget_controller.get("/item", response_model=BudgetOutputData)
 async def get_budget(
     budget_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> Budget:
     budget_service: BudgetService = BudgetService(session=session)
     budget: Budget | None = budget_service.get_by_id(budget_id)
 
     if budget is None:
         raise CouldNotFindRecord(budget_id, Budget)
 
-    if budget.user != current_user:
+    if budget.type is BudgetType.PERSONAL and budget.user != current_user:
+        raise CouldNotAccessRecord(budget_id, Budget)
+
+    if budget.type is BudgetType.JOINT and budget.user not in current_user.family.members:
         raise CouldNotAccessRecord(budget_id, Budget)
 
     return budget
@@ -51,7 +67,7 @@ async def create_budget(
     budget_data: BudgetCreationData,
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> Budget:
     categories: list[Category] = get_validated_user_categories_by_ids(
         category_ids=budget_data.category_ids,
         user=current_user,
@@ -72,7 +88,7 @@ async def update_budget(
     budget_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> Budget:
     budget_service: BudgetService = BudgetService(session=session)
     budget: Budget | None = budget_service.get_by_id(budget_id)
 

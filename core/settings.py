@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     POSTGRES_URL: PostgresDsn | None
 
     @validator("POSTGRES_URL", pre=True)
-    def assemble_postgres_dsn(cls, value: str | None, values: dict[str, Any]) -> str:  # noqa: N805, WPS110
+    def assemble_postgres_dsn(cls, value: Any, values: dict[str, Any]) -> str:
         if isinstance(value, str):
             return value
 

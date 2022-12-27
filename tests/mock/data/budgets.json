@@ -3,14 +3,14 @@
         "id": 1,
         "user_id": 1,
         "name": "Budget 1",
-        "type": "joint",
+        "type": "personal",
         "planned_outcomes": 100000
     },
     {
         "id": 2,
-        "user_id": 1,
+        "user_id": 2,
         "name": "Budget 2",
-        "type": "personal",
+        "type": "joint",
         "planned_outcomes": 200000
     }
 ]

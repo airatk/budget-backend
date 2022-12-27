@@ -12,14 +12,15 @@ from tests.test_app.utilities.controller_method_test_class import (
 
 
 class TestGetBudgets(ControllerMethodTestClass, http_method="GET", api_endpoint="/budget/list"):
-    @mark.parametrize("test_type", (
-        BudgetType.PERSONAL.value,
-        BudgetType.JOINT.value,
+    @mark.parametrize("test_type, expected_items_number", (
+        param(BudgetType.PERSONAL.value, 1),
+        param(BudgetType.JOINT.value, 2),
     ))
     def test_with_correct_data(
         self,
         test_client: TestClient,
         test_type: Any,
+        expected_items_number: int,
     ):
         response: Response = self.request(
             test_client=test_client,
@@ -28,7 +29,7 @@ class TestGetBudgets(ControllerMethodTestClass, http_method="GET", api_endpoint=
 
         assert response.status_code == status.HTTP_200_OK, response.text
         assert isinstance(response.json(), list)
-        assert response.json()
+        assert len(response.json()) == expected_items_number
 
     @mark.parametrize("test_type", (
         "non_existing_type",
@@ -54,7 +55,7 @@ class TestGetBudget(ControllerMethodTestClass, http_method="GET", api_endpoint="
             {
                 "id": 2,
                 "name": "Budget 2",
-                "type": BudgetType.PERSONAL.value,
+                "type": BudgetType.JOINT.value,
                 "planned_outcomes": 200000,
                 "categories": [
                     {

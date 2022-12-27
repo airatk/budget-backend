@@ -15,7 +15,7 @@ from .mock.dependencies import define_test_postgres_session, identify_test_user
 
 
 @fixture(scope="module", autouse=True)
-def manage_test_database():
+def manage_test_database() -> Generator[None, None, None]:
     BaseModel.metadata.create_all(bind=test_postgres_engine)
     fill_up_test_database()
 

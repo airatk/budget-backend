@@ -1,6 +1,7 @@
 from datetime import date
+from typing import Any
 
-from pydantic import Field, NonNegativeFloat, NonPositiveFloat, PositiveInt
+from pydantic import Field, NonNegativeFloat, PositiveInt, validator
 
 from models.account import CurrencyType
 from models.utilities.types import SummaryPeriodType
@@ -31,9 +32,13 @@ class AccountBalanceData(BaseData):
 
 class PeriodSummaryData(BaseData):
     period: SummaryPeriodType
-    balance: float = 0
     incomes: NonNegativeFloat
-    outcomes: NonPositiveFloat
+    outcomes: NonNegativeFloat
+    balance: float = 0
+
+    @validator("balance", pre=True)
+    def calculate_balance(cls, value: Any, values: dict[str, Any]) -> float:
+        return value or (values["incomes"] - values["outcomes"])
 
 class DailyHighlightData(BaseData):
     date: date
@@ -41,5 +46,5 @@ class DailyHighlightData(BaseData):
 
 class TrendPointData(BaseData):
     date: date
-    current_month_amount: NonNegativeFloat
+    current_amount: NonNegativeFloat
     average_amount: NonNegativeFloat

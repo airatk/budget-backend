@@ -11,7 +11,7 @@ class BaseModel:
     metadata: MetaData
 
     @declared_attr
-    def __tablename__(cls):  # noqa: N805
+    def __tablename__(cls) -> str:
         pre_snake_case_name: str = sub("([A-Z]+)", r" \1", cls.__name__)
         pre_snake_case_name = sub("([A-Z][a-z]+)", r" \1", pre_snake_case_name)
 

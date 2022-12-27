@@ -20,7 +20,7 @@ user_controller: APIRouter = APIRouter(prefix="/user", tags=["user"])
 @user_controller.get("/current", response_model=UserData)
 async def get_current_user(
     current_user: User = Depends(identify_user),
-):
+) -> User:
     return current_user
 
 @user_controller.get("/relative", response_model=UserData)
@@ -28,7 +28,7 @@ async def get_relative(
     relative_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> User:
     if relative_id == current_user.id:
         raise SelfIsNotRelative()
 

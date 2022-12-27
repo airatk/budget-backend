@@ -79,7 +79,7 @@ class TestGetTransaction(ControllerMethodTestClass, http_method="GET", api_endpo
                 "type": TransactionType.INCOME.value,
                 "due_date": "2022-12-12",
                 "due_time": "10:40:00",
-                "amount": 100,
+                "amount": 300,
                 "note": "Note",
             },
             id="transaction_1",

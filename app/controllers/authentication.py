@@ -17,7 +17,7 @@ authentication_controller: APIRouter = APIRouter(tags=["authentication"])
 async def sign_in(
     credentials: HTTPBasicCredentials = Depends(HTTPBasic()),
     session: Session = Depends(define_postgres_session),
-):
+) -> AuthenticationData:
     user_service: UserService = UserService(session=session)
     user: User | None = user_service.get_by_credentials(
         username=credentials.username,
