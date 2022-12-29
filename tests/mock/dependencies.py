@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.dependencies.sessions import define_postgres_session
-from models import User
+from core.databases.models import User
 
 from .databases import TestPostgresSession
 

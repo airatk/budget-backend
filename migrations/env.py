@@ -5,8 +5,8 @@ from alembic.config import Config
 from sqlalchemy import MetaData, create_engine, pool
 from sqlalchemy.engine import Engine
 
+from core.databases.models.utilities.base import BaseModel
 from core.settings import settings
-from models.utilities.base import BaseModel
 
 
 # Alembic Config object to access the values within

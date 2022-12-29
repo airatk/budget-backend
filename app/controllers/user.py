@@ -5,13 +5,13 @@ from sqlalchemy.orm import Session
 from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
 from app.schemas.user import UserData
-from app.services import UserService
-from app.utilities.exceptions import (
+from app.utilities.exceptions.records import (
     CouldNotAccessRecord,
     CouldNotFindRecord,
-    SelfIsNotRelative,
 )
-from models import User
+from app.utilities.exceptions.users import SelfIsNotRelative
+from core.databases.models import User
+from core.databases.services import UserService
 
 
 user_controller: APIRouter = APIRouter(prefix="/user", tags=["user"])

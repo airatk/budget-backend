@@ -4,8 +4,7 @@ from sqlalchemy import Boolean, select
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import ColumnElement
 
-from app.schemas.utilities.base import BaseData, BaseUpdateData
-from models.utilities.base import BaseModel
+from core.databases.models.utilities.base import BaseModel
 
 
 Model = TypeVar("Model", bound=BaseModel)
@@ -31,9 +30,10 @@ class BaseService(Generic[Model]):
             self.model_class.id == record_id,
         )
 
-    def create(self, record_data: BaseData, **additional_attributes: Any) -> Model:
-        record_data_dict: dict[str, Any] = record_data.dict() | additional_attributes
-        record: Model = self.model_class(**record_data_dict)
+    def create(self, record_data: dict[str, Any], **additional_attributes: Any) -> Model:
+        record_data |= additional_attributes
+
+        record: Model = self.model_class(**record_data)
 
         self.session.add(record)
         self.session.commit()
@@ -41,10 +41,10 @@ class BaseService(Generic[Model]):
 
         return record
 
-    def update(self, record: Model, record_data: BaseUpdateData, **additional_attributes: Any) -> Model:
-        record_data_dict: dict[str, Any] = record_data.dict() | additional_attributes
+    def update(self, record: Model, record_data: dict[str, Any], **additional_attributes: Any) -> Model:
+        record_data |= additional_attributes
 
-        for (field, datum) in record_data_dict.items():
+        for (field, datum) in record_data.items():
             setattr(record, field, datum)
 
         self.session.add(record)

@@ -10,12 +10,14 @@ from app.schemas.account import (
     AccountOutputData,
     AccountUpdateData,
 )
-from app.services import AccountService
-from app.utilities.exceptions import CouldNotAccessRecord, CouldNotFindRecord
-from models import Account, User
-from models.utilities.types import TransactionType
-
-from .utilities.callables import sum_transactions_of_given_type
+from app.utilities.callables import sum_transactions_of_given_type
+from app.utilities.exceptions.records import (
+    CouldNotAccessRecord,
+    CouldNotFindRecord,
+)
+from core.databases.models import Account, User
+from core.databases.models.utilities.types import TransactionType
+from core.databases.services import AccountService
 
 
 account_controller: APIRouter = APIRouter(prefix="/account", tags=["account"])
@@ -54,7 +56,7 @@ async def create_account(
     account_service: AccountService = AccountService(session=session)
 
     return account_service.create(
-        record_data=account_data,
+        record_data=account_data.dict(),
         user=current_user,
     )
 
@@ -76,7 +78,7 @@ async def update_account(
 
     return account_service.update(
         record=account,
-        record_data=account_data,
+        record_data=account_data.dict(),
     )
 
 @account_controller.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)

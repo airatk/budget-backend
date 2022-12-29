@@ -9,8 +9,11 @@ from core.calendar import (
     fill_missing_dates_with_default_value,
     get_current_month_boundaries,
 )
-from models import Transaction, User
-from models.utilities.types import SummaryPeriodType, TransactionType
+from core.databases.models import Transaction, User
+from core.databases.models.utilities.types import (
+    SummaryPeriodType,
+    TransactionType,
+)
 
 from .utilities.base import BaseService
 

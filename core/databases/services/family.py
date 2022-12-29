@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from models import Family
+from core.databases.models import Family
 
 from .utilities.base import BaseService
 

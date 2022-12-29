@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends
 
 from app.dependencies.user import identify_user
 from app.schemas.family import FamilyOutputData
-from app.utilities.exceptions import NotFamilyMember
-from models import Family, User
+from app.utilities.exceptions.users import NotFamilyMember
+from core.databases.models import Family, User
 
 
 family_controller: APIRouter = APIRouter(prefix="/family", tags=["family"])

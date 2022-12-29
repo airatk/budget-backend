@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 from httpx import Response
 from pytest import mark, param
 
-from models.utilities.types import TransactionType
+from core.databases.models.utilities.types import TransactionType
 from tests.test_app.utilities.controller_method_test_class import (
     ControllerMethodTestClass,
 )

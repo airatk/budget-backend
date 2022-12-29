@@ -3,10 +3,10 @@ from typing import Iterable
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
-from app.services import CategoryService
-from app.utilities.exceptions import CouldNotAccessRecords
-from models import Category, Transaction, User
-from models.utilities.types import TransactionType
+from app.utilities.exceptions.records import CouldNotAccessRecords
+from core.databases.models import Category, Transaction, User
+from core.databases.models.utilities.types import TransactionType
+from core.databases.services import CategoryService
 
 
 def sum_transactions_of_given_type(

@@ -3,8 +3,8 @@ from typing import Any
 
 from pydantic import Field, NonNegativeFloat, PositiveInt, validator
 
-from models.account import CurrencyType
-from models.utilities.types import SummaryPeriodType
+from core.databases.models.account import CurrencyType
+from core.databases.models.utilities.types import SummaryPeriodType
 
 from .utilities.base import BaseData, BaseUpdateData
 

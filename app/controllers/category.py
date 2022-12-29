@@ -9,9 +9,12 @@ from app.schemas.category import (
     CategoryOutputData,
     CategoryUpdateData,
 )
-from app.services import CategoryService
-from app.utilities.exceptions import CouldNotAccessRecord, CouldNotFindRecord
-from models import Category, User
+from app.utilities.exceptions.records import (
+    CouldNotAccessRecord,
+    CouldNotFindRecord,
+)
+from core.databases.models import Category, User
+from core.databases.services import CategoryService
 
 
 category_controller: APIRouter = APIRouter(prefix="/category", tags=["category"])
@@ -49,7 +52,7 @@ async def create_category(
     category_service: CategoryService = CategoryService(session=session)
 
     return category_service.create(
-        record_data=category_data,
+        record_data=category_data.dict(),
         user=current_user,
     )
 
@@ -71,7 +74,7 @@ async def update_category(
 
     return category_service.update(
         record=category,
-        record_data=category_data,
+        record_data=category_data.dict(),
     )
 
 @category_controller.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)

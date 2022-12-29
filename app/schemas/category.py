@@ -1,6 +1,6 @@
 from pydantic import Field, PositiveInt
 
-from models.category import CategoryType
+from core.databases.models.category import CategoryType
 
 from .utilities.base import BaseData, BaseUpdateData
 

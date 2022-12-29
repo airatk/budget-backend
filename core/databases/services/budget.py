@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from models import Budget
+from core.databases.models import Budget
 
 from .utilities.base import BaseService
 

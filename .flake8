@@ -25,7 +25,7 @@ per-file-ignores =
     core/settings.py:
         N805,
         WPS110,
-    models/utilities/base.py:
+    core/databases/models/utilities/base.py:
         N805,
     tests/**/test_*.py:
         S101,

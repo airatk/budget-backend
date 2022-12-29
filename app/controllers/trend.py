@@ -10,11 +10,13 @@ from app.schemas.account import (
     PeriodSummaryData,
     TrendPointData,
 )
-from app.services import TransactionService
-from models import User
-from models.utilities.types import SummaryPeriodType, TransactionType
-
-from .utilities.constants import MAX_HIGHLIGHT_DAYS, MIN_HIGHLIGHT_DAYS
+from app.utilities.constants import MAX_HIGHLIGHT_DAYS, MIN_HIGHLIGHT_DAYS
+from core.databases.models import User
+from core.databases.models.utilities.types import (
+    SummaryPeriodType,
+    TransactionType,
+)
+from core.databases.services import TransactionService
 
 
 trend_controller: APIRouter = APIRouter(prefix="/trend", tags=["trend"])

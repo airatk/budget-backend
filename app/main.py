@@ -11,7 +11,7 @@ from app.controllers import (
     trend_controller,
     user_controller,
 )
-from app.utilities.cors import (
+from app.utilities.security.cors import (
     ALLOWED_HEADERS,
     ALLOWED_METHODS,
     ALLOWED_ORIGINS,

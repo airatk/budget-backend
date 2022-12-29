@@ -2,7 +2,7 @@ from typing import Any
 
 from pydantic import Field, NonNegativeFloat, PositiveInt
 
-from models.utilities.types import BudgetType
+from core.databases.models.utilities.types import BudgetType
 
 from .category import CategoryOutputData
 from .utilities.base import BaseData, BaseUpdateData

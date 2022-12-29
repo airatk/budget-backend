@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from models import Category
+from core.databases.models import Category
 
 from .utilities.base import BaseService
 

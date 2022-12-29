@@ -11,15 +11,17 @@ from app.schemas.transaction import (
     TransactionsPeriod,
     TransactionUpdateData,
 )
-from app.services import TransactionService
-from app.utilities.exceptions import CouldNotAccessRecord, CouldNotFindRecord
-from models import Account, Category, Transaction, User
-
-from .utilities.constants import (
+from app.utilities.constants import (
     MAX_TRANSACTION_MONTH,
     MIN_TRANSACTION_MONTH,
     MIN_TRANSACTION_YEAR,
 )
+from app.utilities.exceptions.records import (
+    CouldNotAccessRecord,
+    CouldNotFindRecord,
+)
+from core.databases.models import Account, Category, Transaction, User
+from core.databases.services import TransactionService
 
 
 transaction_controller: APIRouter = APIRouter(prefix="/transaction", tags=["transaction"])
@@ -82,7 +84,7 @@ async def create_transaction(
     transaction_service: TransactionService = TransactionService(session=session)
 
     return transaction_service.create(
-        record_data=transaction_data,
+        record_data=transaction_data.dict(),
     )
 
 @transaction_controller.patch("/update", response_model=TransactionOutputData)
@@ -103,7 +105,7 @@ async def update_transaction(
 
     return transaction_service.update(
         record=transaction,
-        record_data=transaction_data,
+        record_data=transaction_data.dict(),
     )
 
 @transaction_controller.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)

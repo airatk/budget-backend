@@ -2,7 +2,7 @@ from typing import Generator
 
 from sqlalchemy.orm import Session
 
-from core.databases import PostgresSession
+from core.databases.sessions import PostgresSession
 
 
 def define_postgres_session() -> Generator[Session, None, None]:

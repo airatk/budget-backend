@@ -12,12 +12,14 @@ from app.schemas.budget import (
     BudgetOutputData,
     BudgetUpdateData,
 )
-from app.services import BudgetService
-from app.utilities.exceptions import CouldNotAccessRecord, CouldNotFindRecord
-from models import Budget, Category, User
-from models.utilities.types import BudgetType
-
-from .utilities.callables import get_validated_user_categories_by_ids
+from app.utilities.callables import get_validated_user_categories_by_ids
+from app.utilities.exceptions.records import (
+    CouldNotAccessRecord,
+    CouldNotFindRecord,
+)
+from core.databases.models import Budget, Category, User
+from core.databases.models.utilities.types import BudgetType
+from core.databases.services import BudgetService
 
 
 budget_controller: APIRouter = APIRouter(prefix="/budget", tags=["budget"])
@@ -81,7 +83,7 @@ async def create_budget(
     budget_service: BudgetService = BudgetService(session=session)
 
     return budget_service.create(
-        record_data=budget_data,
+        record_data=budget_data.dict(),
         user=current_user,
         categories=categories,
     )
@@ -113,7 +115,7 @@ async def update_budget(
 
     return budget_service.update(
         record=budget,
-        record_data=budget_data,
+        record_data=budget_data.dict(),
         **relationship_attributes,
     )
 

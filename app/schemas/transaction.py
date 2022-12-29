@@ -2,7 +2,7 @@ from datetime import date, time
 
 from pydantic import PositiveFloat, PositiveInt
 
-from models.utilities.types import TransactionType
+from core.databases.models.utilities.types import TransactionType
 
 from .utilities.base import BaseData, BaseUpdateData
 

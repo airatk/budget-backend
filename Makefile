@@ -5,7 +5,7 @@ help:
 
 .PHONY: linted
 linted:
-	isort core/ models/ migrations/ app/ tests/
+	isort core/ migrations/ app/ tests/
 	mypy .
 	flake8 .
 

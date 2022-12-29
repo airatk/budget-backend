@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from models import Account
+from core.databases.models import Account
 
 from .utilities.base import BaseService
 

@@ -5,8 +5,15 @@ from typing import Type, TypeAlias
 from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models import Account, Budget, Category, Family, Transaction, User
-from models.utilities.base import BaseModel
+from core.databases.models import (
+    Account,
+    Budget,
+    Category,
+    Family,
+    Transaction,
+    User,
+)
+from core.databases.models.utilities.base import BaseModel
 
 from .settings import test_settings
 

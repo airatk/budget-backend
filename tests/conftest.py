@@ -8,7 +8,7 @@ from pytest import fixture
 from app import api
 from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
-from models.utilities.base import BaseModel
+from core.databases.models.utilities.base import BaseModel
 
 from .mock.databases import fill_up_test_database, test_postgres_engine
 from .mock.dependencies import define_test_postgres_session, identify_test_user
