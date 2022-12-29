@@ -10,6 +10,8 @@ class BaseModel:
     __name__: str
     metadata: MetaData
 
+    id: int = Column(BigInteger, primary_key=True)
+
     @declared_attr
     def __tablename__(cls) -> str:
         pre_snake_case_name: str = sub("([A-Z]+)", r" \1", cls.__name__)
@@ -17,4 +19,5 @@ class BaseModel:
 
         return "_".join(pre_snake_case_name.lower().split())
 
-    id: int = Column(BigInteger, primary_key=True)
+    def __repr__(self) -> str:
+        return "{0.__class__.__name__}(id={0.id})".format(self)

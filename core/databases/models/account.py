@@ -22,6 +22,3 @@ class Account(BaseModel):
     name: str = Column(String, index=True, nullable=False)
     currency: CurrencyType = Column(Enum(CurrencyType, values_callable=persist_enumeration_values), nullable=False)
     openning_balance: float = Column(Float, default=0, nullable=False)
-
-    def __repr__(self) -> str:
-        return "{0.__class__.__name__}(id={0.id}, name={0.name})".format(self)

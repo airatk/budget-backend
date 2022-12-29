@@ -4,6 +4,7 @@ from sqlalchemy import BigInteger, Column, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from .utilities.base import BaseModel
+from .utilities.constants import MAX_USERNAME_LENGTH
 
 
 if TYPE_CHECKING:
@@ -11,9 +12,6 @@ if TYPE_CHECKING:
     from .budget import Budget
     from .category import Category
     from .family import Family
-
-
-MAX_USERNAME_LENGTH: int = 30
 
 
 class User(BaseModel):
@@ -26,6 +24,3 @@ class User(BaseModel):
 
     username: str = Column(String(MAX_USERNAME_LENGTH), unique=True, index=True, nullable=False)
     password: str = Column(String, nullable=False)
-
-    def __repr__(self) -> str:
-        return "{0.__class__.__name__}(id={0.id}, username={0.username})".format(self)

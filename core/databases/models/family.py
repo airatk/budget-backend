@@ -13,7 +13,4 @@ if TYPE_CHECKING:
 class Family(BaseModel):
     members: list["User"] = relationship("User", back_populates="family")
 
-    access_code: str = Column(String(8), unique=True, nullable=False)
-
-    def __repr__(self) -> str:
-        return "{0.__class__.__name__}(id={0.id})".format(self)
+    access_code: str = Column(String, unique=True, nullable=False)

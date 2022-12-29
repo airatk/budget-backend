@@ -35,6 +35,3 @@ class Transaction(BaseModel):
     due_time: time = Column(Time, nullable=False)
     amount: float = Column(Float, nullable=False)
     note: str = Column(String, default="", nullable=False)
-
-    def __repr__(self) -> str:
-        return "{0.__class__.__name__}(id={0.id}, amount={0.amount})".format(self)
