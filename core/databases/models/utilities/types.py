@@ -1,29 +1,24 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class BaseType(str, Enum):
-    def __repr__(self) -> str:
-        return self.value
-
-
-class BudgetType(BaseType):
+class BudgetType(StrEnum):
     JOINT = "joint"
     PERSONAL = "personal"
 
-class SummaryPeriodType(BaseType):
+class SummaryPeriodType(StrEnum):
     CURRENT_MONTH = "Current Month"
     CURRENT_YEAR = "Current Year"
     ALL_TIME = "All Time"
 
-class TransactionType(BaseType):
+class TransactionType(StrEnum):
     INCOME = "Income"
     OUTCOME = "Outcome"
     TRANSFER = "Transfer"
 
-class CategoryType(BaseType):
+class CategoryType(StrEnum):
     INCOME = "Income"
     OUTCOME = "Outcome"
 
-class CurrencyType(BaseType):
+class CurrencyType(StrEnum):
     RUB = "RUB"
     USD = "USD"

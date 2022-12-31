@@ -5,6 +5,7 @@ from pydantic import PositiveFloat, PositiveInt
 from core.databases.models.utilities.types import TransactionType
 
 from .utilities.base import BaseData, BaseUpdateData
+from .utilities.types import Month, Year
 
 
 class TransactionOutputData(BaseData, orm_mode=True):
@@ -36,6 +37,6 @@ class TransactionUpdateData(BaseUpdateData, anystr_strip_whitespace=True):
     note: str | None
 
 
-class TransactionsPeriod(BaseData):
-    month: PositiveInt
-    year: PositiveInt
+class TransactionsPeriodData(BaseData):
+    year: Year
+    month: Month

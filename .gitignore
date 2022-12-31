@@ -2,7 +2,7 @@
 .env*
 !.env-example
 tests/coverage-report-pages/
-project-files/*-examples/
+specifications/*-examples/
 
 # Python & System Files
 .venv/

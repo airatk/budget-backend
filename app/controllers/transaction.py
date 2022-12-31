@@ -8,13 +8,8 @@ from app.dependencies.user import identify_user
 from app.schemas.transaction import (
     TransactionCreationData,
     TransactionOutputData,
-    TransactionsPeriod,
+    TransactionsPeriodData,
     TransactionUpdateData,
-)
-from app.utilities.constants import (
-    MAX_TRANSACTION_MONTH,
-    MIN_TRANSACTION_MONTH,
-    MIN_TRANSACTION_YEAR,
 )
 from app.utilities.exceptions.records import (
     CouldNotAccessRecord,
@@ -27,20 +22,19 @@ from core.databases.services import TransactionService
 transaction_controller: APIRouter = APIRouter(prefix="/transaction", tags=["transaction"])
 
 
-@transaction_controller.get("/periods", response_model=list[TransactionsPeriod])
+@transaction_controller.get("/periods", response_model=list[TransactionsPeriodData])
 async def get_periods(
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-) -> list[TransactionsPeriod]:
+) -> list[TransactionsPeriodData]:
     transaction_service: TransactionService = TransactionService(session=session)
     periods_entities: list[tuple[int, int]] = transaction_service.get_user_transaction_periods(current_user)
 
-    return [TransactionsPeriod(year=year, month=month) for (year, month) in periods_entities]
+    return [TransactionsPeriodData(year=year, month=month) for (year, month) in periods_entities]
 
 @transaction_controller.get("/list", response_model=list[TransactionOutputData])
 async def get_transactions(
-    year: int = Query(..., ge=MIN_TRANSACTION_YEAR),
-    month: int = Query(..., ge=MIN_TRANSACTION_MONTH, le=MAX_TRANSACTION_MONTH),
+    transactions_period: TransactionsPeriodData = Depends(),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ) -> list[Transaction]:
@@ -48,8 +42,8 @@ async def get_transactions(
 
     return transaction_service.get_list(
         Transaction.account.has(user=current_user),
-        func.DATE_PART("YEAR", Transaction.due_date) == year,
-        func.DATE_PART("MONTH", Transaction.due_date) == month,
+        func.DATE_PART("YEAR", Transaction.due_date) == transactions_period.year,
+        func.DATE_PART("MONTH", Transaction.due_date) == transactions_period.month,
     )
 
 @transaction_controller.get("/item", response_model=TransactionOutputData)
