@@ -33,7 +33,7 @@ async def get_balances(
             balance=sum_transactions_of_given_type(
                 transactions=account.transactions,
                 transaction_type=TransactionType.INCOME,
-                initial_amount=account.openning_balance,
+                initial_amount=account.opening_balance,
             ) - sum_transactions_of_given_type(
                 transactions=account.transactions,
                 transaction_type=TransactionType.OUTCOME,

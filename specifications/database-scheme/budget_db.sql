@@ -40,7 +40,7 @@ CREATE TABLE "account" (
   "user_id" integer,
   "name" string,
   "currency" string,
-  "openning_balance" float DEFAULT 0
+  "opening_balance" float DEFAULT 0
 );
 
 CREATE TABLE "category" (

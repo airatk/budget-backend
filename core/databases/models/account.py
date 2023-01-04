@@ -21,4 +21,4 @@ class Account(BaseModel):
 
     name: str = Column(String, index=True, nullable=False)
     currency: CurrencyType = Column(Enum(CurrencyType, values_callable=persist_enumeration_values), nullable=False)
-    openning_balance: float = Column(Float, default=0, nullable=False)
+    opening_balance: float = Column(Float, default=0, nullable=False)

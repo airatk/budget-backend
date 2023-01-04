@@ -13,17 +13,17 @@ class AccountOutputData(BaseData, orm_mode=True):
     id: PositiveInt
     name: str
     currency: CurrencyType
-    openning_balance: int = 0
+    opening_balance: int = 0
 
 class AccountCreationData(BaseData, anystr_strip_whitespace=True):
     name: str = Field(..., min_length=1)
     currency: CurrencyType
-    openning_balance: int = 0
+    opening_balance: int = 0
 
 class AccountUpdateData(BaseUpdateData, anystr_strip_whitespace=True):
     name: str | None = Field(None, min_length=1)
     currency: CurrencyType | None
-    openning_balance: int | None
+    opening_balance: int | None
 
 
 class AccountBalanceData(BaseData):

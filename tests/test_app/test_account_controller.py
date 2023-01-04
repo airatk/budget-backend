@@ -32,13 +32,13 @@ class TestCreateAccount(ControllerMethodTestClass, http_method="POST", api_endpo
             {
                 "name": "Test Account Name",
                 "currency": CurrencyType.RUB.value,
-                "openning_balance": 260000,
+                "opening_balance": 260000,
             },
             {
                 "id": 5,
                 "name": "Test Account Name",
                 "currency": CurrencyType.RUB.value,
-                "openning_balance": 260000,
+                "opening_balance": 260000,
             },
             id="account_5",
         ),
@@ -62,7 +62,7 @@ class TestCreateAccount(ControllerMethodTestClass, http_method="POST", api_endpo
             {
                 "name": "",
                 "currency": CurrencyType.RUB.value,
-                "openning_balance": 260000,
+                "opening_balance": 260000,
             },
             id="wrong_name",
         ),
@@ -70,7 +70,7 @@ class TestCreateAccount(ControllerMethodTestClass, http_method="POST", api_endpo
             {
                 "name": "Test Account Name",
                 "currency": "non_existing_type",
-                "openning_balance": 260000,
+                "opening_balance": 260000,
             },
             id="wrong_currency",
         ),
@@ -95,13 +95,13 @@ class TestUpdateAccount(ControllerMethodTestClass, http_method="PATCH", api_endp
             {
                 "name": "Test Account Name",
                 "currency": CurrencyType.RUB.value,
-                "openning_balance": 260000,
+                "opening_balance": 260000,
             },
             {
                 "id": 1,
                 "name": "Test Account Name",
                 "currency": CurrencyType.RUB.value,
-                "openning_balance": 260000,
+                "opening_balance": 260000,
             },
             id="correct_data",
         ),

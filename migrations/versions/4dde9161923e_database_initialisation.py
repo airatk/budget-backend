@@ -38,7 +38,7 @@ def upgrade():
     sa.Column('user_id', sa.BigInteger(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
     sa.Column('currency', sa.Enum('RUB', 'USD', name='currencytype'), nullable=False),
-    sa.Column('openning_balance', sa.Float(), nullable=False),
+    sa.Column('opening_balance', sa.Float(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
