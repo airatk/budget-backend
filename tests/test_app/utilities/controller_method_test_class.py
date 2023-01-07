@@ -10,10 +10,10 @@ class ControllerMethodTestClass:
     api_endpoint: str
 
     def __init_subclass__(cls, http_method: str, api_endpoint: str) -> None:
+        super().__init_subclass__()
+
         cls.http_method = http_method
         cls.api_endpoint = api_endpoint
-
-        super().__init_subclass__()
 
     def request(
         self,

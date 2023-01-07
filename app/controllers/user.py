@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
-from app.schemas.user import UserData
+from app.schemas.user import UserOutputData
 from app.utilities.exceptions.records import (
     CouldNotAccessRecord,
     CouldNotFindRecord,
@@ -17,13 +17,13 @@ from core.databases.services import UserService
 user_controller: APIRouter = APIRouter(prefix="/user", tags=["user"])
 
 
-@user_controller.get("/current", response_model=UserData)
+@user_controller.get("/current", response_model=UserOutputData)
 async def get_current_user(
     current_user: User = Depends(identify_user),
 ) -> User:
     return current_user
 
-@user_controller.get("/relative", response_model=UserData)
+@user_controller.get("/relative", response_model=UserOutputData)
 async def get_relative(
     relative_id: PositiveInt = Query(..., alias="id"),
     current_user: User = Depends(identify_user),

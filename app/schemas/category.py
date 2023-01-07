@@ -8,7 +8,7 @@ from .utilities.base import BaseData, BaseUpdateData
 class CategoryOutputData(BaseData, orm_mode=True):
     id: PositiveInt
     base_category_id: PositiveInt | None
-    name: str = Field(..., min_length=1)
+    name: str
     type: CategoryType
 
 class CategoryCreationData(BaseData, anystr_strip_whitespace=True):

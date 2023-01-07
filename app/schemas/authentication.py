@@ -1,7 +1,7 @@
-from pydantic import Field
-
+from .user import UserOutputData
 from .utilities.base import BaseData
 
 
 class AuthenticationData(BaseData):
-    access_token: str = Field(..., min_length=1)
+    access_token: str
+    user: UserOutputData

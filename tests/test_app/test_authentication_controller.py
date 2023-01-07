@@ -1,24 +1,105 @@
+from typing import Any
+
 from fastapi import status
 from fastapi.testclient import TestClient
 from httpx import Response
 from pytest import mark, param
 
-from app.utilities.security.jwt import create_access_token
 from tests.test_app.utilities.controller_method_test_class import (
     ControllerMethodTestClass,
 )
 
 
+class TestSignUp(ControllerMethodTestClass, http_method="POST", api_endpoint="/sign-up"):
+    @mark.parametrize("test_data", (
+        param(
+            {
+                "username": "test-user-4",
+                "password": "test-password",
+            },
+            id="user_4",
+        ),
+        param(
+            {
+                "username": "test-user-5",
+                "password": "test-password",
+                "family_id": 1,
+            },
+            id="user_5",
+        ),
+    ))
+    def test_with_correct_data(
+        self,
+        test_client: TestClient,
+        test_data: dict[str, Any],
+    ):
+        response: Response = self.request(
+            test_client=test_client,
+            test_data=test_data,
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED, response.text
+        assert response.json().get("user").get("username") == test_data["username"]
+
+    @mark.parametrize("test_data, expected_status_code", (
+        param(
+            {
+                "username": "",
+                "password": "test-password",
+                "family_id": 1,
+            },
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_username",
+        ),
+        param(
+            {
+                "username": "test-user-5",
+                "password": "short",
+                "family_id": 1,
+            },
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="too_short_password",
+        ),
+        param(
+            {
+                "username": "test-user-5",
+                "password": "shortpass",
+                "family_id": -1,
+            },
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            id="wrong_family_id",
+        ),
+        param(
+            {
+                "username": "test-user",
+                "password": "test-password",
+            },
+            status.HTTP_400_BAD_REQUEST,
+            id="existing_user",
+        ),
+    ))
+    def test_with_wrong_data(
+        self,
+        test_client: TestClient,
+        test_data: dict[str, Any],
+        expected_status_code: int,
+    ):
+        response: Response = self.request(
+            test_client=test_client,
+            test_data=test_data,
+        )
+
+        assert response.status_code == expected_status_code, response.text
+
+
 class TestSignIn(ControllerMethodTestClass, http_method="GET", api_endpoint="/sign-in"):
-    @mark.parametrize("test_credentials, expected_token", (
+    @mark.parametrize("test_credentials", (
         param(
             ("test-user", "test-password"),
-            create_access_token(user_id=1),
             id="user_1",
         ),
         param(
             ("family-member", "test-password"),
-            create_access_token(user_id=2),
             id="user_2",
         ),
     ))
@@ -26,7 +107,6 @@ class TestSignIn(ControllerMethodTestClass, http_method="GET", api_endpoint="/si
         self,
         test_client: TestClient,
         test_credentials: tuple[str, str],
-        expected_token: str,
     ):
         response: Response = self.request(
             test_client=test_client,
@@ -34,9 +114,7 @@ class TestSignIn(ControllerMethodTestClass, http_method="GET", api_endpoint="/si
         )
 
         assert response.status_code == status.HTTP_200_OK, response.text
-        assert response.json() == {
-            "access_token": expected_token,
-        }
+        assert response.json().get("user").get("username") == test_credentials[0]
 
     @mark.parametrize("test_credentials, expected_status_code", (
         param(

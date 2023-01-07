@@ -11,18 +11,32 @@ class UserUnauthorised(BaseApiException):
         )
 
 
+class UsernameAlreadyExists(BaseApiException):
+    def __init__(self, username: str):
+        super().__init__(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            message="User {0} already exists".format(username),
+            error_data={
+                "username": username,
+            },
+        )
+
 class WrongUsername(BaseApiException):
-    def __init__(self):
+    def __init__(self, username: str):
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
-            message="User with provided username was not found",
+            message="User {0} does not exist".format(username),
+            error_data={
+                "username": username,
+            },
         )
 
 class WrongPassword(BaseApiException):
     def __init__(self, username: str):
         super().__init__(
             status_code=status.HTTP_403_FORBIDDEN,
-            message="Provided password for {username} is wrong".format(
-                username=username,
-            ),
+            message="Provided password for {0} is wrong".format(username),
+            error_data={
+                "username": username,
+            },
         )
