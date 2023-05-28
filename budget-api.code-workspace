@@ -7,13 +7,6 @@
     "settings": {
         "python.linting.enabled": true,
         "python.linting.flake8Enabled": true,
-        "python.linting.flake8Args": [
-            "--config", ".flake8",
-        ],
-        "python.linting.banditEnabled": true,
-        "python.linting.banditArgs": [
-            "--exclude_dirs=tests",
-        ],
         "python.linting.mypyEnabled": true,
         "python.analysis.typeCheckingMode": "off",
         "python.testing.pytestEnabled": true,
@@ -30,10 +23,10 @@
                 "module": "uvicorn",
                 "args": [
                     "app:api",
-                    "--host", "0.0.0.0",
+                    "--host", "localhost",
                     "--port", "8000",
                 ],
-                "justMyCode": true,
+                "justMyCode": false,
             },
         ],
     },

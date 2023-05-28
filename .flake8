@@ -6,6 +6,7 @@ ignore =
     D102,
     D103,
     D105,
+    D106,
     D107,
     E302,
     E501,
@@ -34,4 +35,3 @@ per-file-ignores =
         WPS432,
 
 max-imports = 13
-inline-quotes = "
