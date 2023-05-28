@@ -20,10 +20,10 @@ from core.databases.models.utilities.types import TransactionType
 from core.databases.services import AccountService
 
 
-account_controller: APIRouter = APIRouter(prefix="/account", tags=["account"])
+account_controller: APIRouter = APIRouter(prefix='/account', tags=['account'])
 
 
-@account_controller.get("/balances", response_model=list[AccountBalanceData])
+@account_controller.get('/balances', response_model=list[AccountBalanceData])
 async def get_balances(
     current_user: User = Depends(identify_user),
 ) -> list[AccountBalanceData]:
@@ -41,13 +41,13 @@ async def get_balances(
         ) for account in current_user.accounts
     ]
 
-@account_controller.get("/list", response_model=list[AccountOutputData])
+@account_controller.get('/list', response_model=list[AccountOutputData])
 async def get_accounts(
     current_user: User = Depends(identify_user),
 ) -> list[Account]:
     return current_user.accounts
 
-@account_controller.post("/create", response_model=AccountOutputData, status_code=status.HTTP_201_CREATED)
+@account_controller.post('/create', response_model=AccountOutputData, status_code=status.HTTP_201_CREATED)
 async def create_account(
     account_data: AccountCreationData,
     current_user: User = Depends(identify_user),
@@ -60,10 +60,10 @@ async def create_account(
         user=current_user,
     )
 
-@account_controller.patch("/update", response_model=AccountOutputData)
+@account_controller.patch('/update', response_model=AccountOutputData)
 async def update_account(
     account_data: AccountUpdateData,
-    account_id: PositiveInt = Query(..., alias="id"),
+    account_id: PositiveInt = Query(..., alias='id'),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ) -> Account:
@@ -81,12 +81,12 @@ async def update_account(
         record_data=account_data.dict(),
     )
 
-@account_controller.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
+@account_controller.delete('/delete', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_account(
-    account_id: PositiveInt = Query(..., alias="id"),
+    account_id: PositiveInt = Query(..., alias='id'),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> None:
     account_service: AccountService = AccountService(session=session)
     account: Account | None = account_service.get_by_id(account_id)
 

@@ -9,7 +9,11 @@ class ControllerMethodTestClass:
     http_method: str
     api_endpoint: str
 
-    def __init_subclass__(cls, http_method: str, api_endpoint: str) -> None:
+    def __init_subclass__(
+        cls,
+        http_method: str,
+        api_endpoint: str,
+    ) -> None:
         super().__init_subclass__()
 
         cls.http_method = http_method
@@ -20,7 +24,7 @@ class ControllerMethodTestClass:
         test_client: TestClient,
         test_credentials: tuple[str, str] | None = None,
         test_data: dict[str, Any] | None = None,
-        **query_parameters,
+        **query_parameters: Any,
     ) -> Response:
         query_parameters = {
             key: test_value for (key, test_value) in query_parameters.items() if test_value is not None

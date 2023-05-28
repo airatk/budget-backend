@@ -7,8 +7,8 @@ from core.settings import settings
 
 def create_access_token(*, user_id: int) -> str:
     payload: dict[str, int | datetime] = {
-        "sub": user_id,
-        "exp": datetime.utcnow() + timedelta(minutes=10),
+        'sub': user_id,
+        'exp': datetime.utcnow() + timedelta(minutes=10),
     }
 
     return encode(
@@ -17,7 +17,7 @@ def create_access_token(*, user_id: int) -> str:
         algorithm=settings.JWT_ALGORITHM,
     )
 
-def decode_access_token(token: str) -> tuple[int, str]:
+def decode_access_token(token: str) -> tuple[int | None, str | None]:
     try:
         payload: dict[str, int] = decode(
             jwt=token,
@@ -27,6 +27,6 @@ def decode_access_token(token: str) -> tuple[int, str]:
             ],
         )
     except InvalidTokenError:
-        return (0, "Token is invalid")
+        return (None, 'Token is invalid')
 
-    return (payload["sub"], "")
+    return (payload['sub'], None)

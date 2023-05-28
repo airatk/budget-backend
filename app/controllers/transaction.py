@@ -19,10 +19,10 @@ from core.databases.models import Account, Category, Transaction, User
 from core.databases.services import TransactionService
 
 
-transaction_controller: APIRouter = APIRouter(prefix="/transaction", tags=["transaction"])
+transaction_controller: APIRouter = APIRouter(prefix='/transaction', tags=['transaction'])
 
 
-@transaction_controller.get("/periods", response_model=list[TransactionsPeriodData])
+@transaction_controller.get('/periods', response_model=list[TransactionsPeriodData])
 async def get_periods(
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
@@ -32,7 +32,7 @@ async def get_periods(
 
     return [TransactionsPeriodData(year=year, month=month) for (year, month) in periods_entities]
 
-@transaction_controller.get("/list", response_model=list[TransactionOutputData])
+@transaction_controller.get('/list', response_model=list[TransactionOutputData])
 async def get_transactions(
     transactions_period: TransactionsPeriodData = Depends(),
     current_user: User = Depends(identify_user),
@@ -42,13 +42,13 @@ async def get_transactions(
 
     return transaction_service.get_list(
         Transaction.account.has(user=current_user),
-        func.DATE_PART("YEAR", Transaction.due_date) == transactions_period.year,
-        func.DATE_PART("MONTH", Transaction.due_date) == transactions_period.month,
+        func.DATE_PART('YEAR', Transaction.due_date) == transactions_period.year,
+        func.DATE_PART('MONTH', Transaction.due_date) == transactions_period.month,
     )
 
-@transaction_controller.get("/item", response_model=TransactionOutputData)
+@transaction_controller.get('/item', response_model=TransactionOutputData)
 async def get_transaction(
-    transaction_id: PositiveInt = Query(..., alias="id"),
+    transaction_id: PositiveInt = Query(..., alias='id'),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ) -> Transaction:
@@ -63,7 +63,7 @@ async def get_transaction(
 
     return transaction
 
-@transaction_controller.post("/create", response_model=TransactionOutputData, status_code=status.HTTP_201_CREATED)
+@transaction_controller.post('/create', response_model=TransactionOutputData, status_code=status.HTTP_201_CREATED)
 async def create_transaction(
     transaction_data: TransactionCreationData,
     current_user: User = Depends(identify_user),
@@ -81,10 +81,10 @@ async def create_transaction(
         record_data=transaction_data.dict(),
     )
 
-@transaction_controller.patch("/update", response_model=TransactionOutputData)
+@transaction_controller.patch('/update', response_model=TransactionOutputData)
 async def update_transaction(
     transaction_data: TransactionUpdateData,
-    transaction_id: PositiveInt = Query(..., alias="id"),
+    transaction_id: PositiveInt = Query(..., alias='id'),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ) -> Transaction:
@@ -102,12 +102,12 @@ async def update_transaction(
         record_data=transaction_data.dict(),
     )
 
-@transaction_controller.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
+@transaction_controller.delete('/delete', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_transaction(
-    transaction_id: PositiveInt = Query(..., alias="id"),
+    transaction_id: PositiveInt = Query(..., alias='id'),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> None:
     transaction_service: TransactionService = TransactionService(session=session)
     transaction: Transaction | None = transaction_service.get_by_id(transaction_id)
 

@@ -1,13 +1,13 @@
-from typing import Any, Generic, Type, TypeVar
+from typing import Any, Generic, Type, TypeVar, Iterable
 
-from sqlalchemy import Boolean, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import ColumnElement
 
 from core.databases.models.utilities.base import BaseModel
 
 
-Model = TypeVar("Model", bound=BaseModel)
+Model = TypeVar('Model', bound=BaseModel)
 
 
 class BaseService(Generic[Model]):
@@ -15,12 +15,12 @@ class BaseService(Generic[Model]):
         self.model_class = model_class
         self.session = session
 
-    def get_list(self, *conditions) -> list[Model]:
+    def get_list(self, *conditions: ColumnElement[bool]) -> Iterable[Model]:
         return self.session.scalars(
             select(self.model_class).where(*conditions),
         ).all()
 
-    def get(self, *conditions: ColumnElement[Boolean]) -> Model | None:
+    def get(self, *conditions: ColumnElement[bool]) -> Model | None:
         return self.session.scalar(
             select(self.model_class).where(*conditions),
         )
@@ -53,6 +53,6 @@ class BaseService(Generic[Model]):
 
         return record
 
-    def delete(self, record: Model):
+    def delete(self, record: Model) -> None:
         self.session.delete(record)
         self.session.commit()

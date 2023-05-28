@@ -11,19 +11,19 @@ from tests.test_app.utilities.controller_method_test_class import (
 )
 
 
-def test_get_periods(test_client: TestClient):
-    response: Response = test_client.get("/transaction/periods")
+def test_get_periods(test_client: TestClient) -> None:
+    response: Response = test_client.get('/transaction/periods')
 
     assert response.status_code == status.HTTP_200_OK, response.text
     assert isinstance(response.json(), list)
     assert response.json()
 
 
-class TestGetTransactions(ControllerMethodTestClass, http_method="GET", api_endpoint="/transaction/list"):
-    @mark.parametrize("test_year", (
+class TestGetTransactions(ControllerMethodTestClass, http_method='GET', api_endpoint='/transaction/list'):
+    @mark.parametrize('test_year', (
         2022,
     ))
-    @mark.parametrize("test_month", (
+    @mark.parametrize('test_month', (
         12,
     ))
     def test_with_correct_data(
@@ -31,7 +31,7 @@ class TestGetTransactions(ControllerMethodTestClass, http_method="GET", api_endp
         test_client: TestClient,
         test_year: int,
         test_month: int,
-    ):
+    ) -> None:
         response: Response = self.request(
             test_client=test_client,
             year=test_year,
@@ -42,15 +42,15 @@ class TestGetTransactions(ControllerMethodTestClass, http_method="GET", api_endp
         assert isinstance(response.json(), list)
         assert response.json()
 
-    @mark.parametrize("test_year", (
-        param(1999, id="lower"),
-        param("string"),
+    @mark.parametrize('test_year', (
+        param(1999, id='lower'),
+        param('string'),
         param(None),
     ))
-    @mark.parametrize("test_month", (
-        param(13, id="greater"),
-        param(0, id="lower"),
-        param("string"),
+    @mark.parametrize('test_month', (
+        param(13, id='greater'),
+        param(0, id='lower'),
+        param('string'),
         param(None),
     ))
     def test_with_wrong_data(
@@ -58,7 +58,7 @@ class TestGetTransactions(ControllerMethodTestClass, http_method="GET", api_endp
         test_client: TestClient,
         test_year: Any,
         test_month: Any,
-    ):
+    ) -> None:
         response: Response = self.request(
             test_client=test_client,
             year=test_year,
@@ -68,21 +68,21 @@ class TestGetTransactions(ControllerMethodTestClass, http_method="GET", api_endp
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
 
-class TestGetTransaction(ControllerMethodTestClass, http_method="GET", api_endpoint="/transaction/item"):
-    @mark.parametrize("test_id, expected_data", (
+class TestGetTransaction(ControllerMethodTestClass, http_method='GET', api_endpoint='/transaction/item'):
+    @mark.parametrize('test_id, expected_data', (
         param(
             1,
             {
-                "id": 1,
-                "account_id": 1,
-                "category_id": 1,
-                "type": TransactionType.INCOME.value,
-                "due_date": "2022-12-12",
-                "due_time": "10:40:00",
-                "amount": 300,
-                "note": "Note",
+                'id': 1,
+                'account_id': 1,
+                'category_id': 1,
+                'type': TransactionType.INCOME.value,
+                'due_date': '2022-12-12',
+                'due_time': '10:40:00',
+                'amount': 300,
+                'note': 'Note',
             },
-            id="transaction_1",
+            id='transaction_1',
         ),
     ))
     def test_with_correct_id(
@@ -90,7 +90,7 @@ class TestGetTransaction(ControllerMethodTestClass, http_method="GET", api_endpo
         test_client: TestClient,
         test_id: int,
         expected_data: dict[str, Any],
-    ):
+    ) -> None:
         response: Response = self.request(
             test_client=test_client,
             id=test_id,
@@ -100,31 +100,31 @@ class TestGetTransaction(ControllerMethodTestClass, http_method="GET", api_endpo
         assert isinstance(response.json(), dict)
         assert response.json() == expected_data
 
-    @mark.parametrize("test_id, expected_status_code", (
+    @mark.parametrize('test_id, expected_status_code', (
         param(
             999999,
             status.HTTP_404_NOT_FOUND,
-            id="non_existing",
+            id='non_existing',
         ),
         param(
             4,
             status.HTTP_403_FORBIDDEN,
-            id="forbidden_id",
+            id='forbidden_id',
         ),
         param(
             0,
             status.HTTP_422_UNPROCESSABLE_ENTITY,
-            id="wrong_id",
+            id='wrong_id',
         ),
         param(
-            "string",
+            'string',
             status.HTTP_422_UNPROCESSABLE_ENTITY,
-            id="wrong_id",
+            id='wrong_id',
         ),
         param(
             None,
             status.HTTP_422_UNPROCESSABLE_ENTITY,
-            id="wrong_id",
+            id='wrong_id',
         ),
     ))
     def test_with_wrong_id(
@@ -132,7 +132,7 @@ class TestGetTransaction(ControllerMethodTestClass, http_method="GET", api_endpo
         test_client: TestClient,
         test_id: Any,
         expected_status_code: int,
-    ):
+    ) -> None:
         response: Response = self.request(
             test_client=test_client,
             id=test_id,
@@ -141,29 +141,29 @@ class TestGetTransaction(ControllerMethodTestClass, http_method="GET", api_endpo
         assert response.status_code == expected_status_code, response.text
 
 
-class TestCreateTransaction(ControllerMethodTestClass, http_method="POST", api_endpoint="/transaction/create"):
-    @mark.parametrize("test_data, expected_data", (
+class TestCreateTransaction(ControllerMethodTestClass, http_method='POST', api_endpoint='/transaction/create'):
+    @mark.parametrize('test_data, expected_data', (
         param(
             {
-                "account_id": 1,
-                "category_id": 1,
-                "type": TransactionType.INCOME.value,
-                "due_date": "2022-12-12",
-                "due_time": "10:40:00",
-                "amount": 100,
-                "note": "Note",
+                'account_id': 1,
+                'category_id': 1,
+                'type': TransactionType.INCOME.value,
+                'due_date': '2022-12-12',
+                'due_time': '10:40:00',
+                'amount': 100,
+                'note': 'Note',
             },
             {
-                "id": 5,
-                "account_id": 1,
-                "category_id": 1,
-                "type": TransactionType.INCOME.value,
-                "due_date": "2022-12-12",
-                "due_time": "10:40:00",
-                "amount": 100,
-                "note": "Note",
+                'id': 5,
+                'account_id': 1,
+                'category_id': 1,
+                'type': TransactionType.INCOME.value,
+                'due_date': '2022-12-12',
+                'due_time': '10:40:00',
+                'amount': 100,
+                'note': 'Note',
             },
-            id="transaction_4",
+            id='transaction_4',
         ),
     ))
     def test_with_correct_data(
@@ -171,7 +171,7 @@ class TestCreateTransaction(ControllerMethodTestClass, http_method="POST", api_e
         test_client: TestClient,
         test_data: dict[str, Any],
         expected_data: dict[str, Any],
-    ):
+    ) -> None:
         response: Response = self.request(
             test_client=test_client,
             test_data=test_data,
@@ -180,85 +180,85 @@ class TestCreateTransaction(ControllerMethodTestClass, http_method="POST", api_e
         assert response.status_code == status.HTTP_201_CREATED, response.text
         assert response.json() == expected_data
 
-    @mark.parametrize("test_data", (
+    @mark.parametrize('test_data', (
         param(
             {
-                "account_id": 0,
-                "category_id": 1,
-                "type": TransactionType.INCOME.value,
-                "due_date": "2022-12-12",
-                "due_time": "10:40",
-                "amount": 100,
-                "note": "Note",
+                'account_id': 0,
+                'category_id': 1,
+                'type': TransactionType.INCOME.value,
+                'due_date': '2022-12-12',
+                'due_time': '10:40',
+                'amount': 100,
+                'note': 'Note',
             },
-            id="wrong_account_id",
+            id='wrong_account_id',
         ),
         param(
             {
-                "account_id": 1,
-                "category_id": 0,
-                "type": TransactionType.INCOME.value,
-                "due_date": "2022-12-12",
-                "due_time": "10:40",
-                "amount": 100,
-                "note": "Note",
+                'account_id': 1,
+                'category_id': 0,
+                'type': TransactionType.INCOME.value,
+                'due_date': '2022-12-12',
+                'due_time': '10:40',
+                'amount': 100,
+                'note': 'Note',
             },
-            id="wrong_category_id",
+            id='wrong_category_id',
         ),
         param(
             {
-                "account_id": 1,
-                "category_id": 1,
-                "type": "non_existing_type",
-                "due_date": "2022-12-12",
-                "due_time": "10:40",
-                "amount": 100,
-                "note": "Note",
+                'account_id': 1,
+                'category_id': 1,
+                'type': 'non_existing_type',
+                'due_date': '2022-12-12',
+                'due_time': '10:40',
+                'amount': 100,
+                'note': 'Note',
             },
-            id="wrong_type",
+            id='wrong_type',
         ),
         param(
             {
-                "account_id": 0,
-                "category_id": 1,
-                "type": TransactionType.INCOME.value,
-                "due_date": "",
-                "due_time": "10:40",
-                "amount": 100,
-                "note": "Note",
+                'account_id': 0,
+                'category_id': 1,
+                'type': TransactionType.INCOME.value,
+                'due_date': '',
+                'due_time': '10:40',
+                'amount': 100,
+                'note': 'Note',
             },
-            id="wrong_due_date",
+            id='wrong_due_date',
         ),
         param(
             {
-                "account_id": 0,
-                "category_id": 1,
-                "type": TransactionType.INCOME.value,
-                "due_date": "2022-12-12",
-                "due_time": "",
-                "amount": 100,
-                "note": "Note",
+                'account_id': 0,
+                'category_id': 1,
+                'type': TransactionType.INCOME.value,
+                'due_date': '2022-12-12',
+                'due_time': '',
+                'amount': 100,
+                'note': 'Note',
             },
-            id="wrong_due_time",
+            id='wrong_due_time',
         ),
         param(
             {
-                "account_id": 0,
-                "category_id": 1,
-                "type": TransactionType.INCOME.value,
-                "due_date": "2022-12-12",
-                "due_time": "10:40",
-                "amount": 0,
-                "note": "Note",
+                'account_id': 0,
+                'category_id': 1,
+                'type': TransactionType.INCOME.value,
+                'due_date': '2022-12-12',
+                'due_time': '10:40',
+                'amount': 0,
+                'note': 'Note',
             },
-            id="wrong_amount",
+            id='wrong_amount',
         ),
     ))
     def test_with_wrong_data(
         self,
         test_client: TestClient,
         test_data: dict[str, Any],
-    ):
+    ) -> None:
         response: Response = self.request(
             test_client=test_client,
             test_data=test_data,
@@ -266,37 +266,37 @@ class TestCreateTransaction(ControllerMethodTestClass, http_method="POST", api_e
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
-    @mark.parametrize("test_data", (
+    @mark.parametrize('test_data', (
         param(
             {
-                "account_id": 4,
-                "category_id": 1,
-                "type": TransactionType.INCOME.value,
-                "due_date": "2022-12-12",
-                "due_time": "10:40:00",
-                "amount": 100,
-                "note": "Note",
+                'account_id': 4,
+                'category_id': 1,
+                'type': TransactionType.INCOME.value,
+                'due_date': '2022-12-12',
+                'due_time': '10:40:00',
+                'amount': 100,
+                'note': 'Note',
             },
-            id="wrong_account_id",
+            id='wrong_account_id',
         ),
         param(
             {
-                "account_id": 1,
-                "category_id": 5,
-                "type": TransactionType.INCOME.value,
-                "due_date": "2022-12-12",
-                "due_time": "10:40:00",
-                "amount": 100,
-                "note": "Note",
+                'account_id': 1,
+                'category_id': 5,
+                'type': TransactionType.INCOME.value,
+                'due_date': '2022-12-12',
+                'due_time': '10:40:00',
+                'amount': 100,
+                'note': 'Note',
             },
-            id="wrong_category_id",
+            id='wrong_category_id',
         ),
     ))
     def test_with_wrong_ids(
         self,
         test_client: TestClient,
         test_data: dict[str, Any],
-    ):
+    ) -> None:
         response: Response = self.request(
             test_client=test_client,
             test_data=test_data,
@@ -305,30 +305,30 @@ class TestCreateTransaction(ControllerMethodTestClass, http_method="POST", api_e
         assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
 
 
-class TestUpdateTransaction(ControllerMethodTestClass, http_method="PATCH", api_endpoint="/transaction/update"):
-    @mark.parametrize("test_id, test_data, expected_data", (
+class TestUpdateTransaction(ControllerMethodTestClass, http_method='PATCH', api_endpoint='/transaction/update'):
+    @mark.parametrize('test_id, test_data, expected_data', (
         param(
             1,
             {
-                "account_id": 2,
-                "category_id": 2,
-                "type": TransactionType.OUTCOME.value,
-                "due_date": "2022-12-24",
-                "due_time": "12:40:00",
-                "amount": 200,
-                "note": "New Note",
+                'account_id': 2,
+                'category_id': 2,
+                'type': TransactionType.OUTCOME.value,
+                'due_date': '2022-12-24',
+                'due_time': '12:40:00',
+                'amount': 200,
+                'note': 'New Note',
             },
             {
-                "id": 1,
-                "account_id": 2,
-                "category_id": 2,
-                "type": TransactionType.OUTCOME.value,
-                "due_date": "2022-12-24",
-                "due_time": "12:40:00",
-                "amount": 200,
-                "note": "New Note",
+                'id': 1,
+                'account_id': 2,
+                'category_id': 2,
+                'type': TransactionType.OUTCOME.value,
+                'due_date': '2022-12-24',
+                'due_time': '12:40:00',
+                'amount': 200,
+                'note': 'New Note',
             },
-            id="transaction_1",
+            id='transaction_1',
         ),
     ))
     def test_with_correct_data(
@@ -337,7 +337,7 @@ class TestUpdateTransaction(ControllerMethodTestClass, http_method="PATCH", api_
         test_id: int,
         test_data: dict[str, Any],
         expected_data: dict[str, Any],
-    ):
+    ) -> None:
         response: Response = self.request(
             test_client=test_client,
             test_data=test_data,
@@ -347,48 +347,48 @@ class TestUpdateTransaction(ControllerMethodTestClass, http_method="PATCH", api_
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == expected_data
 
-    @mark.parametrize("test_id, test_data", (
+    @mark.parametrize('test_id, test_data', (
         param(
             1,
             {
-                "account_id": 0,
+                'account_id': 0,
             },
-            id="wrong_account_id",
+            id='wrong_account_id',
         ),
         param(
             1,
             {
-                "category_id": 0,
+                'category_id': 0,
             },
-            id="wrong_category_id",
+            id='wrong_category_id',
         ),
         param(
             1,
             {
-                "type": "non_existing_type",
+                'type': 'non_existing_type',
             },
-            id="wrong_type",
+            id='wrong_type',
         ),
         param(
             1,
             {
-                "due_date": "",
+                'due_date': '',
             },
-            id="wrong_due_date",
+            id='wrong_due_date',
         ),
         param(
             1,
             {
-                "due_time": "",
+                'due_time': '',
             },
-            id="wrong_due_time",
+            id='wrong_due_time',
         ),
         param(
             1,
             {
-                "amount": 0,
+                'amount': 0,
             },
-            id="wrong_amount",
+            id='wrong_amount',
         ),
     ))
     def test_with_wrong_data(
@@ -396,7 +396,7 @@ class TestUpdateTransaction(ControllerMethodTestClass, http_method="PATCH", api_
         test_client: TestClient,
         test_id: int,
         test_data: dict[str, Any],
-    ):
+    ) -> None:
         response: Response = self.request(
             test_client=test_client,
             test_data=test_data,
@@ -405,31 +405,31 @@ class TestUpdateTransaction(ControllerMethodTestClass, http_method="PATCH", api_
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
-    @mark.parametrize("test_id, expected_status_code", (
+    @mark.parametrize('test_id, expected_status_code', (
         param(
             999999,
             status.HTTP_404_NOT_FOUND,
-            id="non_existing",
+            id='non_existing',
         ),
         param(
             4,
             status.HTTP_403_FORBIDDEN,
-            id="forbidden_id",
+            id='forbidden_id',
         ),
         param(
             0,
             status.HTTP_422_UNPROCESSABLE_ENTITY,
-            id="wrong_id",
+            id='wrong_id',
         ),
         param(
-            "string",
+            'string',
             status.HTTP_422_UNPROCESSABLE_ENTITY,
-            id="wrong_id",
+            id='wrong_id',
         ),
         param(
             None,
             status.HTTP_422_UNPROCESSABLE_ENTITY,
-            id="wrong_id",
+            id='wrong_id',
         ),
     ))
     def test_with_wrong_id(
@@ -437,7 +437,7 @@ class TestUpdateTransaction(ControllerMethodTestClass, http_method="PATCH", api_
         test_client: TestClient,
         test_id: Any,
         expected_status_code: int,
-    ):
+    ) -> None:
         response: Response = self.request(
             test_client=test_client,
             test_data={},
@@ -447,15 +447,15 @@ class TestUpdateTransaction(ControllerMethodTestClass, http_method="PATCH", api_
         assert response.status_code == expected_status_code, response.text
 
 
-class TestDeleteTransaction(ControllerMethodTestClass, http_method="DELETE", api_endpoint="/transaction/delete"):
-    @mark.parametrize("test_id", (
+class TestDeleteTransaction(ControllerMethodTestClass, http_method='DELETE', api_endpoint='/transaction/delete'):
+    @mark.parametrize('test_id', (
         1,
     ))
     def test_with_correct_id(
         self,
         test_client: TestClient,
         test_id: int,
-    ):
+    ) -> None:
         response: Response = self.request(
             test_client=test_client,
             id=test_id,
@@ -463,31 +463,31 @@ class TestDeleteTransaction(ControllerMethodTestClass, http_method="DELETE", api
 
         assert response.status_code == status.HTTP_204_NO_CONTENT, response.text
 
-    @mark.parametrize("test_id, expected_status_code", (
+    @mark.parametrize('test_id, expected_status_code', (
         param(
             999999,
             status.HTTP_404_NOT_FOUND,
-            id="non_existing",
+            id='non_existing',
         ),
         param(
             4,
             status.HTTP_403_FORBIDDEN,
-            id="forbidden_id",
+            id='forbidden_id',
         ),
         param(
             0,
             status.HTTP_422_UNPROCESSABLE_ENTITY,
-            id="wrong_id",
+            id='wrong_id',
         ),
         param(
-            "string",
+            'string',
             status.HTTP_422_UNPROCESSABLE_ENTITY,
-            id="wrong_id",
+            id='wrong_id',
         ),
         param(
             None,
             status.HTTP_422_UNPROCESSABLE_ENTITY,
-            id="wrong_id",
+            id='wrong_id',
         ),
     ))
     def test_with_wrong_id(
@@ -495,7 +495,7 @@ class TestDeleteTransaction(ControllerMethodTestClass, http_method="DELETE", api
         test_client: TestClient,
         test_id: Any,
         expected_status_code: int,
-    ):
+    ) -> None:
         response: Response = self.request(
             test_client=test_client,
             id=test_id,

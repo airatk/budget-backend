@@ -16,19 +16,19 @@ class Settings(BaseSettings):
 
     POSTGRES_URL: PostgresDsn | None
 
-    @validator("POSTGRES_URL", pre=True)
+    @validator('POSTGRES_URL', pre=True)
     def assemble_postgres_dsn(cls, value: Any, values: dict[str, Any]) -> str:
         if isinstance(value, str):
             return value
 
         return PostgresDsn.build(
-            scheme=values.get("POSTGRES_DRIVER"),
-            user=values.get("POSTGRES_USERNAME"),
-            password=values.get("POSTGRES_PASSWORD"),
-            host=values.get("POSTGRES_HOST"),
-            port=values.get("POSTGRES_PORT"),
-            path="/{0}".format(values.get("POSTGRES_DATABASE")),
+            scheme=values.get('POSTGRES_DRIVER'),
+            user=values.get('POSTGRES_USERNAME'),
+            password=values.get('POSTGRES_PASSWORD'),
+            host=values.get('POSTGRES_HOST'),
+            port=values.get('POSTGRES_PORT'),
+            path='/{0}'.format(values.get('POSTGRES_DATABASE')),
         )
 
 
-settings: Settings = Settings(_env_file="configurations/.env")
+settings: Settings = Settings(_env_file='configurations/.env')

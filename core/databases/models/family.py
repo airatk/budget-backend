@@ -11,6 +11,6 @@ if TYPE_CHECKING:
 
 
 class Family(BaseModel):
-    members: list["User"] = relationship("User", back_populates="family")
+    members: list['User'] = relationship('User', back_populates='family')
 
     access_code: str = Column(String, unique=True, nullable=False)

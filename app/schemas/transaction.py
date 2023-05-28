@@ -25,7 +25,7 @@ class TransactionCreationData(BaseData, anystr_strip_whitespace=True):
     due_date: date
     due_time: time
     amount: PositiveFloat
-    note: str = ""
+    note: str = ''
 
 class TransactionUpdateData(BaseUpdateData, anystr_strip_whitespace=True):
     account_id: PositiveInt | None

@@ -19,15 +19,15 @@ from app.utilities.security.cors import (
 
 
 api: FastAPI = FastAPI(
-    title="Budget API",
-    description="web API for managing & planning both of joint & personal budgets",
-    version="1.0.0",
+    title='Budget API',
+    description='web API for managing & planning both of joint & personal budgets',
+    version='1.0.0',
     contact={
-        "name": "Airat K",
-        "url": "https://github.com/airatk",
+        'name': 'Airat K',
+        'url': 'https://github.com/airatk',
     },
     swagger_ui_parameters={
-        "filter": True,
+        'filter': True,
     },
 )
 

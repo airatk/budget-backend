@@ -11,28 +11,31 @@ from tests.test_app.utilities.controller_method_test_class import (
 )
 
 
-def test_get_summary(test_client: TestClient):
-    response: Response = test_client.get("/trend/summary")
+def test_get_summary(test_client: TestClient) -> None:
+    response: Response = test_client.get('/trend/summary')
 
     assert response.status_code == status.HTTP_200_OK, response.text
     assert isinstance(response.json(), list)
     assert len(response.json()) == 3
 
-def test_get_monthly_trend(test_client: TestClient, current_month_days_number: int):
-    response: Response = test_client.get("/trend/current-month")
+def test_get_monthly_trend(
+    test_client: TestClient,
+    current_month_days_number: int,
+) -> None:
+    response: Response = test_client.get('/trend/current-month')
 
     assert response.status_code == status.HTTP_200_OK, response.text
     assert isinstance(response.json(), list)
     assert len(response.json()) == current_month_days_number
 
 
-class TestGetLastNDaysHighlight(ControllerMethodTestClass, http_method="GET", api_endpoint="/trend/last-n-days"):
-    @mark.parametrize("test_n_days", (
+class TestGetLastNDaysHighlight(ControllerMethodTestClass, http_method='GET', api_endpoint='/trend/last-n-days'):
+    @mark.parametrize('test_n_days', (
         param(4),
-        param(None, id="default"),
+        param(None, id='default'),
         param(14),
     ))
-    @mark.parametrize("test_type", (
+    @mark.parametrize('test_type', (
         TransactionType.INCOME.value,
         TransactionType.OUTCOME.value,
         TransactionType.TRANSFER.value,
@@ -42,7 +45,7 @@ class TestGetLastNDaysHighlight(ControllerMethodTestClass, http_method="GET", ap
         test_client: TestClient,
         test_n_days: int | None,
         test_type: str,
-    ):
+    ) -> None:
         response: Response = self.request(
             test_client=test_client,
             n_days=test_n_days,
@@ -53,16 +56,16 @@ class TestGetLastNDaysHighlight(ControllerMethodTestClass, http_method="GET", ap
         assert isinstance(response.json(), list)
         assert len(response.json()) == test_n_days or 7
 
-    @mark.parametrize("test_n_days", (
-        param(3, id="lower"),
-        param(15, id="greater"),
-        param("string"),
+    @mark.parametrize('test_n_days', (
+        param(3, id='lower'),
+        param(15, id='greater'),
+        param('string'),
     ))
     def test_with_wrong_data(
         self,
         test_client: TestClient,
         test_n_days: Any,
-    ):
+    ) -> None:
         response: Response = self.request(
             test_client=test_client,
             n_days=test_n_days,

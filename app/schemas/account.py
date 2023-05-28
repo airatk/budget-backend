@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Any
+from typing import Any, cast
 
 from pydantic import Field, NonNegativeFloat, PositiveInt, validator
 
@@ -36,9 +36,9 @@ class PeriodSummaryData(BaseData):
     outcomes: NonNegativeFloat
     balance: float = 0
 
-    @validator("balance", pre=True)
+    @validator('balance', pre=True)
     def calculate_balance(cls, value: Any, values: dict[str, Any]) -> float:
-        return value or (values["incomes"] - values["outcomes"])
+        return cast(float, value or (values['incomes'] - values['outcomes']))
 
 class DailyHighlightData(BaseData):
     date: date

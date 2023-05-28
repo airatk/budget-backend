@@ -14,10 +14,10 @@ if TYPE_CHECKING:
 
 
 class Budget(BaseModel):
-    user_id: int | None = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"))
+    user_id: int | None = Column(BigInteger, ForeignKey('user.id', ondelete='CASCADE'))
 
-    user: Optional["User"] = relationship("User", back_populates="budgets")
-    categories: list["Category"] = relationship("Category", back_populates="budget")
+    user: Optional['User'] = relationship('User', back_populates='budgets')
+    categories: list['Category'] = relationship('Category', back_populates='budget')
 
     name: str = Column(String, index=True, nullable=False)
     type: BudgetType = Column(Enum(BudgetType, values_callable=persist_enumeration_values), nullable=False)

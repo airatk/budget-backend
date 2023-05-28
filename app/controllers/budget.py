@@ -22,12 +22,12 @@ from core.databases.models.utilities.types import BudgetType
 from core.databases.services import BudgetService
 
 
-budget_controller: APIRouter = APIRouter(prefix="/budget", tags=["budget"])
+budget_controller: APIRouter = APIRouter(prefix='/budget', tags=['budget'])
 
 
-@budget_controller.get("/list", response_model=list[BudgetOutputData])
+@budget_controller.get('/list', response_model=list[BudgetOutputData])
 async def get_budgets(
-    budget_type: BudgetType = Query(..., alias="type"),
+    budget_type: BudgetType = Query(..., alias='type'),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ) -> list[Budget]:
@@ -48,9 +48,9 @@ async def get_budgets(
             ),
         )
 
-@budget_controller.get("/item", response_model=BudgetOutputData)
+@budget_controller.get('/item', response_model=BudgetOutputData)
 async def get_budget(
-    budget_id: PositiveInt = Query(..., alias="id"),
+    budget_id: PositiveInt = Query(..., alias='id'),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ) -> Budget:
@@ -68,7 +68,7 @@ async def get_budget(
 
     return budget
 
-@budget_controller.post("/create", response_model=BudgetOutputData, status_code=status.HTTP_201_CREATED)
+@budget_controller.post('/create', response_model=BudgetOutputData, status_code=status.HTTP_201_CREATED)
 async def create_budget(
     budget_data: BudgetCreationData,
     current_user: User = Depends(identify_user),
@@ -88,10 +88,10 @@ async def create_budget(
         categories=categories,
     )
 
-@budget_controller.patch("/update", response_model=BudgetOutputData)
+@budget_controller.patch('/update', response_model=BudgetOutputData)
 async def update_budget(
     budget_data: BudgetUpdateData,
-    budget_id: PositiveInt = Query(..., alias="id"),
+    budget_id: PositiveInt = Query(..., alias='id'),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
 ) -> Budget:
@@ -107,7 +107,7 @@ async def update_budget(
     relationship_attributes: dict[str, Any] = {}
 
     if budget_data.category_ids is not None:
-        relationship_attributes["categories"] = get_validated_user_categories_by_ids(
+        relationship_attributes['categories'] = get_validated_user_categories_by_ids(
             category_ids=budget_data.category_ids,
             user=current_user,
             session=session,
@@ -119,12 +119,12 @@ async def update_budget(
         **relationship_attributes,
     )
 
-@budget_controller.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
+@budget_controller.delete('/delete', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_budget(
-    budget_id: PositiveInt = Query(..., alias="id"),
+    budget_id: PositiveInt = Query(..., alias='id'),
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
-):
+) -> None:
     budget_service: BudgetService = BudgetService(session=session)
     budget: Budget | None = budget_service.get_by_id(budget_id)
 

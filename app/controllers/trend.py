@@ -19,10 +19,10 @@ from core.databases.models.utilities.types import (
 from core.databases.services import TransactionService
 
 
-trend_controller: APIRouter = APIRouter(prefix="/trend", tags=["trend"])
+trend_controller: APIRouter = APIRouter(prefix='/trend', tags=['trend'])
 
 
-@trend_controller.get("/summary", response_model=list[PeriodSummaryData])
+@trend_controller.get('/summary', response_model=list[PeriodSummaryData])
 async def get_summary(
     current_user: User = Depends(identify_user),
     session: Session = Depends(define_postgres_session),
@@ -45,7 +45,7 @@ async def get_summary(
         ) for summary_period_type in SummaryPeriodType
     ]
 
-@trend_controller.get("/last-n-days", response_model=list[DailyHighlightData])
+@trend_controller.get('/last-n-days', response_model=list[DailyHighlightData])
 async def get_last_n_days_highlight(
     n_days: int = Query(7, ge=MIN_HIGHLIGHT_DAYS, le=MAX_HIGHLIGHT_DAYS),
     transaction_type: TransactionType = TransactionType.OUTCOME,
@@ -69,7 +69,7 @@ async def get_last_n_days_highlight(
         )
     ]
 
-@trend_controller.get("/current-month", response_model=list[TrendPointData])
+@trend_controller.get('/current-month', response_model=list[TrendPointData])
 async def get_current_month(  # noqa: WPS210
     transaction_type: TransactionType = TransactionType.OUTCOME,
     current_user: User = Depends(identify_user),

@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from typing import cast
 
-from sqlalchemy import Boolean, func, select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import ColumnElement, Select, Subquery
 
@@ -27,8 +27,8 @@ class TransactionService(BaseService[Transaction]):
 
     def get_user_transaction_periods(self, user: User) -> list[tuple[int, int]]:
         query: Select = select(
-            func.DATE_PART("YEAR", Transaction.due_date),
-            func.DATE_PART("MONTH", Transaction.due_date),
+            func.DATE_PART('YEAR', Transaction.due_date),
+            func.DATE_PART('MONTH', Transaction.due_date),
         ).where(
             Transaction.account.has(user=user),
         )
@@ -44,14 +44,14 @@ class TransactionService(BaseService[Transaction]):
         transactions_type: TransactionType,
         summary_period_type: SummaryPeriodType,
     ) -> float:
-        period_conditions: list[ColumnElement[Boolean]] = []
+        period_conditions: list[ColumnElement[bool]] = []
         today_date: date = datetime.today().date()
 
         if summary_period_type in {SummaryPeriodType.CURRENT_YEAR, SummaryPeriodType.CURRENT_MONTH}:
-            period_conditions.append(func.DATE_PART("YEAR", Transaction.due_date) == today_date.year)
+            period_conditions.append(func.DATE_PART('YEAR', Transaction.due_date) == today_date.year)
 
         if summary_period_type is SummaryPeriodType.CURRENT_MONTH:
-            period_conditions.append(func.DATE_PART("MONTH", Transaction.due_date) == today_date.month)
+            period_conditions.append(func.DATE_PART('MONTH', Transaction.due_date) == today_date.month)
 
         query: Select = select(
             func.SUM(Transaction.amount),
@@ -71,8 +71,8 @@ class TransactionService(BaseService[Transaction]):
         last_date: date,
     ) -> list[tuple[date, float]]:
         query: Select = select(
-            Transaction.due_date.label("date"),
-            func.SUM(Transaction.amount).label("sum"),
+            Transaction.due_date.label('date'),
+            func.SUM(Transaction.amount).label('sum'),
         ).where(
             Transaction.account.has(user=user),
             Transaction.type == transaction_type,
@@ -96,9 +96,9 @@ class TransactionService(BaseService[Transaction]):
         transaction_type: TransactionType,
     ) -> list[tuple[date, float, float]]:
         current_month_query: Subquery = select(
-            func.DATE_PART("DAY", Transaction.due_date).label("day"),
-            Transaction.due_date.label("date"),
-            func.SUM(Transaction.amount).label("amount"),
+            func.DATE_PART('DAY', Transaction.due_date).label('day'),
+            Transaction.due_date.label('date'),
+            func.SUM(Transaction.amount).label('amount'),
         ).where(
             Transaction.account.has(user=user),
             Transaction.type == transaction_type,
@@ -108,7 +108,7 @@ class TransactionService(BaseService[Transaction]):
 
         average_month_query: Subquery = select(
             current_month_query.c.day,
-            func.AVG(current_month_query.c.amount).label("average_amount"),
+            func.AVG(current_month_query.c.amount).label('average_amount'),
         ).group_by(
             current_month_query.c.day,
         ).subquery()
@@ -117,7 +117,7 @@ class TransactionService(BaseService[Transaction]):
 
         transaction_statistics_query: Select = select(
             current_month_query.c.date,
-            current_month_query.c.amount.label("current_amount"),
+            current_month_query.c.amount.label('current_amount'),
             average_month_query.c.average_amount,
         ).join(
             average_month_query,

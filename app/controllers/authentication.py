@@ -17,10 +17,10 @@ from core.databases.models import User
 from core.databases.services import UserService
 
 
-authentication_controller: APIRouter = APIRouter(tags=["authentication"])
+authentication_controller: APIRouter = APIRouter(tags=['authentication'])
 
 
-@authentication_controller.post("/sign-up", response_model=AuthenticationData, status_code=status.HTTP_201_CREATED)
+@authentication_controller.post('/sign-up', response_model=AuthenticationData, status_code=status.HTTP_201_CREATED)
 async def sign_up(
     user_data: UserCreationData,
     session: Session = Depends(define_postgres_session),
@@ -42,7 +42,7 @@ async def sign_up(
         user=user,
     )
 
-@authentication_controller.get("/sign-in", response_model=AuthenticationData)
+@authentication_controller.get('/sign-in', response_model=AuthenticationData)
 async def sign_in(
     credentials: HTTPBasicCredentials = Depends(HTTPBasic()),
     session: Session = Depends(define_postgres_session),

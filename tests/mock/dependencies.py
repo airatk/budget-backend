@@ -17,7 +17,7 @@ def define_test_postgres_session() -> Generator[Session, None, None]:
 
 def identify_test_user(
     session: Session = Depends(define_postgres_session),
-    test_username: str = Header(default="test-user"),
+    test_username: str = Header(default='test-user'),
 ) -> User:
     return session.scalar(
         select(User).where(User.username == test_username),

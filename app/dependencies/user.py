@@ -22,6 +22,6 @@ def identify_user(
     user: User | None = user_service.get_by_id(user_id)
 
     if user is None:
-        raise UserUnauthorised(message="The user does not seem to exist")
+        raise UserUnauthorised(message='The user does not seem to exist')
 
     return user

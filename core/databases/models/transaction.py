@@ -24,14 +24,14 @@ if TYPE_CHECKING:
 
 
 class Transaction(BaseModel):
-    account_id: int = Column(BigInteger, ForeignKey("account.id", ondelete="CASCADE"), nullable=False)
-    category_id: int = Column(BigInteger, ForeignKey("category.id", ondelete="SET NULL"))
+    account_id: int = Column(BigInteger, ForeignKey('account.id', ondelete='CASCADE'), nullable=False)
+    category_id: int = Column(BigInteger, ForeignKey('category.id', ondelete='SET NULL'))
 
-    account: "Account" = relationship("Account", back_populates="transactions")
-    category: "Category" = relationship("Category", back_populates="transactions")
+    account: 'Account' = relationship('Account', back_populates='transactions')
+    category: 'Category' = relationship('Category', back_populates='transactions')
 
     type: TransactionType = Column(Enum(TransactionType, values_callable=persist_enumeration_values), nullable=False)
     due_date: date = Column(Date, nullable=False)
     due_time: time = Column(Time, nullable=False)
     amount: float = Column(Float, nullable=False)
-    note: str = Column(String, default="", nullable=False)
+    note: str = Column(String, default='', nullable=False)

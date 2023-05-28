@@ -16,8 +16,8 @@ class BudgetOutputData(BaseData, orm_mode=True):
     categories: list[CategoryOutputData]
 
 class BudgetInputData(BaseData, anystr_strip_whitespace=True):
-    def dict(self, **keyword_arguments) -> dict[str, Any]:
-        keyword_arguments["exclude"] = {"category_ids"}
+    def dict(self, **keyword_arguments: Any) -> dict[str, Any]:
+        keyword_arguments['exclude'] = {'category_ids'}
 
         return super().dict(**keyword_arguments)
 

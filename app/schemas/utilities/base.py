@@ -8,7 +8,7 @@ class BaseData(BaseModel):
 
 
 class BaseUpdateData(BaseData):
-    def dict(self, **keyword_arguments) -> dict[str, Any]:
-        keyword_arguments["exclude_unset"] = True
+    def dict(self, **keyword_arguments: Any) -> dict[str, Any]:
+        keyword_arguments['exclude_unset'] = True
 
         return super().dict(**keyword_arguments)

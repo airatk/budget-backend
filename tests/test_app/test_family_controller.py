@@ -4,23 +4,27 @@ from httpx import Response
 from pytest import mark, param
 
 
-@mark.parametrize("test_username, expected_status_code", (
+@mark.parametrize('test_username, expected_status_code', (
     param(
-        "test-user",
+        'test-user',
         status.HTTP_200_OK,
-        id="family_member",
+        id='family_member',
     ),
     param(
-        "not-family-member",
+        'not-family-member',
         status.HTTP_400_BAD_REQUEST,
-        id="not_family_member",
+        id='not_family_member',
     ),
 ))
-def test_get_family(test_client: TestClient, test_username: str, expected_status_code: int):
+def test_get_family(
+    test_client: TestClient,
+    test_username: str,
+    expected_status_code: int,
+) -> None:
     response: Response = test_client.get(
-        url="/family/current",
+        url='/family/current',
         headers={
-            "test-username": test_username,
+            'test-username': test_username,
         },
     )
 
