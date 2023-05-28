@@ -1,8 +1,11 @@
 # Project Files
-.env*
-!.env-example
+configurations/*.env
+!configurations/.test.env
+!configurations/.example.env
+
 tests/coverage-report-pages/
 specifications/*-examples/
+
 
 # Python & System Files
 .venv/
