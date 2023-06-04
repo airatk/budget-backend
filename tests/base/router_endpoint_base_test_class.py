@@ -5,19 +5,19 @@ from httpx import Response
 from httpx._client import USE_CLIENT_DEFAULT  # noqa: WPS436
 
 
-class ControllerMethodTestClass:
+class RouterEndpointBaseTestClass:
     http_method: str
-    api_endpoint: str
+    endpoint: str
 
     def __init_subclass__(
         cls,
         http_method: str,
-        api_endpoint: str,
+        endpoint: str,
     ) -> None:
         super().__init_subclass__()
 
         cls.http_method = http_method
-        cls.api_endpoint = api_endpoint
+        cls.endpoint = endpoint
 
     def request(
         self,
@@ -32,7 +32,7 @@ class ControllerMethodTestClass:
 
         return test_client.request(
             method=self.http_method,
-            url=self.api_endpoint,
+            url=self.endpoint,
             json=test_data,
             params=query_parameters or None,
             auth=test_credentials or USE_CLIENT_DEFAULT,

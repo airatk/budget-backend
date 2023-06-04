@@ -6,8 +6,8 @@ from httpx import Response
 from pytest import mark, param
 
 from core.databases.models.utilities.types import CategoryType
-from tests.test_app.utilities.controller_method_test_class import (
-    ControllerMethodTestClass,
+from tests.base.router_endpoint_base_test_class import (
+    RouterEndpointBaseTestClass,
 )
 
 
@@ -19,7 +19,7 @@ def test_get_categories(test_client: TestClient) -> None:
     assert response.json()
 
 
-class TestGetCategory(ControllerMethodTestClass, http_method='GET', api_endpoint='/category/item'):
+class TestGetCategory(RouterEndpointBaseTestClass, http_method='GET', endpoint='/category/item'):
     @mark.parametrize('test_id, expected_data', (
         param(
             1,
@@ -88,7 +88,7 @@ class TestGetCategory(ControllerMethodTestClass, http_method='GET', api_endpoint
         assert response.status_code == expected_status_code, response.text
 
 
-class TestCreateCategory(ControllerMethodTestClass, http_method='POST', api_endpoint='/category/create'):
+class TestCreateCategory(RouterEndpointBaseTestClass, http_method='POST', endpoint='/category/create'):
     @mark.parametrize('test_data, expected_data', (
         param(
             {
@@ -150,7 +150,7 @@ class TestCreateCategory(ControllerMethodTestClass, http_method='POST', api_endp
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
 
-class TestUpdateCategory(ControllerMethodTestClass, http_method='PATCH', api_endpoint='/category/update'):
+class TestUpdateCategory(RouterEndpointBaseTestClass, http_method='PATCH', endpoint='/category/update'):
     @mark.parametrize('test_id, test_data, expected_data', (
         param(
             1,
@@ -256,7 +256,7 @@ class TestUpdateCategory(ControllerMethodTestClass, http_method='PATCH', api_end
         assert response.status_code == expected_status_code, response.text
 
 
-class TestDeleteCategory(ControllerMethodTestClass, http_method='DELETE', api_endpoint='/category/delete'):
+class TestDeleteCategory(RouterEndpointBaseTestClass, http_method='DELETE', endpoint='/category/delete'):
     @mark.parametrize('test_id', (
         1,
     ))

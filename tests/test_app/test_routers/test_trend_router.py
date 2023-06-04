@@ -6,8 +6,8 @@ from httpx import Response
 from pytest import mark, param
 
 from core.databases.models.utilities.types import TransactionType
-from tests.test_app.utilities.controller_method_test_class import (
-    ControllerMethodTestClass,
+from tests.base.router_endpoint_base_test_class import (
+    RouterEndpointBaseTestClass,
 )
 
 
@@ -29,7 +29,7 @@ def test_get_monthly_trend(
     assert len(response.json()) == current_month_days_number
 
 
-class TestGetLastNDaysHighlight(ControllerMethodTestClass, http_method='GET', api_endpoint='/trend/last-n-days'):
+class TestGetLastNDaysHighlight(RouterEndpointBaseTestClass, http_method='GET', endpoint='/trend/last-n-days'):
     @mark.parametrize('test_n_days', (
         param(4),
         param(None, id='default'),

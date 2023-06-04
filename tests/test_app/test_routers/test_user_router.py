@@ -5,8 +5,8 @@ from fastapi.testclient import TestClient
 from httpx import Response
 from pytest import mark, param
 
-from tests.test_app.utilities.controller_method_test_class import (
-    ControllerMethodTestClass,
+from tests.base.router_endpoint_base_test_class import (
+    RouterEndpointBaseTestClass,
 )
 
 
@@ -21,7 +21,7 @@ def test_get_current_user(test_client: TestClient) -> None:
     }
 
 
-class TestGetRelative(ControllerMethodTestClass, http_method='GET', api_endpoint='/user/relative'):
+class TestGetRelative(RouterEndpointBaseTestClass, http_method='GET', endpoint='/user/relative'):
     @mark.parametrize('test_data', (
         param(
             {

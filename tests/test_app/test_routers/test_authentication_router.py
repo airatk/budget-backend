@@ -5,12 +5,12 @@ from fastapi.testclient import TestClient
 from httpx import Response
 from pytest import mark, param
 
-from tests.test_app.utilities.controller_method_test_class import (
-    ControllerMethodTestClass,
+from tests.base.router_endpoint_base_test_class import (
+    RouterEndpointBaseTestClass,
 )
 
 
-class TestSignUp(ControllerMethodTestClass, http_method='POST', api_endpoint='/sign-up'):
+class TestSignUp(RouterEndpointBaseTestClass, http_method='POST', endpoint='/sign-up'):
     @mark.parametrize('test_data', (
         param(
             {
@@ -92,7 +92,7 @@ class TestSignUp(ControllerMethodTestClass, http_method='POST', api_endpoint='/s
         assert response.status_code == expected_status_code, response.text
 
 
-class TestSignIn(ControllerMethodTestClass, http_method='GET', api_endpoint='/sign-in'):
+class TestSignIn(RouterEndpointBaseTestClass, http_method='GET', endpoint='/sign-in'):
     @mark.parametrize('test_credentials', (
         param(
             ('test-user', 'test-password'),
