@@ -1,9 +1,10 @@
+from asyncio import run
 from logging.config import fileConfig
 
 from alembic import context
 from alembic.config import Config
-from sqlalchemy import MetaData, create_engine, pool
-from sqlalchemy.engine import Engine
+from sqlalchemy import Connection, MetaData, pool
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from core.databases.models.utilities.base import BaseModel
 from core.settings import settings
@@ -22,7 +23,7 @@ if config.config_file_name is not None:
 target_metadata: MetaData = BaseModel.metadata
 
 
-def run_migrations_offline():
+def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
     This configures the context with just a URL
@@ -47,29 +48,32 @@ def run_migrations_offline():
         context.run_migrations()
 
 
-def run_migrations_online():
+async def run_migrations_online() -> None:
     """Run migrations in 'online' mode.
 
     In this scenario we need to create an Engine
     and associate a connection with the context.
     """
 
-    connectable: Engine = create_engine(
-        url=settings.POSTGRES_URL,  # type: ignore [arg-type]
+    connectable: AsyncEngine = create_async_engine(
+        url=settings.POSTGRES_URL,
         poolclass=pool.NullPool,
     )
 
-    with connectable.connect() as connection:
-        context.configure(
-            connection=connection,
-            target_metadata=target_metadata
-        )
+    async with connectable.connect() as connection:
+        await connection.run_sync(_run_sync_migrations_online)
 
-        with context.begin_transaction():
-            context.run_migrations()
+def _run_sync_migrations_online(connection: Connection) -> None:
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+    )
+
+    with context.begin_transaction():
+        context.run_migrations()
 
 
 if context.is_offline_mode():
     run_migrations_offline()
 else:
-    run_migrations_online()
+    run(run_migrations_online())

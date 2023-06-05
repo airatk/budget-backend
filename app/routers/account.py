@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Query, status
 from pydantic import PositiveInt
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
@@ -17,13 +17,13 @@ from app.utilities.exceptions.records import (
 )
 from core.databases.models import Account, User
 from core.databases.models.utilities.types import TransactionType
-from core.databases.services import AccountService
+from core.databases.repositories import AccountRepository
 
 
-account_controller: APIRouter = APIRouter(prefix='/account', tags=['account'])
+account_router: APIRouter = APIRouter(prefix='/account', tags=['account'])
 
 
-@account_controller.get('/balances', response_model=list[AccountBalanceData])
+@account_router.get('/balances', response_model=list[AccountBalanceData])
 async def get_balances(
     current_user: User = Depends(identify_user),
 ) -> list[AccountBalanceData]:
@@ -41,34 +41,34 @@ async def get_balances(
         ) for account in current_user.accounts
     ]
 
-@account_controller.get('/list', response_model=list[AccountOutputData])
+@account_router.get('/list', response_model=list[AccountOutputData])
 async def get_accounts(
     current_user: User = Depends(identify_user),
 ) -> list[Account]:
     return current_user.accounts
 
-@account_controller.post('/create', response_model=AccountOutputData, status_code=status.HTTP_201_CREATED)
+@account_router.post('/create', response_model=AccountOutputData, status_code=status.HTTP_201_CREATED)
 async def create_account(
     account_data: AccountCreationData,
     current_user: User = Depends(identify_user),
-    session: Session = Depends(define_postgres_session),
+    session: AsyncSession = Depends(define_postgres_session),
 ) -> Account:
-    account_service: AccountService = AccountService(session=session)
+    account_repository: AccountRepository = AccountRepository(session=session)
 
-    return account_service.create(
+    return await account_repository.create(
         record_data=account_data.dict(),
         user=current_user,
     )
 
-@account_controller.patch('/update', response_model=AccountOutputData)
+@account_router.patch('/update', response_model=AccountOutputData)
 async def update_account(
     account_data: AccountUpdateData,
     account_id: PositiveInt = Query(..., alias='id'),
     current_user: User = Depends(identify_user),
-    session: Session = Depends(define_postgres_session),
+    session: AsyncSession = Depends(define_postgres_session),
 ) -> Account:
-    account_service: AccountService = AccountService(session=session)
-    account: Account | None = account_service.get_by_id(account_id)
+    account_repository: AccountRepository = AccountRepository(session=session)
+    account: Account | None = await account_repository.get_by_id(account_id)
 
     if account is None:
         raise CouldNotFindRecord(account_id, Account)
@@ -76,19 +76,19 @@ async def update_account(
     if account.user != current_user:
         raise CouldNotAccessRecord(account_id, Account)
 
-    return account_service.update(
+    return await account_repository.update(
         record=account,
         record_data=account_data.dict(),
     )
 
-@account_controller.delete('/delete', status_code=status.HTTP_204_NO_CONTENT)
+@account_router.delete('/delete', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_account(
     account_id: PositiveInt = Query(..., alias='id'),
     current_user: User = Depends(identify_user),
-    session: Session = Depends(define_postgres_session),
+    session: AsyncSession = Depends(define_postgres_session),
 ) -> None:
-    account_service: AccountService = AccountService(session=session)
-    account: Account | None = account_service.get_by_id(account_id)
+    account_repository: AccountRepository = AccountRepository(session=session)
+    account: Account | None = await account_repository.get_by_id(account_id)
 
     if account is None:
         raise CouldNotFindRecord(account_id, Account)
@@ -96,4 +96,4 @@ async def delete_account(
     if account.user != current_user:
         raise CouldNotAccessRecord(account_id, Account)
 
-    account_service.delete(account)
+    await account_repository.delete(account)

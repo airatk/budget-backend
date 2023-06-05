@@ -6,10 +6,10 @@ from app.utilities.exceptions.users import NotFamilyMember
 from core.databases.models import Family, User
 
 
-family_controller: APIRouter = APIRouter(prefix='/family', tags=['family'])
+family_router: APIRouter = APIRouter(prefix='/family', tags=['family'])
 
 
-@family_controller.get('/current', response_model=FamilyOutputData)
+@family_router.get('/current', response_model=FamilyOutputData)
 async def get_family(
     current_user: User = Depends(identify_user),
 ) -> Family:

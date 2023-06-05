@@ -1,15 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.controllers import (
-    account_controller,
-    authentication_controller,
-    budget_controller,
-    category_controller,
-    family_controller,
-    transaction_controller,
-    trend_controller,
-    user_controller,
+from app.routers import (
+    account_router,
+    authentication_router,
+    budget_router,
+    category_router,
+    family_router,
+    transaction_router,
+    trend_router,
+    user_router,
 )
 from app.utilities.security.cors import (
     ALLOWED_HEADERS,
@@ -39,11 +39,11 @@ api.add_middleware(
     allow_credentials=True,
 )
 
-api.include_router(authentication_controller)
-api.include_router(family_controller)
-api.include_router(user_controller)
-api.include_router(trend_controller)
-api.include_router(account_controller)
-api.include_router(category_controller)
-api.include_router(transaction_controller)
-api.include_router(budget_controller)
+api.include_router(authentication_router)
+api.include_router(family_router)
+api.include_router(user_router)
+api.include_router(trend_router)
+api.include_router(account_router)
+api.include_router(category_router)
+api.include_router(transaction_router)
+api.include_router(budget_router)

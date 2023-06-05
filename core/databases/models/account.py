@@ -1,10 +1,9 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import BigInteger, Column, Enum, Float, ForeignKey, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .utilities.base import BaseModel
-from .utilities.callables import persist_enumeration_values
 from .utilities.types import CurrencyType
 
 
@@ -14,11 +13,11 @@ if TYPE_CHECKING:
 
 
 class Account(BaseModel):
-    user_id: int = Column(BigInteger, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
 
-    user: 'User' = relationship('User', back_populates='accounts')
-    transactions: list['Transaction'] = relationship('Transaction', back_populates='account', passive_deletes=True)
+    user: Mapped['User'] = relationship('User', back_populates='accounts', lazy='joined')
+    transactions: Mapped[list['Transaction']] = relationship('Transaction', back_populates='account', cascade='all, delete', lazy='joined')
 
-    name: str = Column(String, index=True, nullable=False)
-    currency: CurrencyType = Column(Enum(CurrencyType, values_callable=persist_enumeration_values), nullable=False)
-    opening_balance: float = Column(Float, default=0, nullable=False)
+    name: Mapped[str] = mapped_column(index=True)
+    currency: Mapped[CurrencyType]
+    opening_balance: Mapped[float] = mapped_column(default=0)

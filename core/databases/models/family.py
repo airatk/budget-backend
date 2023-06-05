@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Column, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .utilities.base import BaseModel
 
@@ -11,6 +10,6 @@ if TYPE_CHECKING:
 
 
 class Family(BaseModel):
-    members: list['User'] = relationship('User', back_populates='family')
+    members: Mapped[list['User']] = relationship('User', back_populates='family', lazy='joined')
 
-    access_code: str = Column(String, unique=True, nullable=False)
+    access_code: Mapped[str] = mapped_column(unique=True)

@@ -2,11 +2,10 @@ from typing import Annotated
 
 from pydantic import Field
 
-from app.utilities.constants import (
-    MAX_TRANSACTION_MONTH,
-    MIN_TRANSACTION_MONTH,
-    MIN_TRANSACTION_YEAR,
-)
+
+MIN_TRANSACTION_YEAR: int = 2000
+MIN_TRANSACTION_MONTH: int = 1
+MAX_TRANSACTION_MONTH: int = 12
 
 
 Year = Annotated[

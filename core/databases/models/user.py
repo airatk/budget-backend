@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import BigInteger, Column, ForeignKey, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .utilities.base import BaseModel
 from .utilities.constants import MAX_USERNAME_LENGTH
@@ -15,12 +15,12 @@ if TYPE_CHECKING:
 
 
 class User(BaseModel):
-    family_id: int = Column(BigInteger, ForeignKey('family.id', ondelete='SET NULL'))
+    family_id: Mapped[int | None] = mapped_column(ForeignKey('family.id'))
 
-    family: 'Family' = relationship('Family', back_populates='members')
-    accounts: list['Account'] = relationship('Account', back_populates='user', passive_deletes=True)
-    categories: list['Category'] = relationship('Category', back_populates='user', passive_deletes=True)
-    budgets: list['Budget'] = relationship('Budget', back_populates='user', passive_deletes=True)
+    family: Mapped['Family | None'] = relationship('Family', back_populates='members', lazy='joined')
+    accounts: Mapped[list['Account']] = relationship('Account', back_populates='user', cascade='all, delete', lazy='joined')
+    categories: Mapped[list['Category']] = relationship('Category', back_populates='user', cascade='all, delete', lazy='joined')
+    budgets: Mapped[list['Budget']] = relationship('Budget', back_populates='user', cascade='all, delete', lazy='joined')
 
-    username: str = Column(String(MAX_USERNAME_LENGTH), unique=True, index=True, nullable=False)
-    password: str = Column(String, nullable=False)
+    username: Mapped[str] = mapped_column(String(MAX_USERNAME_LENGTH), unique=True, index=True)
+    password: Mapped[str]

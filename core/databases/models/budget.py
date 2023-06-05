@@ -1,10 +1,9 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
-from sqlalchemy import BigInteger, Column, Enum, Float, ForeignKey, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .utilities.base import BaseModel
-from .utilities.callables import persist_enumeration_values
 from .utilities.types import BudgetType
 
 
@@ -14,11 +13,11 @@ if TYPE_CHECKING:
 
 
 class Budget(BaseModel):
-    user_id: int | None = Column(BigInteger, ForeignKey('user.id', ondelete='CASCADE'))
+    user_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
 
-    user: Optional['User'] = relationship('User', back_populates='budgets')
-    categories: list['Category'] = relationship('Category', back_populates='budget')
+    user: Mapped['User'] = relationship('User', back_populates='budgets', lazy='joined')
+    categories: Mapped[list['Category']] = relationship('Category', back_populates='budget', lazy='joined')
 
-    name: str = Column(String, index=True, nullable=False)
-    type: BudgetType = Column(Enum(BudgetType, values_callable=persist_enumeration_values), nullable=False)
-    planned_outcomes: float = Column(Float, default=0, nullable=False)
+    name: Mapped[str] = mapped_column(index=True)
+    type: Mapped[BudgetType]
+    planned_outcomes: Mapped[float] = mapped_column(default=0)

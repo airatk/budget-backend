@@ -1,10 +1,10 @@
-from typing import Generator
+from typing import AsyncIterator
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.databases.sessions import PostgresSession
 
 
-def define_postgres_session() -> Generator[Session, None, None]:
-    with PostgresSession() as postgres_session:
+async def define_postgres_session() -> AsyncIterator[AsyncSession]:
+    async with PostgresSession() as postgres_session:
         yield postgres_session

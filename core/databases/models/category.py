@@ -1,10 +1,9 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import BigInteger, Column, Enum, ForeignKey, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .utilities.base import BaseModel
-from .utilities.callables import persist_enumeration_values
 from .utilities.types import CategoryType
 
 
@@ -15,15 +14,15 @@ if TYPE_CHECKING:
 
 
 class Category(BaseModel):
-    user_id: int = Column(BigInteger, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
-    base_category_id: int = Column(BigInteger, ForeignKey('category.id', ondelete='CASCADE'))
-    budget_id: int = Column(BigInteger, ForeignKey('budget.id', ondelete='SET NULL'))
+    user_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
+    base_category_id: Mapped[int | None] = mapped_column(ForeignKey('category.id'))
+    budget_id: Mapped[int | None] = mapped_column(ForeignKey('budget.id'))
 
-    user: 'User' = relationship('User', back_populates='categories')
-    base_category: 'Category' = relationship('Category', back_populates='subcategories', remote_side=lambda: Category.id)
-    subcategories: list['Category'] = relationship('Category', back_populates='base_category', passive_deletes=True)
-    budget: 'Budget' = relationship('Budget', back_populates='categories')
-    transactions: list['Transaction'] = relationship('Transaction', back_populates='category')
+    user: Mapped['User'] = relationship('User', back_populates='categories', lazy='joined')
+    base_category: Mapped['Category | None'] = relationship('Category', back_populates='subcategories', lazy='joined', remote_side=lambda: Category.id)
+    subcategories: Mapped[list['Category']] = relationship('Category', back_populates='base_category', cascade='all, delete', lazy='joined')
+    budget: Mapped['Budget | None'] = relationship('Budget', back_populates='categories', lazy='joined')
+    transactions: Mapped[list['Transaction']] = relationship('Transaction', back_populates='category', lazy='joined')
 
-    name: str = Column(String, index=True, nullable=False)
-    type: CategoryType = Column(Enum(CategoryType, values_callable=persist_enumeration_values), nullable=False)
+    name: Mapped[str] = mapped_column(index=True)
+    type: Mapped[CategoryType]

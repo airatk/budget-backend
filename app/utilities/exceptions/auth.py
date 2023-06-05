@@ -4,10 +4,10 @@ from .response import BaseApiException
 
 
 class UserUnauthorised(BaseApiException):
-    def __init__(self, message: str):
+    def __init__(self, message: str | None):
         super().__init__(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            message=message,
+            message=message or 'User is not authorised',
         )
 
 

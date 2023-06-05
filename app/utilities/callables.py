@@ -1,12 +1,12 @@
 from typing import Iterable
 
 from sqlalchemy import or_
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.utilities.exceptions.records import CouldNotAccessRecords
 from core.databases.models import Category, Transaction, User
 from core.databases.models.utilities.types import TransactionType
-from core.databases.services import CategoryService
+from core.databases.repositories import CategoryRepository
 
 
 def sum_transactions_of_given_type(
@@ -24,13 +24,13 @@ def sum_transactions_of_given_type(
     )
 
 
-def get_validated_user_categories_by_ids(
+async def get_validated_user_categories_by_ids(
     category_ids: list[int],
     user: User,
-    session: Session,
+    session: AsyncSession,
 ) -> list[Category]:
-    category_service: CategoryService = CategoryService(session=session)
-    categories: list[Category] = category_service.get_list(
+    category_repository: CategoryRepository = CategoryRepository(session=session)
+    categories: list[Category] = await category_repository.get_list(
         or_(
             Category.id.in_(category_ids),
             Category.base_category_id.in_(category_ids),

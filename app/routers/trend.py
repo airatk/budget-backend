@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
@@ -10,34 +10,37 @@ from app.schemas.account import (
     PeriodSummaryData,
     TrendPointData,
 )
-from app.utilities.constants import MAX_HIGHLIGHT_DAYS, MIN_HIGHLIGHT_DAYS
 from core.databases.models import User
 from core.databases.models.utilities.types import (
     SummaryPeriodType,
     TransactionType,
 )
-from core.databases.services import TransactionService
+from core.databases.repositories import TransactionRepository
 
 
-trend_controller: APIRouter = APIRouter(prefix='/trend', tags=['trend'])
+MIN_HIGHLIGHT_DAYS: int = 4
+MAX_HIGHLIGHT_DAYS: int = 14
 
 
-@trend_controller.get('/summary', response_model=list[PeriodSummaryData])
+trend_router: APIRouter = APIRouter(prefix='/trend', tags=['trend'])
+
+
+@trend_router.get('/summary', response_model=list[PeriodSummaryData])
 async def get_summary(
     current_user: User = Depends(identify_user),
-    session: Session = Depends(define_postgres_session),
+    session: AsyncSession = Depends(define_postgres_session),
 ) -> list[PeriodSummaryData]:
-    transaction_service: TransactionService = TransactionService(session=session)
+    transaction_repository: TransactionRepository = TransactionRepository(session=session)
 
     return [
         PeriodSummaryData(
             period=summary_period_type,
-            incomes=transaction_service.get_user_transactions_sum_for_summary_period(
+            incomes=await transaction_repository.get_user_transactions_sum_for_summary_period(
                 user=current_user,
                 transactions_type=TransactionType.INCOME,
                 summary_period_type=summary_period_type,
             ),
-            outcomes=transaction_service.get_user_transactions_sum_for_summary_period(
+            outcomes=await transaction_repository.get_user_transactions_sum_for_summary_period(
                 user=current_user,
                 transactions_type=TransactionType.OUTCOME,
                 summary_period_type=summary_period_type,
@@ -45,14 +48,14 @@ async def get_summary(
         ) for summary_period_type in SummaryPeriodType
     ]
 
-@trend_controller.get('/last-n-days', response_model=list[DailyHighlightData])
+@trend_router.get('/last-n-days', response_model=list[DailyHighlightData])
 async def get_last_n_days_highlight(
     n_days: int = Query(7, ge=MIN_HIGHLIGHT_DAYS, le=MAX_HIGHLIGHT_DAYS),
     transaction_type: TransactionType = TransactionType.OUTCOME,
     current_user: User = Depends(identify_user),
-    session: Session = Depends(define_postgres_session),
+    session: AsyncSession = Depends(define_postgres_session),
 ) -> list[DailyHighlightData]:
-    transaction_service: TransactionService = TransactionService(session=session)
+    transaction_repository: TransactionRepository = TransactionRepository(session=session)
 
     today_date: date = datetime.today().date()
     first_date: date = today_date - timedelta(days=n_days - 1)
@@ -61,7 +64,7 @@ async def get_last_n_days_highlight(
         DailyHighlightData(
             date=transaction_date,
             amount=transaction_sum,
-        ) for (transaction_date, transaction_sum) in transaction_service.get_user_transaction_sums_by_dates(
+        ) for (transaction_date, transaction_sum) in await transaction_repository.get_user_transaction_sums_by_dates(
             user=current_user,
             transaction_type=transaction_type,
             first_date=first_date,
@@ -69,16 +72,16 @@ async def get_last_n_days_highlight(
         )
     ]
 
-@trend_controller.get('/current-month', response_model=list[TrendPointData])
+@trend_router.get('/current-month', response_model=list[TrendPointData])
 async def get_current_month(  # noqa: WPS210
     transaction_type: TransactionType = TransactionType.OUTCOME,
     current_user: User = Depends(identify_user),
-    session: Session = Depends(define_postgres_session),
+    session: AsyncSession = Depends(define_postgres_session),
 ) -> list[TrendPointData]:
-    transaction_service: TransactionService = TransactionService(session=session)
+    transaction_repository: TransactionRepository = TransactionRepository(session=session)
 
     trend: list[TrendPointData] = []
-    statistics: list[tuple[date, float, float]] = transaction_service.get_current_month_user_transaction_statistics(
+    statistics: list[tuple[date, float, float]] = await transaction_repository.get_current_month_user_transaction_statistics(
         user=current_user,
         transaction_type=transaction_type,
     )

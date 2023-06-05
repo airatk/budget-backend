@@ -1,8 +1,9 @@
 from pydantic import Field, PositiveInt
 
-from app.utilities.constants import MIN_PASSWORD_LENGTH
-
 from .utilities.base import BaseData
+
+
+MIN_PASSWORD_LENGTH: int = 10
 
 
 class UserOutputData(BaseData, orm_mode=True):
