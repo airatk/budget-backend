@@ -1,8 +1,7 @@
 from typing import Any
 
 from fastapi import status
-from fastapi.testclient import TestClient
-from httpx import Response
+from httpx import AsyncClient, Response
 from pytest import mark, param
 
 from tests.base.router_endpoint_base_test_class import (
@@ -28,12 +27,13 @@ class TestSignUp(RouterEndpointBaseTestClass, http_method='POST', endpoint='/sig
             id='user_5',
         ),
     ))
-    def test_with_correct_data(
+    @mark.anyio
+    async def test_with_correct_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
         )
@@ -78,13 +78,14 @@ class TestSignUp(RouterEndpointBaseTestClass, http_method='POST', endpoint='/sig
             id='existing_user',
         ),
     ))
-    def test_with_wrong_data(
+    @mark.anyio
+    async def test_with_wrong_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_data: dict[str, Any],
         expected_status_code: int,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
         )
@@ -103,12 +104,13 @@ class TestSignIn(RouterEndpointBaseTestClass, http_method='GET', endpoint='/sign
             id='user_2',
         ),
     ))
-    def test_with_correct_data(
+    @mark.anyio
+    async def test_with_correct_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_credentials: tuple[str, str],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_credentials=test_credentials,
         )
@@ -128,13 +130,14 @@ class TestSignIn(RouterEndpointBaseTestClass, http_method='GET', endpoint='/sign
             id='wrong_password',
         ),
     ))
-    def test_with_wrong_data(
+    @mark.anyio
+    async def test_with_wrong_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_credentials: tuple[str, str],
         expected_status_code: int,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_credentials=test_credentials,
         )

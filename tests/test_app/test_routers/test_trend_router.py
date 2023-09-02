@@ -1,8 +1,7 @@
 from typing import Any
 
 from fastapi import status
-from fastapi.testclient import TestClient
-from httpx import Response
+from httpx import AsyncClient, Response
 from pytest import mark, param
 
 from core.databases.models.utilities.types import TransactionType
@@ -11,18 +10,20 @@ from tests.base.router_endpoint_base_test_class import (
 )
 
 
-def test_get_summary(test_client: TestClient) -> None:
-    response: Response = test_client.get('/trend/summary')
+@mark.anyio
+async def test_get_summary(test_client: AsyncClient) -> None:
+    response: Response = await test_client.get('/trend/summary')
 
     assert response.status_code == status.HTTP_200_OK, response.text
     assert isinstance(response.json(), list)
     assert len(response.json()) == 3
 
-def test_get_monthly_trend(
-    test_client: TestClient,
+@mark.anyio
+async def test_get_monthly_trend(
+    test_client: AsyncClient,
     current_month_days_number: int,
 ) -> None:
-    response: Response = test_client.get('/trend/current-month')
+    response: Response = await test_client.get('/trend/current-month')
 
     assert response.status_code == status.HTTP_200_OK, response.text
     assert isinstance(response.json(), list)
@@ -40,13 +41,14 @@ class TestGetLastNDaysHighlight(RouterEndpointBaseTestClass, http_method='GET', 
         TransactionType.OUTCOME.value,
         TransactionType.TRANSFER.value,
     ))
-    def test_with_correct_data(
+    @mark.anyio
+    async def test_with_correct_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_n_days: int | None,
         test_type: str,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             n_days=test_n_days,
             transaction_type=test_type,
@@ -61,12 +63,13 @@ class TestGetLastNDaysHighlight(RouterEndpointBaseTestClass, http_method='GET', 
         param(15, id='greater'),
         param('string'),
     ))
-    def test_with_wrong_data(
+    @mark.anyio
+    async def test_with_wrong_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_n_days: Any,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             n_days=test_n_days,
         )

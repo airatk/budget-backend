@@ -32,7 +32,7 @@ api: FastAPI = FastAPI(
 )
 
 api.add_middleware(
-    middleware_class=CORSMiddleware,
+    CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_methods=ALLOWED_METHODS,
     allow_headers=ALLOWED_HEADERS,

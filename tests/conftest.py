@@ -1,39 +1,48 @@
 from calendar import monthrange
 from datetime import date, datetime
-from typing import Generator
+from typing import AsyncIterator
 
-from fastapi.testclient import TestClient
+from httpx import AsyncClient
 from pytest import fixture
 
 from app import api
 from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
-from core.databases.models.utilities.base import BaseModel
 
-from .mock.databases import fill_up_test_database, test_postgres_engine
+from .mock.databases import (
+    create_database,
+    create_database_tables,
+    drop_database,
+)
 from .mock.dependencies import define_test_postgres_session, identify_test_user
 
 
-@fixture(scope='module', autouse=True)
-def manage_test_database() -> Generator[None, None, None]:
-    BaseModel.metadata.create_all(bind=test_postgres_engine)
-    fill_up_test_database()
+@fixture(scope='session', autouse=True)
+async def manage_database() -> AsyncIterator[None]:
+    await drop_database()
+    await create_database()
+    await create_database_tables()
 
     yield
 
-    BaseModel.metadata.drop_all(bind=test_postgres_engine)
+    await drop_database()
 
 
 @fixture(scope='session')
-def test_client() -> Generator[TestClient, None, None]:
+def anyio_backend() -> str:
+    return 'asyncio'
+
+
+@fixture(scope='session')
+async def test_client() -> AsyncIterator[AsyncClient]:
     api.dependency_overrides[define_postgres_session] = define_test_postgres_session
     api.dependency_overrides[identify_user] = identify_test_user
 
-    with TestClient(app=api) as api_test_client:
+    async with AsyncClient(app=api, base_url='http://testserver') as api_test_client:
         yield api_test_client
 
 
-@fixture
+@fixture(scope='session')
 def current_month_days_number() -> int:
     today_date: date = datetime.today().date()
 

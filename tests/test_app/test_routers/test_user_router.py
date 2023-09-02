@@ -1,8 +1,7 @@
 from typing import Any
 
 from fastapi import status
-from fastapi.testclient import TestClient
-from httpx import Response
+from httpx import AsyncClient, Response
 from pytest import mark, param
 
 from tests.base.router_endpoint_base_test_class import (
@@ -10,8 +9,9 @@ from tests.base.router_endpoint_base_test_class import (
 )
 
 
-def test_get_current_user(test_client: TestClient) -> None:
-    response: Response = test_client.get('/user/current')
+@mark.anyio
+async def test_get_current_user(test_client: AsyncClient) -> None:
+    response: Response = await test_client.get('/user/current')
 
     assert response.status_code == status.HTTP_200_OK, response.text
     assert response.json() == {
@@ -31,12 +31,13 @@ class TestGetRelative(RouterEndpointBaseTestClass, http_method='GET', endpoint='
             id='correct_id',
         ),
     ))
-    def test_with_correct_id(
+    @mark.anyio
+    async def test_with_correct_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_data: Any,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             id=test_data['id'],
         )
@@ -48,11 +49,12 @@ class TestGetRelative(RouterEndpointBaseTestClass, http_method='GET', endpoint='
             'username': test_data['username'],
         }
 
-    def test_with_self_id(
+    @mark.anyio
+    async def test_with_self_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             id=1,
         )
@@ -91,13 +93,14 @@ class TestGetRelative(RouterEndpointBaseTestClass, http_method='GET', endpoint='
             id='wrong_id',
         ),
     ))
-    def test_with_wrong_id(
+    @mark.anyio
+    async def test_with_wrong_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: Any,
         expected_status_code: int,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             id=test_id,
         )

@@ -1,7 +1,6 @@
 from typing import Any
 
-from fastapi.testclient import TestClient
-from httpx import Response
+from httpx import AsyncClient, Response
 from httpx._client import USE_CLIENT_DEFAULT  # noqa: WPS436
 
 
@@ -19,18 +18,20 @@ class RouterEndpointBaseTestClass:
         cls.http_method = http_method
         cls.endpoint = endpoint
 
-    def request(
+    async def request(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_credentials: tuple[str, str] | None = None,
         test_data: dict[str, Any] | None = None,
         **query_parameters: Any,
     ) -> Response:
         query_parameters = {
-            key: test_value for (key, test_value) in query_parameters.items() if test_value is not None
+            key: test_value
+            for key, test_value in query_parameters.items()
+            if test_value is not None
         }
 
-        return test_client.request(
+        return await test_client.request(
             method=self.http_method,
             url=self.endpoint,
             json=test_data,

@@ -1,62 +1,98 @@
-from itertools import chain
-from json import load as load_from_json
-from typing import Type, TypeAlias
+from typing import Any
 
-from sqlalchemy.engine import Engine, create_engine
-from sqlalchemy.orm import sessionmaker, Session
-
-from core.databases.models import (
-    Account,
-    Budget,
-    Category,
-    Family,
-    Transaction,
-    User,
+from pydantic import PostgresDsn
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
 )
+from sqlalchemy.pool import NullPool
+from sqlalchemy.sql import insert, text
+
 from core.databases.models.utilities.base import BaseModel
 
 from .settings import test_settings
+from .utilities.callables import get_records_data_from_json
+from .utilities.constants import DATABASE_MAPPING
 
 
-test_postgres_engine: Engine = create_engine(url=test_settings.POSTGRES_URL)  # type: ignore [arg-type]
-
-TestPostgresSession: sessionmaker[Session] = sessionmaker(
-    bind=test_postgres_engine,
-    autocommit=False,
-    autoflush=False,
+_POSTGRES_DEFAULT_DATABASE_URL: str = PostgresDsn.build(
+    scheme=test_settings.POSTGRES_DRIVER,
+    user=test_settings.POSTGRES_USERNAME,
+    password=test_settings.POSTGRES_PASSWORD,
+    host=test_settings.POSTGRES_HOST,
+    port=test_settings.POSTGRES_PORT,
+    path='/postgres',
 )
 
 
-DatabaseMapping: TypeAlias = tuple[Type[BaseModel], str, str]
+test_postgres_engine: AsyncEngine = create_async_engine(
+    url=test_settings.POSTGRES_URL,
+    poolclass=NullPool,
+)
 
-def fill_up_test_database() -> None:  # noqa: WPS210
-    generic_json_file_path: str = 'tests/mock/data/{0}.json'
-    data_mapping: tuple[DatabaseMapping, ...] = (
-        (User, 'users', 'user_id_seq'),
-        (Family, 'families', 'family_id_seq'),
-        (Account, 'accounts', 'account_id_seq'),
-        (Category, 'categories', 'category_id_seq'),
-        (Budget, 'budgets', 'budget_id_seq'),
-        (Transaction, 'transactions', 'transaction_id_seq'),
+
+TestPostgresSession: async_sessionmaker[AsyncSession] = async_sessionmaker(
+    bind=test_postgres_engine,
+    expire_on_commit=False,
+)
+
+
+async def drop_database() -> None:
+    engine: AsyncEngine = create_async_engine(
+        url=_POSTGRES_DEFAULT_DATABASE_URL,
+        isolation_level='AUTOCOMMIT',
     )
 
-    tables: list[list[BaseModel]] = []
-    sequence_data: dict[str, int] = {}
+    async with engine.connect() as database_connection:
+        await database_connection.execute(
+            text('DROP DATABASE IF EXISTS "{database_name}" WITH (FORCE)'.format(
+                database_name=test_settings.POSTGRES_DATABASE,
+            )),
+        )
 
-    for (model, data_type, sequence_id) in data_mapping:
-        with open(file=generic_json_file_path.format(data_type), mode='r') as json_file:
-            tables.append([
-                model(**json_list_item_data) for json_list_item_data in load_from_json(json_file)
-            ])
+    await engine.dispose()
 
-        sequence_data[sequence_id] = len(tables[-1]) + 1
 
-    with TestPostgresSession() as test_postgres_session:
-        test_postgres_session.add_all(chain(*tables))
+async def create_database() -> None:
+    engine: AsyncEngine = create_async_engine(
+        url=_POSTGRES_DEFAULT_DATABASE_URL,
+        isolation_level='AUTOCOMMIT',
+    )
 
-        for (sequence_id, next_sequence_value) in sequence_data.items():  # noqa: WPS440
-            test_postgres_session.execute(
-                'ALTER SEQUENCE {0} RESTART WITH {1}'.format(sequence_id, next_sequence_value),
+    async with engine.connect() as database_connection:
+        await database_connection.execute(
+            text('CREATE DATABASE "{database_name}"'.format(
+                database_name=test_settings.POSTGRES_DATABASE,
+            )),
+        )
+
+    await engine.dispose()
+
+
+async def create_database_tables() -> None:
+    engine: AsyncEngine = create_async_engine(
+        url=test_settings.POSTGRES_URL,
+    )
+
+    async with engine.begin() as database_connection:
+        await database_connection.run_sync(BaseModel.metadata.drop_all)
+        await database_connection.run_sync(BaseModel.metadata.create_all)
+
+        for database_mapping_item in DATABASE_MAPPING:
+            record_data_list: list[dict[str, Any]] = get_records_data_from_json(
+                file_name=database_mapping_item.file_name,
             )
 
-        test_postgres_session.commit()
+            await database_connection.execute(
+                insert(database_mapping_item.model).values(record_data_list),
+            )
+            await database_connection.execute(
+                text('ALTER SEQUENCE {sequence_id} RESTART WITH {sequence_next_value}'.format(
+                    sequence_id=database_mapping_item.sequence_id,
+                    sequence_next_value=len(record_data_list) + 1,
+                )),
+            )
+
+    await engine.dispose()

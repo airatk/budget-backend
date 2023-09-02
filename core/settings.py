@@ -1,5 +1,7 @@
+from pathlib import Path
 from typing import Any
 
+from dotenv import dotenv_values
 from pydantic import BaseSettings, PostgresDsn, validator
 
 
@@ -31,4 +33,6 @@ class Settings(BaseSettings):
         )
 
 
-settings: Settings = Settings(_env_file='configurations/.env')
+_dotenv_path: Path = Path('configurations') / '.env'
+
+settings: Settings = Settings(**dotenv_values(_dotenv_path))

@@ -1,8 +1,7 @@
 from typing import Any
 
 from fastapi import status
-from fastapi.testclient import TestClient
-from httpx import Response
+from httpx import AsyncClient, Response
 from pytest import mark, param
 
 from core.databases.models.utilities.types import BudgetType, CategoryType
@@ -13,16 +12,25 @@ from tests.base.router_endpoint_base_test_class import (
 
 class TestGetBudgets(RouterEndpointBaseTestClass, http_method='GET', endpoint='/budget/list'):
     @mark.parametrize('test_type, expected_items_number', (
-        param(BudgetType.PERSONAL.value, 1),
-        param(BudgetType.JOINT.value, 1),
+        param(
+            BudgetType.PERSONAL.value,
+            1,
+            id='personal',
+        ),
+        param(
+            BudgetType.JOINT.value,
+            1,
+            id='joint',
+        ),
     ))
-    def test_with_correct_data(
+    @mark.anyio
+    async def test_with_correct_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_type: Any,
         expected_items_number: int,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             type=test_type,
         )
@@ -35,12 +43,13 @@ class TestGetBudgets(RouterEndpointBaseTestClass, http_method='GET', endpoint='/
         'non_existing_type',
         None,
     ))
-    def test_with_wrong_data(
+    @mark.anyio
+    async def test_with_wrong_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_type: Any,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             type=test_type,
         )
@@ -75,13 +84,14 @@ class TestGetBudget(RouterEndpointBaseTestClass, http_method='GET', endpoint='/b
             id='budget_2',
         ),
     ))
-    def test_with_correct_id(
+    @mark.anyio
+    async def test_with_correct_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: int,
         expected_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             id=test_id,
         )
@@ -122,13 +132,14 @@ class TestGetBudget(RouterEndpointBaseTestClass, http_method='GET', endpoint='/b
             id='wrong_id',
         ),
     ))
-    def test_with_wrong_id(
+    @mark.anyio
+    async def test_with_wrong_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: Any,
         expected_status_code: int,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             id=test_id,
         )
@@ -185,13 +196,14 @@ class TestCreateBudget(RouterEndpointBaseTestClass, http_method='POST', endpoint
             id='budget_6',
         ),
     ))
-    def test_with_correct_data(
+    @mark.anyio
+    async def test_with_correct_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_data: dict[str, Any],
         expected_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
         )
@@ -237,12 +249,13 @@ class TestCreateBudget(RouterEndpointBaseTestClass, http_method='POST', endpoint
             id='missing_category_ids',
         ),
     ))
-    def test_with_wrong_data(
+    @mark.anyio
+    async def test_with_wrong_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
         )
@@ -260,12 +273,13 @@ class TestCreateBudget(RouterEndpointBaseTestClass, http_method='POST', endpoint
             id='wrong_category_ids',
         ),
     ))
-    def test_with_wrong_ids(
+    @mark.anyio
+    async def test_with_wrong_ids(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
         )
@@ -300,14 +314,15 @@ class TestUpdateBudget(RouterEndpointBaseTestClass, http_method='PATCH', endpoin
             id='budget_1',
         ),
     ))
-    def test_with_correct_data(
+    @mark.anyio
+    async def test_with_correct_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: int,
         test_data: dict[str, Any],
         expected_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
             id=test_id,
@@ -346,13 +361,14 @@ class TestUpdateBudget(RouterEndpointBaseTestClass, http_method='PATCH', endpoin
             id='missing_category_ids',
         ),
     ))
-    def test_with_wrong_data(
+    @mark.anyio
+    async def test_with_wrong_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: int,
         test_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
             id=test_id,
@@ -369,13 +385,14 @@ class TestUpdateBudget(RouterEndpointBaseTestClass, http_method='PATCH', endpoin
             id='wrong_category_ids',
         ),
     ))
-    def test_with_wrong_ids(
+    @mark.anyio
+    async def test_with_wrong_ids(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: int,
         test_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
             id=test_id,
@@ -410,13 +427,14 @@ class TestUpdateBudget(RouterEndpointBaseTestClass, http_method='PATCH', endpoin
             id='wrong_id',
         ),
     ))
-    def test_with_wrong_id(
+    @mark.anyio
+    async def test_with_wrong_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: Any,
         expected_status_code: int,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data={},
             id=test_id,
@@ -429,12 +447,13 @@ class TestDeleteBudget(RouterEndpointBaseTestClass, http_method='DELETE', endpoi
     @mark.parametrize('test_id', (
         1,
     ))
-    def test_with_correct_id(
+    @mark.anyio
+    async def test_with_correct_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: int,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             id=test_id,
         )
@@ -468,13 +487,14 @@ class TestDeleteBudget(RouterEndpointBaseTestClass, http_method='DELETE', endpoi
             id='wrong_id',
         ),
     ))
-    def test_with_wrong_id(
+    @mark.anyio
+    async def test_with_wrong_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: Any,
         expected_status_code: int,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             id=test_id,
         )

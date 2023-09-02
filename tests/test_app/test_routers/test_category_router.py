@@ -1,8 +1,7 @@
 from typing import Any
 
 from fastapi import status
-from fastapi.testclient import TestClient
-from httpx import Response
+from httpx import AsyncClient, Response
 from pytest import mark, param
 
 from core.databases.models.utilities.types import CategoryType
@@ -11,8 +10,9 @@ from tests.base.router_endpoint_base_test_class import (
 )
 
 
-def test_get_categories(test_client: TestClient) -> None:
-    response: Response = test_client.get('/category/list')
+@mark.anyio
+async def test_get_categories(test_client: AsyncClient) -> None:
+    response: Response = await test_client.get('/category/list')
 
     assert response.status_code == status.HTTP_200_OK, response.text
     assert isinstance(response.json(), list)
@@ -32,13 +32,14 @@ class TestGetCategory(RouterEndpointBaseTestClass, http_method='GET', endpoint='
             id='category_1',
         ),
     ))
-    def test_with_correct_id(
+    @mark.anyio
+    async def test_with_correct_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: int,
         expected_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             id=test_id,
         )
@@ -74,13 +75,14 @@ class TestGetCategory(RouterEndpointBaseTestClass, http_method='GET', endpoint='
             id='wrong_id',
         ),
     ))
-    def test_with_wrong_id(
+    @mark.anyio
+    async def test_with_wrong_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: Any,
         expected_status_code: int,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             id=test_id,
         )
@@ -105,13 +107,14 @@ class TestCreateCategory(RouterEndpointBaseTestClass, http_method='POST', endpoi
             id='category_7',
         ),
     ))
-    def test_with_correct_data(
+    @mark.anyio
+    async def test_with_correct_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_data: dict[str, Any],
         expected_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
         )
@@ -137,12 +140,13 @@ class TestCreateCategory(RouterEndpointBaseTestClass, http_method='POST', endpoi
             id='wrong_type',
         ),
     ))
-    def test_with_wrong_data(
+    @mark.anyio
+    async def test_with_wrong_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
         )
@@ -168,14 +172,15 @@ class TestUpdateCategory(RouterEndpointBaseTestClass, http_method='PATCH', endpo
             id='category_1',
         ),
     ))
-    def test_with_correct_data(
+    @mark.anyio
+    async def test_with_correct_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: int,
         test_data: dict[str, Any],
         expected_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
             id=test_id,
@@ -200,13 +205,14 @@ class TestUpdateCategory(RouterEndpointBaseTestClass, http_method='PATCH', endpo
             id='wrong_type',
         ),
     ))
-    def test_with_wrong_data(
+    @mark.anyio
+    async def test_with_wrong_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: int,
         test_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
             id=test_id,
@@ -241,13 +247,14 @@ class TestUpdateCategory(RouterEndpointBaseTestClass, http_method='PATCH', endpo
             id='wrong_id',
         ),
     ))
-    def test_with_wrong_id(
+    @mark.anyio
+    async def test_with_wrong_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: Any,
         expected_status_code: int,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data={},
             id=test_id,
@@ -260,12 +267,13 @@ class TestDeleteCategory(RouterEndpointBaseTestClass, http_method='DELETE', endp
     @mark.parametrize('test_id', (
         1,
     ))
-    def test_with_correct_id(
+    @mark.anyio
+    async def test_with_correct_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: int,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             id=test_id,
         )
@@ -299,13 +307,14 @@ class TestDeleteCategory(RouterEndpointBaseTestClass, http_method='DELETE', endp
             id='wrong_id',
         ),
     ))
-    def test_with_wrong_id(
+    @mark.anyio
+    async def test_with_wrong_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: Any,
         expected_status_code: int,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             id=test_id,
         )

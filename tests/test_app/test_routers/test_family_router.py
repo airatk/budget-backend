@@ -1,6 +1,5 @@
 from fastapi import status
-from fastapi.testclient import TestClient
-from httpx import Response
+from httpx import AsyncClient, Response
 from pytest import mark, param
 
 
@@ -16,12 +15,13 @@ from pytest import mark, param
         id='not_family_member',
     ),
 ))
-def test_get_family(
-    test_client: TestClient,
+@mark.anyio
+async def test_get_family(
+    test_client: AsyncClient,
     test_username: str,
     expected_status_code: int,
 ) -> None:
-    response: Response = test_client.get(
+    response: Response = await test_client.get(
         url='/family/current',
         headers={
             'test-username': test_username,

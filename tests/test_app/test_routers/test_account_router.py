@@ -1,8 +1,7 @@
 from typing import Any
 
 from fastapi import status
-from fastapi.testclient import TestClient
-from httpx import Response
+from httpx import AsyncClient, Response
 from pytest import mark, param
 
 from core.databases.models.utilities.types import CurrencyType
@@ -11,15 +10,17 @@ from tests.base.router_endpoint_base_test_class import (
 )
 
 
-def test_get_balances(test_client: TestClient) -> None:
-    response: Response = test_client.get('/account/balances')
+@mark.anyio
+async def test_get_balances(test_client: AsyncClient) -> None:
+    response: Response = await test_client.get('/account/balances')
 
     assert response.status_code == status.HTTP_200_OK, response.text
     assert isinstance(response.json(), list)
     assert response.json()
 
-def test_get_accounts(test_client: TestClient) -> None:
-    response: Response = test_client.get('/account/list')
+@mark.anyio
+async def test_get_accounts(test_client: AsyncClient) -> None:
+    response: Response = await test_client.get('/account/list')
 
     assert response.status_code == status.HTTP_200_OK, response.text
     assert isinstance(response.json(), list)
@@ -43,13 +44,14 @@ class TestCreateAccount(RouterEndpointBaseTestClass, http_method='POST', endpoin
             id='account_5',
         ),
     ))
-    def test_with_correct_data(
+    @mark.anyio
+    async def test_with_correct_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_data: dict[str, Any],
         expected_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
         )
@@ -75,12 +77,13 @@ class TestCreateAccount(RouterEndpointBaseTestClass, http_method='POST', endpoin
             id='wrong_currency',
         ),
     ))
-    def test_with_wrong_data(
+    @mark.anyio
+    async def test_with_wrong_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
         )
@@ -106,14 +109,15 @@ class TestUpdateAccount(RouterEndpointBaseTestClass, http_method='PATCH', endpoi
             id='correct_data',
         ),
     ))
-    def test_with_correct_data(
+    @mark.anyio
+    async def test_with_correct_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: int,
         test_data: dict[str, Any],
         expected_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
             id=test_id,
@@ -139,13 +143,14 @@ class TestUpdateAccount(RouterEndpointBaseTestClass, http_method='PATCH', endpoi
             id='wrong_currency',
         ),
     ))
-    def test_with_wrong_data(
+    @mark.anyio
+    async def test_with_wrong_data(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: int,
         test_data: dict[str, Any],
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data=test_data,
             id=test_id,
@@ -180,13 +185,14 @@ class TestUpdateAccount(RouterEndpointBaseTestClass, http_method='PATCH', endpoi
             id='wrong_id',
         ),
     ))
-    def test_with_wrong_id(
+    @mark.anyio
+    async def test_with_wrong_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: Any,
         expected_status_code: int,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             test_data={},
             id=test_id,
@@ -199,12 +205,13 @@ class TestDeleteAccount(RouterEndpointBaseTestClass, http_method='DELETE', endpo
     @mark.parametrize('test_id', (
         1,
     ))
-    def test_with_correct_id(
+    @mark.anyio
+    async def test_with_correct_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: int,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             id=test_id,
         )
@@ -238,13 +245,14 @@ class TestDeleteAccount(RouterEndpointBaseTestClass, http_method='DELETE', endpo
             id='wrong_id',
         ),
     ))
-    def test_with_wrong_id(
+    @mark.anyio
+    async def test_with_wrong_id(
         self,
-        test_client: TestClient,
+        test_client: AsyncClient,
         test_id: Any,
         expected_status_code: int,
     ) -> None:
-        response: Response = self.request(
+        response: Response = await self.request(
             test_client=test_client,
             id=test_id,
         )

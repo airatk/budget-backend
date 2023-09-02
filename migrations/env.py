@@ -3,8 +3,9 @@ from logging.config import fileConfig
 
 from alembic import context
 from alembic.config import Config
-from sqlalchemy import Connection, MetaData, pool
+from sqlalchemy import Connection, MetaData
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
+from sqlalchemy.pool import NullPool
 
 from core.databases.models.utilities.base import BaseModel
 from core.settings import settings
@@ -57,7 +58,7 @@ async def run_migrations_online() -> None:
 
     connectable: AsyncEngine = create_async_engine(
         url=settings.POSTGRES_URL,
-        poolclass=pool.NullPool,
+        poolclass=NullPool,
     )
 
     async with connectable.connect() as connection:
