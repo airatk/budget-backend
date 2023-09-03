@@ -15,8 +15,8 @@ if TYPE_CHECKING:
 class Account(BaseModel):
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
 
-    user: Mapped['User'] = relationship('User', back_populates='accounts', lazy='joined')
-    transactions: Mapped[list['Transaction']] = relationship('Transaction', back_populates='account', cascade='all, delete', lazy='joined')
+    user: Mapped['User'] = relationship(back_populates='accounts', lazy='selectin')
+    transactions: Mapped[list['Transaction']] = relationship(back_populates='account', cascade='all, delete', lazy='selectin')
 
     name: Mapped[str] = mapped_column(index=True)
     currency: Mapped[CurrencyType]

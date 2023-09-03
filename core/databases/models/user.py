@@ -17,10 +17,10 @@ if TYPE_CHECKING:
 class User(BaseModel):
     family_id: Mapped[int | None] = mapped_column(ForeignKey('family.id'))
 
-    family: Mapped['Family | None'] = relationship('Family', back_populates='members', lazy='joined')
-    accounts: Mapped[list['Account']] = relationship('Account', back_populates='user', cascade='all, delete', lazy='joined')
-    categories: Mapped[list['Category']] = relationship('Category', back_populates='user', cascade='all, delete', lazy='joined')
-    budgets: Mapped[list['Budget']] = relationship('Budget', back_populates='user', cascade='all, delete', lazy='joined')
+    family: Mapped['Family | None'] = relationship(back_populates='members', lazy='selectin')
+    accounts: Mapped[list['Account']] = relationship(back_populates='user', cascade='all, delete', lazy='selectin')
+    categories: Mapped[list['Category']] = relationship(back_populates='user', cascade='all, delete', lazy='selectin')
+    budgets: Mapped[list['Budget']] = relationship(back_populates='user', cascade='all, delete', lazy='selectin')
 
     username: Mapped[str] = mapped_column(String(MAX_USERNAME_LENGTH), unique=True, index=True)
     password: Mapped[str]

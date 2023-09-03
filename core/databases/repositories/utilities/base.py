@@ -1,8 +1,8 @@
 from typing import Any, Awaitable, Generic, Type, TypeVar
 
-from sqlalchemy import Result, select
+from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql import ColumnElement
+from sqlalchemy.sql import ColumnElement, select
 
 from core.databases.models.utilities.base import BaseModel
 

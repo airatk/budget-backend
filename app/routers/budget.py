@@ -63,7 +63,7 @@ async def get_budget(
     if budget.type is BudgetType.PERSONAL and budget.user != current_user:
         raise CouldNotAccessRecord(budget_id, Budget)
 
-    if budget.type is BudgetType.JOINT and (current_user.family is None or budget.user not in current_user.family.members):
+    if budget.type is BudgetType.JOINT and (current_user.family is None or budget.user.family_id != current_user.family.id):
         raise CouldNotAccessRecord(budget_id, Budget)
 
     return budget

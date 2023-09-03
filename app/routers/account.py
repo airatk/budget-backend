@@ -38,7 +38,8 @@ async def get_balances(
                 transactions=account.transactions,
                 transaction_type=TransactionType.OUTCOME,
             ),
-        ) for account in current_user.accounts
+        )
+        for account in current_user.accounts
     ]
 
 @account_router.get('/list', response_model=list[AccountOutputData])

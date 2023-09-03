@@ -17,8 +17,8 @@ class Transaction(BaseModel):
     account_id: Mapped[int] = mapped_column(ForeignKey('account.id'))
     category_id: Mapped[int | None] = mapped_column(ForeignKey('category.id'))
 
-    account: Mapped['Account'] = relationship('Account', back_populates='transactions', lazy='joined')
-    category: Mapped['Category | None'] = relationship('Category', back_populates='transactions', lazy='joined')
+    account: Mapped['Account'] = relationship(back_populates='transactions', lazy='selectin')
+    category: Mapped['Category | None'] = relationship(back_populates='transactions', lazy='selectin')
 
     type: Mapped[TransactionType]
     due_date: Mapped[date]

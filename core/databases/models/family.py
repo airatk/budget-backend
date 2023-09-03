@@ -10,6 +10,6 @@ if TYPE_CHECKING:
 
 
 class Family(BaseModel):
-    members: Mapped[list['User']] = relationship('User', back_populates='family', lazy='joined')
+    members: Mapped[list['User']] = relationship(back_populates='family', lazy='selectin')
 
     access_code: Mapped[str] = mapped_column(unique=True)

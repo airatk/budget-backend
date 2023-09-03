@@ -15,8 +15,8 @@ if TYPE_CHECKING:
 class Budget(BaseModel):
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
 
-    user: Mapped['User'] = relationship('User', back_populates='budgets', lazy='joined')
-    categories: Mapped[list['Category']] = relationship('Category', back_populates='budget', lazy='joined')
+    user: Mapped['User'] = relationship(back_populates='budgets', lazy='selectin')
+    categories: Mapped[list['Category']] = relationship(back_populates='budget', lazy='selectin')
 
     name: Mapped[str] = mapped_column(index=True)
     type: Mapped[BudgetType]

@@ -39,22 +39,6 @@ TestPostgresSession: async_sessionmaker[AsyncSession] = async_sessionmaker(
 )
 
 
-async def drop_database() -> None:
-    engine: AsyncEngine = create_async_engine(
-        url=_POSTGRES_DEFAULT_DATABASE_URL,
-        isolation_level='AUTOCOMMIT',
-    )
-
-    async with engine.connect() as database_connection:
-        await database_connection.execute(
-            text('DROP DATABASE IF EXISTS "{database_name}" WITH (FORCE)'.format(
-                database_name=test_settings.POSTGRES_DATABASE,
-            )),
-        )
-
-    await engine.dispose()
-
-
 async def create_database() -> None:
     engine: AsyncEngine = create_async_engine(
         url=_POSTGRES_DEFAULT_DATABASE_URL,
@@ -71,13 +55,28 @@ async def create_database() -> None:
     await engine.dispose()
 
 
+async def drop_database() -> None:
+    engine: AsyncEngine = create_async_engine(
+        url=_POSTGRES_DEFAULT_DATABASE_URL,
+        isolation_level='AUTOCOMMIT',
+    )
+
+    async with engine.connect() as database_connection:
+        await database_connection.execute(
+            text('DROP DATABASE IF EXISTS "{database_name}" WITH (FORCE)'.format(
+                database_name=test_settings.POSTGRES_DATABASE,
+            )),
+        )
+
+    await engine.dispose()
+
+
 async def create_database_tables() -> None:
     engine: AsyncEngine = create_async_engine(
         url=test_settings.POSTGRES_URL,
     )
 
     async with engine.begin() as database_connection:
-        await database_connection.run_sync(BaseModel.metadata.drop_all)
         await database_connection.run_sync(BaseModel.metadata.create_all)
 
         for database_mapping_item in DATABASE_MAPPING:
