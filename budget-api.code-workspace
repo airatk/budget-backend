@@ -5,9 +5,6 @@
         },
     ],
     "settings": {
-        "python.linting.enabled": true,
-        "python.linting.flake8Enabled": true,
-        "python.linting.mypyEnabled": true,
         "python.analysis.typeCheckingMode": "off",
         "python.testing.pytestEnabled": true,
         "python.testing.pytestArgs": [
@@ -18,7 +15,7 @@
         "configurations": [
             {
                 "name": "Debug Launch",
-                "type": "python",
+                "type": "debugpy",
                 "request": "launch",
                 "module": "uvicorn",
                 "args": [

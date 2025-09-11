@@ -1,7 +1,9 @@
 # Budget API
-_web API for managing & planning both of joint & personal budgets_
+
+web API of [`budget-platform`](https://github.com/airatk/budget-platform)
 
 ### Stack
+
 * Python, Poetry
 * FastAPI, Pydantic, PyTest, Coverage
 * PostgreSQL, SQLAlchemy, Alembic
