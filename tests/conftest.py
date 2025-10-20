@@ -5,7 +5,7 @@ from typing import AsyncIterator
 from httpx import AsyncClient
 from pytest import fixture
 
-from app import api
+from app import backend
 from app.dependencies.sessions import define_postgres_session
 from app.dependencies.user import identify_user
 
@@ -35,10 +35,10 @@ def anyio_backend() -> str:
 
 @fixture(scope='session')
 async def test_client() -> AsyncIterator[AsyncClient]:
-    api.dependency_overrides[define_postgres_session] = define_test_postgres_session
-    api.dependency_overrides[identify_user] = identify_test_user
+    backend.dependency_overrides[define_postgres_session] = define_test_postgres_session
+    backend.dependency_overrides[identify_user] = identify_test_user
 
-    async with AsyncClient(app=api, base_url='http://testserver') as api_test_client:
+    async with AsyncClient(app=backend, base_url='http://testserver') as api_test_client:
         yield api_test_client
 
 

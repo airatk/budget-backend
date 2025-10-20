@@ -1,6 +1,4 @@
-# Budget API
-
-web API of [`budget-platform`](https://github.com/airatk/budget-platform)
+# Backend of [`Budget`](https://github.com/airatk/budget-docs)
 
 ### Stack
 

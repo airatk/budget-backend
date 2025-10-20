@@ -18,9 +18,9 @@ from app.utilities.security.cors import (
 )
 
 
-api: FastAPI = FastAPI(
-    title='Budget API',
-    description='web API for managing & planning both of joint & personal budgets',
+backend: FastAPI = FastAPI(
+    title='Budget Backend',
+    description='backend for managing & planning both of joint & personal budgets',
     version='1.0.0',
     contact={
         'name': 'Airat K',
@@ -31,7 +31,7 @@ api: FastAPI = FastAPI(
     },
 )
 
-api.add_middleware(
+backend.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_methods=ALLOWED_METHODS,
@@ -39,11 +39,11 @@ api.add_middleware(
     allow_credentials=True,
 )
 
-api.include_router(authentication_router)
-api.include_router(family_router)
-api.include_router(user_router)
-api.include_router(trend_router)
-api.include_router(account_router)
-api.include_router(category_router)
-api.include_router(transaction_router)
-api.include_router(budget_router)
+backend.include_router(authentication_router)
+backend.include_router(family_router)
+backend.include_router(user_router)
+backend.include_router(trend_router)
+backend.include_router(account_router)
+backend.include_router(category_router)
+backend.include_router(transaction_router)
+backend.include_router(budget_router)

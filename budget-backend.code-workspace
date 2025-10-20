@@ -19,7 +19,7 @@
                 "request": "launch",
                 "module": "uvicorn",
                 "args": [
-                    "app:api",
+                    "app:backend",
                     "--host", "localhost",
                     "--port", "8000",
                 ],

@@ -4,9 +4,9 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry]
-name = "budget-api"
+name = "budget-backend"
 version = "0.0.1"
-description = "web API for managing & planning both of joint & personal budgets"
+description = "backend for managing & planning both of joint & personal budgets"
 authors = [
     "Airat K <kamairat@icloud.com>",
 ]
